@@ -55,6 +55,16 @@ const routes = [
     path: '/developer/password',
     name: 'PasswordGenerator',
     component: () => import('../views/developer/PasswordGenerator.vue')
+  },
+  {
+    path: '/calculator/dday',
+    name: 'DdayCalculator',
+    component: () => import('../views/calculator/DdayCalculator.vue')
+  },
+  {
+    path: '/calculator/unit',
+    name: 'UnitConverter',
+    component: () => import('../views/calculator/UnitConverter.vue')
   }
 ]
 

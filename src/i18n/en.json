@@ -16,7 +16,8 @@
     "games": "Games/Random",
     "developer": "Developer Tools",
     "converter": "Converters",
-    "text": "Text Tools"
+    "text": "Text Tools",
+    "calculator": "Calculators"
   },
   "tools": {
     "ladder": {
@@ -138,6 +139,44 @@
       "medium": "Medium",
       "strong": "Strong",
       "veryStrong": "Very Strong"
+    },
+    "dday": {
+      "title": "D-Day Calculator",
+      "description": "Calculate days until target date",
+      "titleLabel": "Title",
+      "titlePlaceholder": "e.g., Exam day, Trip",
+      "dateLabel": "Date",
+      "save": "Save",
+      "savedList": "Saved D-Days",
+      "empty": "No saved D-Days",
+      "untitled": "Untitled",
+      "today": "Today!",
+      "daysLeft": "{days} days left",
+      "daysPassed": "{days} days passed",
+      "dateFormat": "{month}/{day}/{year}",
+      "weekdays": {
+        "sun": "Sun",
+        "mon": "Mon",
+        "tue": "Tue",
+        "wed": "Wed",
+        "thu": "Thu",
+        "fri": "Fri",
+        "sat": "Sat"
+      }
+    },
+    "unit": {
+      "title": "Unit Converter",
+      "description": "Convert length, weight, temperature, data units",
+      "from": "From",
+      "to": "To",
+      "inputPlaceholder": "Enter value",
+      "quickRef": "Quick Reference",
+      "tabs": {
+        "length": "Length",
+        "weight": "Weight",
+        "temperature": "Temperature",
+        "data": "Data"
+      }
     }
   }
 }

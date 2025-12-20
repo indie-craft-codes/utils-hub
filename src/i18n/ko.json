@@ -16,7 +16,8 @@
     "games": "게임/랜덤",
     "developer": "개발자 도구",
     "converter": "변환 도구",
-    "text": "텍스트 도구"
+    "text": "텍스트 도구",
+    "calculator": "계산기"
   },
   "tools": {
     "ladder": {
@@ -138,6 +139,44 @@
       "medium": "보통",
       "strong": "강함",
       "veryStrong": "매우 강함"
+    },
+    "dday": {
+      "title": "D-Day 계산기",
+      "description": "목표일까지 남은 날짜 계산",
+      "titleLabel": "제목",
+      "titlePlaceholder": "예: 시험일, 여행",
+      "dateLabel": "날짜",
+      "save": "저장하기",
+      "savedList": "저장된 D-Day",
+      "empty": "저장된 D-Day가 없습니다",
+      "untitled": "제목 없음",
+      "today": "오늘입니다!",
+      "daysLeft": "{days}일 남음",
+      "daysPassed": "{days}일 지남",
+      "dateFormat": "{year}년 {month}월 {day}일",
+      "weekdays": {
+        "sun": "일",
+        "mon": "월",
+        "tue": "화",
+        "wed": "수",
+        "thu": "목",
+        "fri": "금",
+        "sat": "토"
+      }
+    },
+    "unit": {
+      "title": "단위 변환기",
+      "description": "길이, 무게, 온도, 데이터 단위 변환",
+      "from": "변환할 값",
+      "to": "결과",
+      "inputPlaceholder": "값 입력",
+      "quickRef": "빠른 참조",
+      "tabs": {
+        "length": "길이",
+        "weight": "무게",
+        "temperature": "온도",
+        "data": "데이터"
+      }
     }
   }
 }
