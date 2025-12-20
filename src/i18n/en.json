@@ -1,0 +1,143 @@
+{
+  "common": {
+    "title": "Utils Hub",
+    "search": "Search",
+    "home": "Home",
+    "copy": "Copy",
+    "copied": "Copied",
+    "clear": "Clear",
+    "download": "Download",
+    "run": "Run",
+    "result": "Result",
+    "input": "Input",
+    "output": "Output"
+  },
+  "categories": {
+    "games": "Games/Random",
+    "developer": "Developer Tools",
+    "converter": "Converters",
+    "text": "Text Tools"
+  },
+  "tools": {
+    "ladder": {
+      "title": "Ladder Game",
+      "description": "Randomly match participants",
+      "participants": "Participants",
+      "results": "Result Items",
+      "addParticipant": "Add Participant",
+      "addResult": "Add Result",
+      "start": "Start Ladder",
+      "reset": "Reset",
+      "inputGuide": "Enter names and prizes",
+      "clickGuide": "Click a name or prize to reveal",
+      "decrease": "Remove",
+      "increase": "Add",
+      "people": "players",
+      "back": "Back",
+      "showAll": "Show All Results",
+      "savePng": "Save Image",
+      "saveGif": "Save GIF",
+      "saving": "Saving..."
+    },
+    "json": {
+      "title": "JSON Parser",
+      "description": "JSON formatting, validation, viewer",
+      "format": "Format",
+      "minify": "Minify",
+      "validate": "Validate",
+      "valid": "Valid JSON",
+      "invalid": "Invalid JSON",
+      "placeholder": "Enter JSON..."
+    },
+    "text": {
+      "title": "Text Tools",
+      "description": "Encoding, hashing, string conversion",
+      "base64Encode": "Base64 Encode",
+      "base64Decode": "Base64 Decode",
+      "urlEncode": "URL Encode",
+      "urlDecode": "URL Decode",
+      "md5": "MD5 Hash",
+      "sha256": "SHA-256 Hash",
+      "uppercase": "Uppercase",
+      "lowercase": "Lowercase",
+      "charCount": "Characters",
+      "wordCount": "Words",
+      "lineCount": "Lines"
+    },
+    "converter": {
+      "title": "Image Converter",
+      "description": "Convert image formats (PNG, JPG, WebP)",
+      "selectFile": "Select File",
+      "dragDrop": "or drag and drop here",
+      "outputFormat": "Output Format",
+      "quality": "Quality",
+      "convert": "Convert"
+    },
+    "qrcode": {
+      "title": "QR Code Generator",
+      "description": "Convert text or URL to QR code",
+      "placeholder": "Enter text or URL",
+      "size": "Size",
+      "generate": "Generate",
+      "downloadPng": "Download PNG",
+      "downloadSvg": "Download SVG"
+    },
+    "uuid": {
+      "title": "UUID Generator",
+      "description": "Generate unique identifiers",
+      "generate": "Generate",
+      "generateMultiple": "Generate Multiple",
+      "count": "Count",
+      "version": "Version",
+      "copyAll": "Copy All"
+    },
+    "numberPicker": {
+      "title": "Number Picker",
+      "description": "Generate random numbers in range",
+      "min": "Min",
+      "max": "Max",
+      "count": "Count",
+      "allowDuplicate": "Allow Duplicates",
+      "generate": "Generate",
+      "rangeError": "Count exceeds range"
+    },
+    "teamDivider": {
+      "title": "Team Divider",
+      "description": "Randomly assign members to teams",
+      "members": "Members (one per line)",
+      "placeholder": "John\nJane\nBob\n...",
+      "teamCount": "Number of Teams",
+      "divide": "Divide Teams",
+      "team": "Team",
+      "memberError": "Not enough members for teams"
+    },
+    "timestamp": {
+      "title": "Timestamp Converter",
+      "description": "Convert Unix timestamp and date",
+      "unix": "Unix Timestamp",
+      "datetime": "Date/Time",
+      "now": "Now",
+      "toDatetime": "To Date",
+      "toTimestamp": "To Timestamp",
+      "seconds": "Seconds",
+      "milliseconds": "Milliseconds",
+      "unit": "Unit"
+    },
+    "password": {
+      "title": "Password Generator",
+      "description": "Generate secure random passwords",
+      "length": "Length",
+      "options": "Options",
+      "uppercase": "Uppercase (A-Z)",
+      "lowercase": "Lowercase (a-z)",
+      "numbers": "Numbers (0-9)",
+      "symbols": "Symbols (!@#$...)",
+      "generate": "Generate",
+      "strength": "Strength",
+      "weak": "Weak",
+      "medium": "Medium",
+      "strong": "Strong",
+      "veryStrong": "Very Strong"
+    }
+  }
+}
