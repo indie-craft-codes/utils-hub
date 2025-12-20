@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t, locale } = useI18n()
@@ -8,6 +8,10 @@ const birthDate = ref('')
 const showResult = ref(false)
 const savedFortune = ref(null)
 const inputMode = ref('select') // 'select' or 'picker'
+const nickname = ref('')
+const selectedCategory = ref(null) // null = 전체, 또는 특정 카테고리
+const showHistory = ref(false)
+const fortuneHistory = ref([])
 
 // 직접 입력용
 const birthYear = ref('')
@@ -15,6 +19,7 @@ const birthMonth = ref('')
 const birthDay = ref('')
 
 const STORAGE_KEY = 'utils-hub-fortune'
+const HISTORY_KEY = 'utils-hub-fortune-history'
 
 // 현재 연도
 const currentYear = new Date().getFullYear()
@@ -107,6 +112,28 @@ const luckyColors = [
   { id: 'white', hex: '#F3F4F6' },
   { id: 'black', hex: '#1F2937' },
   { id: 'gold', hex: '#F59E0B' }
+]
+
+// 오늘의 한 단어 목록
+const luckyWords = [
+  'patience', 'courage', 'harmony', 'growth', 'balance',
+  'wisdom', 'kindness', 'focus', 'trust', 'joy',
+  'peace', 'energy', 'love', 'hope', 'strength'
+]
+
+// 피해야 할 것 목록
+const avoidThings = [
+  'haste', 'overthinking', 'conflict', 'laziness', 'doubt',
+  'greed', 'stubbornness', 'isolation', 'negativity', 'excess'
+]
+
+// 카테고리 정보
+const categoryInfo = [
+  { id: 'general', icon: '📌', color: 'gray' },
+  { id: 'love', icon: '💕', color: 'pink' },
+  { id: 'money', icon: '💰', color: 'yellow' },
+  { id: 'health', icon: '💪', color: 'green' },
+  { id: 'work', icon: '💼', color: 'blue' }
 ]
 
 // 시드 기반 랜덤 생성기
@@ -204,6 +231,23 @@ const fortune = computed(() => {
     work: Math.floor(seededRandom(seed + 19) * 8)
   }
 
+  // 카테고리별 주의 포인트 인덱스
+  const cautionIndices = {
+    general: Math.floor(seededRandom(seed + 20) * 8),
+    love: Math.floor(seededRandom(seed + 21) * 8),
+    money: Math.floor(seededRandom(seed + 22) * 8),
+    health: Math.floor(seededRandom(seed + 23) * 8),
+    work: Math.floor(seededRandom(seed + 24) * 8)
+  }
+
+  // 오늘의 한 단어
+  const luckyWordIndex = Math.floor(seededRandom(seed + 25) * luckyWords.length)
+  const luckyWord = luckyWords[luckyWordIndex]
+
+  // 피해야 할 것
+  const avoidIndex = Math.floor(seededRandom(seed + 26) * avoidThings.length)
+  const avoidThing = avoidThings[avoidIndex]
+
   return {
     zodiac,
     chinese,
@@ -216,12 +260,57 @@ const fortune = computed(() => {
     messageIndex,
     adviceIndex,
     categoryMessages,
+    cautionIndices,
+    luckyWord,
+    avoidThing,
     date: today.toISOString().split('T')[0]
   }
 })
 
+// 히스토리 로드
+const loadHistory = () => {
+  const saved = localStorage.getItem(HISTORY_KEY)
+  if (saved) {
+    try {
+      fortuneHistory.value = JSON.parse(saved)
+    } catch (e) {
+      fortuneHistory.value = []
+    }
+  }
+}
+
+// 히스토리에 저장
+const saveToHistory = (fortuneData) => {
+  loadHistory()
+
+  // 같은 날 데이터가 있으면 업데이트, 없으면 추가
+  const existingIndex = fortuneHistory.value.findIndex(f => f.date === fortuneData.date)
+  if (existingIndex >= 0) {
+    fortuneHistory.value[existingIndex] = {
+      ...fortuneData,
+      nickname: nickname.value,
+      birthDate: birthDate.value
+    }
+  } else {
+    fortuneHistory.value.unshift({
+      ...fortuneData,
+      nickname: nickname.value,
+      birthDate: birthDate.value
+    })
+  }
+
+  // 최대 30일치만 보관
+  if (fortuneHistory.value.length > 30) {
+    fortuneHistory.value = fortuneHistory.value.slice(0, 30)
+  }
+
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(fortuneHistory.value))
+}
+
 // 저장된 운세 확인
 onMounted(() => {
+  loadHistory()
+
   const saved = localStorage.getItem(STORAGE_KEY)
   if (saved) {
     try {
@@ -229,8 +318,10 @@ onMounted(() => {
       const today = new Date().toISOString().split('T')[0]
       if (data.date === today) {
         birthDate.value = data.birthDate
+        nickname.value = data.nickname || ''
         savedFortune.value = data
         showResult.value = true
+        syncFromBirthDate()
       }
     } catch (e) {
       localStorage.removeItem(STORAGE_KEY)
@@ -247,14 +338,19 @@ const viewFortune = () => {
   if (!birthDate.value || !isValidDate.value) return
 
   showResult.value = true
+  selectedCategory.value = null
 
   // 오늘 운세 저장
   const data = {
     date: new Date().toISOString().split('T')[0],
     birthDate: birthDate.value,
+    nickname: nickname.value,
     fortune: fortune.value
   }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
+
+  // 히스토리에도 저장
+  saveToHistory(fortune.value)
 }
 
 const reset = () => {
@@ -263,6 +359,8 @@ const reset = () => {
   birthYear.value = ''
   birthMonth.value = ''
   birthDay.value = ''
+  nickname.value = ''
+  selectedCategory.value = null
   localStorage.removeItem(STORAGE_KEY)
 }
 
@@ -277,8 +375,26 @@ const getStars = (count) => {
   return '★'.repeat(count) + '☆'.repeat(5 - count)
 }
 
+const formatHistoryDate = (dateStr) => {
+  const date = new Date(dateStr)
+  const today = new Date()
+  const diffDays = Math.floor((today - date) / (1000 * 60 * 60 * 24))
+
+  if (diffDays === 0) return t('tools.fortune.history.today')
+  if (diffDays === 1) return t('tools.fortune.history.yesterday')
+  if (diffDays < 7) return t('tools.fortune.history.daysAgo', { days: diffDays })
+
+  return dateStr
+}
+
+const deleteHistoryItem = (index) => {
+  fortuneHistory.value.splice(index, 1)
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(fortuneHistory.value))
+}
+
 const share = async () => {
-  const text = `${t('tools.fortune.shareText')} ${fortune.value.score}${t('tools.fortune.points')}! ${t(`tools.fortune.types.${fortune.value.fortuneType}`)}`
+  const name = nickname.value ? `${nickname.value}${t('tools.fortune.honorific')} ` : ''
+  const text = `${name}${t('tools.fortune.shareText')} ${fortune.value.score}${t('tools.fortune.points')}! ${t(`tools.fortune.types.${fortune.value.fortuneType}`)}`
 
   if (navigator.share) {
     try {
@@ -307,12 +423,74 @@ const share = async () => {
         </svg>
         {{ t('common.home') }}
       </router-link>
-      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-        {{ t('tools.fortune.title') }}
-      </h1>
-      <p class="text-gray-600 dark:text-gray-400 mt-1">
-        {{ t('tools.fortune.description') }}
-      </p>
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+            {{ t('tools.fortune.title') }}
+          </h1>
+          <p class="text-gray-600 dark:text-gray-400 mt-1">
+            {{ t('tools.fortune.description') }}
+          </p>
+        </div>
+        <!-- 히스토리 버튼 -->
+        <button
+          v-if="fortuneHistory.length > 0"
+          @click="showHistory = !showHistory"
+          class="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          :title="t('tools.fortune.history.title')"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 히스토리 패널 -->
+    <div v-if="showHistory" class="card mb-6">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+          {{ t('tools.fortune.history.title') }}
+        </h3>
+        <button @click="showHistory = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div v-if="fortuneHistory.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-4">
+        {{ t('tools.fortune.history.empty') }}
+      </div>
+
+      <div v-else class="space-y-2 max-h-64 overflow-y-auto">
+        <div
+          v-for="(item, index) in fortuneHistory"
+          :key="item.date"
+          class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+        >
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">{{ item.score >= 80 ? '😊' : item.score >= 60 ? '🙂' : item.score >= 40 ? '😐' : '😔' }}</span>
+            <div>
+              <p class="text-sm font-medium text-gray-900 dark:text-white">
+                {{ formatHistoryDate(item.date) }}
+                <span class="ml-2" :class="getScoreColor(item.score)">{{ item.score }}{{ t('tools.fortune.points') }}</span>
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">
+                {{ t(`tools.fortune.types.${item.fortuneType}`) }}
+              </p>
+            </div>
+          </div>
+          <button
+            @click="deleteHistoryItem(index)"
+            class="text-gray-400 hover:text-red-500"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- 입력 화면 -->
@@ -327,6 +505,18 @@ const share = async () => {
         </p>
 
         <div class="max-w-sm mx-auto">
+          <!-- 닉네임 입력 (선택) -->
+          <div class="mb-4">
+            <input
+              v-model="nickname"
+              type="text"
+              :placeholder="t('tools.fortune.nicknamePlaceholder')"
+              class="input w-full text-center"
+              maxlength="10"
+            />
+            <p class="text-xs text-gray-400 mt-1">{{ t('tools.fortune.nicknameHint') }}</p>
+          </div>
+
           <!-- 입력 모드 토글 -->
           <div class="flex rounded-lg bg-gray-100 dark:bg-gray-700 p-1 mb-4">
             <button
@@ -445,6 +635,7 @@ const share = async () => {
         <!-- 점수 -->
         <div class="mb-4">
           <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">
+            <span v-if="nickname">{{ nickname }}{{ t('tools.fortune.honorific') }} </span>
             {{ t('tools.fortune.todayScore') }}
           </p>
           <p class="text-5xl font-bold" :class="getScoreColor(fortune.score)">
@@ -476,6 +667,35 @@ const share = async () => {
         </div>
       </div>
 
+      <!-- 선택형 운세: 오늘은 이게 궁금해요 -->
+      <div class="card">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+          {{ t('tools.fortune.selectCategory') }}
+        </h3>
+        <div class="flex flex-wrap gap-2">
+          <button
+            @click="selectedCategory = null"
+            class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+            :class="selectedCategory === null
+              ? 'bg-primary-600 text-white'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'"
+          >
+            {{ t('tools.fortune.allCategories') }}
+          </button>
+          <button
+            v-for="cat in categoryInfo"
+            :key="cat.id"
+            @click="selectedCategory = cat.id"
+            class="px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+            :class="selectedCategory === cat.id
+              ? 'bg-primary-600 text-white'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'"
+          >
+            {{ cat.icon }} {{ t(`tools.fortune.categories.${cat.id}`) }}
+          </button>
+        </div>
+      </div>
+
       <!-- 카테고리별 운세 -->
       <div class="card">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
@@ -483,70 +703,28 @@ const share = async () => {
         </h3>
 
         <div class="space-y-4">
-          <!-- 총운 -->
-          <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <div class="flex items-center justify-between mb-2">
-              <span class="font-medium text-gray-900 dark:text-white">
-                📌 {{ t('tools.fortune.categories.general') }}
-              </span>
-              <span class="text-yellow-500">{{ getStars(fortune.categories.general) }}</span>
+          <template v-for="cat in categoryInfo" :key="cat.id">
+            <div
+              v-if="selectedCategory === null || selectedCategory === cat.id"
+              class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg"
+              :class="{ 'ring-2 ring-primary-500': selectedCategory === cat.id }"
+            >
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-medium text-gray-900 dark:text-white">
+                  {{ cat.icon }} {{ t(`tools.fortune.categories.${cat.id}`) }}
+                </span>
+                <span class="text-yellow-500">{{ getStars(fortune.categories[cat.id]) }}</span>
+              </div>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                {{ t(`tools.fortune.categoryMessages.${cat.id}.${fortune.categoryMessages[cat.id]}`) }}
+              </p>
+              <!-- 조심 포인트 -->
+              <p class="text-xs text-orange-600 dark:text-orange-400 flex items-center gap-1">
+                <span>⚠️</span>
+                {{ t(`tools.fortune.cautions.${cat.id}.${fortune.cautionIndices[cat.id]}`) }}
+              </p>
             </div>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              {{ t(`tools.fortune.categoryMessages.general.${fortune.categoryMessages.general}`) }}
-            </p>
-          </div>
-
-          <!-- 연애운 -->
-          <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <div class="flex items-center justify-between mb-2">
-              <span class="font-medium text-gray-900 dark:text-white">
-                💕 {{ t('tools.fortune.categories.love') }}
-              </span>
-              <span class="text-yellow-500">{{ getStars(fortune.categories.love) }}</span>
-            </div>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              {{ t(`tools.fortune.categoryMessages.love.${fortune.categoryMessages.love}`) }}
-            </p>
-          </div>
-
-          <!-- 금전운 -->
-          <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <div class="flex items-center justify-between mb-2">
-              <span class="font-medium text-gray-900 dark:text-white">
-                💰 {{ t('tools.fortune.categories.money') }}
-              </span>
-              <span class="text-yellow-500">{{ getStars(fortune.categories.money) }}</span>
-            </div>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              {{ t(`tools.fortune.categoryMessages.money.${fortune.categoryMessages.money}`) }}
-            </p>
-          </div>
-
-          <!-- 건강운 -->
-          <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <div class="flex items-center justify-between mb-2">
-              <span class="font-medium text-gray-900 dark:text-white">
-                💪 {{ t('tools.fortune.categories.health') }}
-              </span>
-              <span class="text-yellow-500">{{ getStars(fortune.categories.health) }}</span>
-            </div>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              {{ t(`tools.fortune.categoryMessages.health.${fortune.categoryMessages.health}`) }}
-            </p>
-          </div>
-
-          <!-- 일/학업운 -->
-          <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <div class="flex items-center justify-between mb-2">
-              <span class="font-medium text-gray-900 dark:text-white">
-                💼 {{ t('tools.fortune.categories.work') }}
-              </span>
-              <span class="text-yellow-500">{{ getStars(fortune.categories.work) }}</span>
-            </div>
-            <p class="text-sm text-gray-600 dark:text-gray-400">
-              {{ t(`tools.fortune.categoryMessages.work.${fortune.categoryMessages.work}`) }}
-            </p>
-          </div>
+          </template>
         </div>
       </div>
 
@@ -556,7 +734,7 @@ const share = async () => {
           🍀 {{ t('tools.fortune.luckyElements') }}
         </h3>
 
-        <div class="grid grid-cols-3 gap-4 text-center">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
           <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
             <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
               {{ t('tools.fortune.luckyColor') }}
@@ -581,6 +759,15 @@ const share = async () => {
 
           <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
             <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
+              {{ t('tools.fortune.luckyWord') }}
+            </p>
+            <p class="text-lg font-medium text-gray-900 dark:text-white">
+              {{ t(`tools.fortune.words.${fortune.luckyWord}`) }}
+            </p>
+          </div>
+
+          <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">
               {{ t('tools.fortune.luckyDirection') }}
             </p>
             <p class="text-2xl">
@@ -591,6 +778,16 @@ const share = async () => {
             </p>
           </div>
         </div>
+      </div>
+
+      <!-- 피해야 할 것 -->
+      <div class="card bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+        <h3 class="text-lg font-semibold text-red-700 dark:text-red-400 mb-3 flex items-center gap-2">
+          🚫 {{ t('tools.fortune.avoidToday') }}
+        </h3>
+        <p class="text-red-600 dark:text-red-300">
+          {{ t(`tools.fortune.avoids.${fortune.avoidThing}`) }}
+        </p>
       </div>
 
       <!-- 오늘의 조언 -->
