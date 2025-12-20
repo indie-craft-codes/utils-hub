@@ -132,7 +132,7 @@
       "uppercase": "Uppercase (A-Z)",
       "lowercase": "Lowercase (a-z)",
       "numbers": "Numbers (0-9)",
-      "symbols": "Symbols (!@#$...)",
+      "symbols": "Symbols (!#$%...)",
       "generate": "Generate",
       "strength": "Strength",
       "weak": "Weak",
