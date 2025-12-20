@@ -213,6 +213,9 @@
       "description": "Check today's fortune with your birth date",
       "inputTitle": "Enter your birth date",
       "inputDescription": "We'll tell you today's fortune based on your zodiac and Chinese zodiac",
+      "nicknamePlaceholder": "Nickname (optional)",
+      "nicknameHint": "Enter for personalized fortune",
+      "honorific": "'s",
       "directInput": "Direct Input",
       "datePicker": "Calendar",
       "year": "Year",
@@ -222,16 +225,27 @@
       "todayScore": "Today's Fortune Score",
       "points": "pts",
       "todayKeywords": "Today's Keywords",
+      "selectCategory": "I'm curious about...",
+      "allCategories": "View All",
       "detailedFortune": "Detailed Fortune",
       "luckyElements": "Lucky Elements",
       "luckyColor": "Lucky Color",
       "luckyNumbers": "Lucky Numbers",
+      "luckyWord": "Word of the Day",
       "luckyDirection": "Lucky Direction",
+      "avoidToday": "What to Avoid Today",
       "todayAdvice": "Today's Advice",
       "share": "Share",
       "reset": "Check Again",
       "shareText": "Today's fortune score is",
       "disclaimer": "This is just for fun. Your choices matter most!",
+      "history": {
+        "title": "Fortune History",
+        "empty": "No history yet",
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "daysAgo": "{days} days ago"
+      },
       "types": {
         "stable": "Day of Stability",
         "opportunity": "Day of Opportunity",
@@ -386,6 +400,87 @@
           "6": "Calm progress will lead to good results.",
           "7": "Taking a short break will bring better ideas."
         }
+      },
+      "cautions": {
+        "general": {
+          "0": "Overconfidence may lead to mistakes.",
+          "1": "Avoid rushed decisions.",
+          "2": "Take care of your condition.",
+          "3": "Listen to others' opinions too.",
+          "4": "Don't overload your schedule.",
+          "5": "Control emotional reactions.",
+          "6": "Double-check important appointments.",
+          "7": "Prepare for unexpected variables."
+        },
+        "love": {
+          "0": "Listen to your partner until the end.",
+          "1": "Keep jealousy in check.",
+          "2": "High expectations may lead to disappointment.",
+          "3": "Don't put only your feelings first.",
+          "4": "Don't rush for responses.",
+          "5": "Don't bring up the past.",
+          "6": "Comparison can hurt relationships.",
+          "7": "Respect each other's space."
+        },
+        "money": {
+          "0": "Watch out for impulse purchases.",
+          "1": "Avoid high-risk investments.",
+          "2": "Think carefully before lending money to friends.",
+          "3": "Don't be swayed by discounts.",
+          "4": "Avoid unplanned big expenses.",
+          "5": "Try to reduce card usage.",
+          "6": "Don't argue over money matters.",
+          "7": "Check receipts and contracts carefully."
+        },
+        "health": {
+          "0": "Avoid overeating and overdrinking.",
+          "1": "Get enough sleep.",
+          "2": "Don't sit for too long.",
+          "3": "Stretch frequently.",
+          "4": "Avoid cold foods.",
+          "5": "Excessive exercise can cause injury.",
+          "6": "Try to reduce caffeine intake.",
+          "7": "Don't bottle up stress."
+        },
+        "work": {
+          "0": "Multitasking reduces efficiency.",
+          "1": "Avoid conflicts with colleagues.",
+          "2": "Don't fall into perfectionism.",
+          "3": "Double-check important emails.",
+          "4": "Try to reduce overtime.",
+          "5": "Don't try to do everything alone.",
+          "6": "Don't get swayed by urgent tasks.",
+          "7": "Negative thoughts reduce focus."
+        }
+      },
+      "words": {
+        "patience": "Patience",
+        "courage": "Courage",
+        "harmony": "Harmony",
+        "growth": "Growth",
+        "balance": "Balance",
+        "wisdom": "Wisdom",
+        "kindness": "Kindness",
+        "focus": "Focus",
+        "trust": "Trust",
+        "joy": "Joy",
+        "peace": "Peace",
+        "energy": "Energy",
+        "love": "Love",
+        "hope": "Hope",
+        "strength": "Strength"
+      },
+      "avoids": {
+        "haste": "Rushing is not good today. Take things slowly.",
+        "overthinking": "Don't overthink. A simple approach works better.",
+        "conflict": "Avoid arguments today. Stepping back is also wisdom.",
+        "laziness": "Laziness is today's enemy. Start with small things.",
+        "doubt": "Stop doubting yourself. You're doing great.",
+        "greed": "Let go of greed. What you have is enough.",
+        "stubbornness": "Being stubborn may make you miss good opportunities.",
+        "isolation": "Don't be alone. Stay with people around you.",
+        "negativity": "Negative thoughts can ruin your day.",
+        "excess": "Excess is not good today. Moderation is best."
       }
     }
   }
