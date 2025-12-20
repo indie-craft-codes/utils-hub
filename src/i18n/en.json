@@ -67,12 +67,13 @@
     },
     "converter": {
       "title": "Image Converter",
-      "description": "Convert image formats (PNG, JPG, WebP)",
+      "description": "Convert image formats (PNG, JPG, WebP, HEIC)",
       "selectFile": "Select File",
       "dragDrop": "or drag and drop here",
       "outputFormat": "Output Format",
       "quality": "Quality",
-      "convert": "Convert"
+      "convert": "Convert",
+      "heicConverting": "Converting HEIC file..."
     },
     "qrcode": {
       "title": "QR Code Generator",

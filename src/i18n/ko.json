@@ -67,12 +67,13 @@
     },
     "converter": {
       "title": "이미지 변환",
-      "description": "이미지 포맷 변환 (PNG, JPG, WebP)",
+      "description": "이미지 포맷 변환 (PNG, JPG, WebP, HEIC)",
       "selectFile": "파일 선택",
       "dragDrop": "또는 여기에 파일을 드래그하세요",
       "outputFormat": "출력 포맷",
       "quality": "품질",
-      "convert": "변환"
+      "convert": "변환",
+      "heicConverting": "HEIC 파일 변환 중..."
     },
     "qrcode": {
       "title": "QR 코드 생성",

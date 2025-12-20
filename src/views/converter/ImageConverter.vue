@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import heic2any from 'heic2any'
 
 const { t } = useI18n()
 
@@ -11,12 +12,20 @@ const quality = ref(0.9)
 const convertedUrl = ref('')
 const converting = ref(false)
 const isDragging = ref(false)
+const isHeic = ref(false)
+const heicConverting = ref(false)
 
 const formats = [
   { value: 'png', label: 'PNG' },
   { value: 'jpeg', label: 'JPEG' },
   { value: 'webp', label: 'WebP' }
 ]
+
+// HEIC 파일 확인
+const checkIsHeic = (file) => {
+  const name = file.name.toLowerCase()
+  return name.endsWith('.heic') || name.endsWith('.heif')
+}
 
 const fileInfo = computed(() => {
   if (!file.value) return null
@@ -33,9 +42,15 @@ const formatSize = (bytes) => {
   return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
 }
 
+const isImageFile = (file) => {
+  if (file.type.startsWith('image/')) return true
+  if (checkIsHeic(file)) return true
+  return false
+}
+
 const handleFileSelect = (event) => {
   const selectedFile = event.target.files?.[0]
-  if (selectedFile && selectedFile.type.startsWith('image/')) {
+  if (selectedFile && isImageFile(selectedFile)) {
     loadFile(selectedFile)
   }
 }
@@ -44,7 +59,7 @@ const handleDrop = (event) => {
   event.preventDefault()
   isDragging.value = false
   const droppedFile = event.dataTransfer.files?.[0]
-  if (droppedFile && droppedFile.type.startsWith('image/')) {
+  if (droppedFile && isImageFile(droppedFile)) {
     loadFile(droppedFile)
   }
 }
@@ -58,15 +73,34 @@ const handleDragLeave = () => {
   isDragging.value = false
 }
 
-const loadFile = (selectedFile) => {
+const loadFile = async (selectedFile) => {
   file.value = selectedFile
   convertedUrl.value = ''
+  isHeic.value = checkIsHeic(selectedFile)
 
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    preview.value = e.target?.result
+  if (isHeic.value) {
+    // HEIC 파일은 먼저 JPEG로 변환하여 미리보기 생성
+    heicConverting.value = true
+    try {
+      const blob = await heic2any({
+        blob: selectedFile,
+        toType: 'image/jpeg',
+        quality: 0.8
+      })
+      preview.value = URL.createObjectURL(blob)
+    } catch (e) {
+      console.error('HEIC conversion failed:', e)
+      preview.value = ''
+    } finally {
+      heicConverting.value = false
+    }
+  } else {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      preview.value = e.target?.result
+    }
+    reader.readAsDataURL(selectedFile)
   }
-  reader.readAsDataURL(selectedFile)
 }
 
 const convert = async () => {
@@ -116,6 +150,7 @@ const reset = () => {
   file.value = null
   preview.value = ''
   convertedUrl.value = ''
+  isHeic.value = false
 }
 </script>
 
@@ -156,18 +191,28 @@ const reset = () => {
         <span class="text-sm text-gray-500 dark:text-gray-400">
           {{ t('tools.converter.dragDrop') }}
         </span>
-        <input type="file" accept="image/*" @change="handleFileSelect" class="hidden" />
+        <input type="file" accept="image/*,.heic,.heif" @change="handleFileSelect" class="hidden" />
       </label>
     </div>
 
+    <!-- HEIC Converting -->
+    <div v-else-if="heicConverting" class="card text-center py-12">
+      <svg class="animate-spin w-8 h-8 mx-auto text-primary-600 mb-4" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <p class="text-gray-600 dark:text-gray-400">{{ t('tools.converter.heicConverting') }}</p>
+    </div>
+
     <!-- Preview & Convert -->
-    <div v-else class="space-y-6">
+    <div v-else-if="file" class="space-y-6">
       <!-- File Info -->
       <div class="card">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-4">
-            <div class="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700">
-              <img :src="preview" alt="Preview" class="w-full h-full object-cover" />
+            <div class="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+              <img v-if="preview" :src="preview" alt="Preview" class="w-full h-full object-cover" />
+              <span v-else class="text-2xl">📷</span>
             </div>
             <div>
               <p class="font-medium text-gray-900 dark:text-white">{{ fileInfo.name }}</p>
