@@ -4,5 +4,6 @@ import vue from '@vitejs/plugin-vue'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  base: process.env.NODE_ENV === 'production' ? '/utils-hub/' : '/',
+  // 커스텀 도메인 사용 시 '/'로 설정
+  base: '/',
 })
