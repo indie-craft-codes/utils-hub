@@ -57,6 +57,11 @@ const routes = [
     component: () => import('../views/games/TeamDivider.vue')
   },
   {
+    path: '/games/fortune',
+    name: 'DailyFortune',
+    component: () => import('../views/games/DailyFortune.vue')
+  },
+  {
     path: '/developer/password',
     name: 'PasswordGenerator',
     component: () => import('../views/developer/PasswordGenerator.vue')

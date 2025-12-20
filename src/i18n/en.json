@@ -204,6 +204,143 @@
       "coordinates": "Coordinates",
       "openMaps": "Open in Maps",
       "noExif": "No EXIF data found"
+    },
+    "fortune": {
+      "title": "Daily Fortune",
+      "description": "Check today's fortune with your birth date",
+      "birthDate": "Birth Date",
+      "selectDate": "Select your birth date",
+      "checkFortune": "Check Fortune",
+      "todaysFortune": "Today's Fortune",
+      "zodiac": "Zodiac",
+      "chineseZodiac": "Chinese Zodiac",
+      "luckyColor": "Lucky Color",
+      "luckyNumbers": "Lucky Numbers",
+      "luckyDirection": "Lucky Direction",
+      "keyword": "Today's Keyword",
+      "advice": "Advice",
+      "categories": {
+        "general": "Overall",
+        "love": "Love",
+        "money": "Money",
+        "health": "Health",
+        "work": "Work"
+      },
+      "zodiacSigns": {
+        "aries": "Aries",
+        "taurus": "Taurus",
+        "gemini": "Gemini",
+        "cancer": "Cancer",
+        "leo": "Leo",
+        "virgo": "Virgo",
+        "libra": "Libra",
+        "scorpio": "Scorpio",
+        "sagittarius": "Sagittarius",
+        "capricorn": "Capricorn",
+        "aquarius": "Aquarius",
+        "pisces": "Pisces"
+      },
+      "chineseZodiacSigns": {
+        "rat": "Rat",
+        "ox": "Ox",
+        "tiger": "Tiger",
+        "rabbit": "Rabbit",
+        "dragon": "Dragon",
+        "snake": "Snake",
+        "horse": "Horse",
+        "goat": "Goat",
+        "monkey": "Monkey",
+        "rooster": "Rooster",
+        "dog": "Dog",
+        "pig": "Pig"
+      },
+      "colors": {
+        "red": "Red",
+        "orange": "Orange",
+        "yellow": "Yellow",
+        "green": "Green",
+        "blue": "Blue",
+        "navy": "Navy",
+        "purple": "Purple",
+        "pink": "Pink",
+        "white": "White",
+        "black": "Black",
+        "gold": "Gold",
+        "silver": "Silver"
+      },
+      "directions": {
+        "east": "East",
+        "west": "West",
+        "south": "South",
+        "north": "North",
+        "southeast": "Southeast",
+        "southwest": "Southwest",
+        "northeast": "Northeast",
+        "northwest": "Northwest"
+      },
+      "keywords": [
+        "Challenge", "Harmony", "Passion", "Patience", "Wisdom",
+        "Love", "Success", "Health", "Joy", "Luck",
+        "Growth", "Peace", "Creativity", "Friendship", "Trust"
+      ],
+      "messages": {
+        "excellent": "A great day is coming! Trust yourself and move forward boldly.",
+        "great": "Good energy surrounds you. Something positive is happening.",
+        "good": "A stable day. Take on small challenges.",
+        "average": "A day of balance. Enjoy routine life.",
+        "careful": "Be a little careful today. Think carefully before you act."
+      },
+      "advices": [
+        "Taking time for yourself today is a good idea.",
+        "Don't miss the little opportunities around you.",
+        "Approach things with a positive attitude.",
+        "Spend meaningful time with important people.",
+        "Don't forget to take care of your health.",
+        "Open your mind to new challenges.",
+        "Rest and relaxation are also important.",
+        "Express gratitude to those around you.",
+        "Take a step closer to your goals.",
+        "Believe in yourself."
+      ],
+      "categoryMessages": {
+        "general": {
+          "excellent": "Your overall luck is at its peak today! Whatever you do will turn out well.",
+          "great": "The energy around you is very positive today.",
+          "good": "A day where you can expect good luck overall.",
+          "average": "A day with slight ups and downs.",
+          "careful": "Not everything may go as planned today."
+        },
+        "love": {
+          "excellent": "Romantic opportunities may come. Stay open to love.",
+          "great": "Good energy in relationships. It's a good day for deep conversations.",
+          "good": "A day to deepen relationships with those around you.",
+          "average": "Love relationships are stable. Enjoy a peaceful time.",
+          "careful": "Small misunderstandings may occur. Express yourself clearly."
+        },
+        "money": {
+          "excellent": "Unexpected financial luck may come. Stay alert to opportunities.",
+          "great": "Financial flow is smooth. Good for saving.",
+          "good": "Normal spending is fine. Enjoy within budget.",
+          "average": "Financial stability is maintained. Avoid big expenses.",
+          "careful": "Watch your spending. Postpone non-essential purchases."
+        },
+        "health": {
+          "excellent": "You're in great shape. Good for new exercises.",
+          "great": "Your condition is very good. Stay active.",
+          "good": "Maintain your health steadily. Walking is recommended.",
+          "average": "No particular health issues. Maintain your daily routine.",
+          "careful": "You may feel a bit tired today. Get enough rest."
+        },
+        "work": {
+          "excellent": "Work luck is excellent. Your abilities will be recognized.",
+          "great": "Work efficiency is high. Take on important tasks today.",
+          "good": "Good for steady progress. Focus on your work.",
+          "average": "A normal workday. Handle routine tasks well.",
+          "careful": "Mistakes may occur. Double-check everything."
+        }
+      },
+      "dailyLimit": "You can check your fortune once per day. Come back tomorrow!",
+      "alreadyChecked": "You've already checked your fortune today."
     }
   }
 }
