@@ -13,6 +13,17 @@ const metadata = ref(null)
 const exifData = ref(null)
 const copied = ref('')
 
+// Google Maps API Key (환경변수에서 가져오기)
+const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || ''
+const showMap = ref(false)
+
+// 지도 URL 생성
+const mapEmbedUrl = computed(() => {
+  if (!exifData.value?.gps || !googleMapsApiKey) return ''
+  const { latitude, longitude } = exifData.value.gps
+  return `https://www.google.com/maps/embed/v1/place?key=${googleMapsApiKey}&q=${latitude},${longitude}&zoom=15`
+})
+
 const handleFileSelect = (event) => {
   const selectedFile = event.target.files?.[0]
   if (selectedFile) {
@@ -464,17 +475,52 @@ const supportedFormats = 'JPEG, PNG, WebP, HEIC, HEIF, TIFF'
           <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
             {{ t('tools.metadata.gpsInfo') }}
           </h3>
-          <div class="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-            <div class="flex items-center justify-between">
-              <div class="text-sm">
-                <p class="text-gray-600 dark:text-gray-400 mb-1">{{ t('tools.metadata.coordinates') }}</p>
-                <p class="text-gray-900 dark:text-white font-mono">
-                  {{ exifData.gps.latitude }}, {{ exifData.gps.longitude }}
-                </p>
-              </div>
-              <button @click="openInMaps" class="btn btn-primary text-sm">
-                {{ t('tools.metadata.openMaps') }}
+          <div class="bg-gray-50 dark:bg-gray-700/50 rounded-lg overflow-hidden">
+            <!-- 지도 표시 -->
+            <div v-if="googleMapsApiKey && showMap" class="w-full h-64">
+              <iframe
+                :src="mapEmbedUrl"
+                class="w-full h-full border-0"
+                allowfullscreen
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+              ></iframe>
+            </div>
+
+            <!-- API 키 미설정 안내 -->
+            <div v-else-if="!googleMapsApiKey" class="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
+              <p>{{ t('tools.metadata.mapApiKeyRequired') }}</p>
+              <p class="text-xs mt-1 font-mono">VITE_GOOGLE_MAPS_API_KEY</p>
+            </div>
+
+            <!-- 지도 표시 버튼 -->
+            <div v-else class="p-4 text-center">
+              <button @click="showMap = true" class="btn btn-secondary text-sm">
+                {{ t('tools.metadata.showMap') }}
               </button>
+            </div>
+
+            <!-- 좌표 정보 -->
+            <div class="p-4 border-t border-gray-200 dark:border-gray-600">
+              <div class="flex items-center justify-between">
+                <div class="text-sm">
+                  <p class="text-gray-600 dark:text-gray-400 mb-1">{{ t('tools.metadata.coordinates') }}</p>
+                  <p class="text-gray-900 dark:text-white font-mono">
+                    {{ exifData.gps.latitude }}, {{ exifData.gps.longitude }}
+                  </p>
+                </div>
+                <div class="flex gap-2">
+                  <button
+                    @click="copy(`${exifData.gps.latitude}, ${exifData.gps.longitude}`, 'coords')"
+                    class="btn btn-secondary text-sm"
+                  >
+                    {{ copied === 'coords' ? t('common.copied') : t('common.copy') }}
+                  </button>
+                  <button @click="openInMaps" class="btn btn-primary text-sm">
+                    {{ t('tools.metadata.openMaps') }}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

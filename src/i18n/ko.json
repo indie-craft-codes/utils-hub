@@ -203,6 +203,8 @@
       "gpsInfo": "위치 정보",
       "coordinates": "좌표",
       "openMaps": "지도에서 보기",
+      "showMap": "지도 표시",
+      "mapApiKeyRequired": "지도를 표시하려면 Google Maps API 키가 필요합니다",
       "noExif": "EXIF 데이터가 없습니다"
     },
     "fortune": {

@@ -203,6 +203,8 @@
       "gpsInfo": "Location",
       "coordinates": "Coordinates",
       "openMaps": "Open in Maps",
+      "showMap": "Show Map",
+      "mapApiKeyRequired": "Google Maps API key is required to display the map",
       "noExif": "No EXIF data found"
     },
     "fortune": {
