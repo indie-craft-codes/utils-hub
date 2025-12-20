@@ -7,8 +7,61 @@ const { t, locale } = useI18n()
 const birthDate = ref('')
 const showResult = ref(false)
 const savedFortune = ref(null)
+const inputMode = ref('select') // 'select' or 'picker'
+
+// 직접 입력용
+const birthYear = ref('')
+const birthMonth = ref('')
+const birthDay = ref('')
 
 const STORAGE_KEY = 'utils-hub-fortune'
+
+// 현재 연도
+const currentYear = new Date().getFullYear()
+
+// 년/월/일 입력값으로 birthDate 동기화
+const syncBirthDate = () => {
+  if (birthYear.value && birthMonth.value && birthDay.value) {
+    const y = birthYear.value.toString().padStart(4, '0')
+    const m = birthMonth.value.toString().padStart(2, '0')
+    const d = birthDay.value.toString().padStart(2, '0')
+    birthDate.value = `${y}-${m}-${d}`
+  } else {
+    birthDate.value = ''
+  }
+}
+
+// birthDate에서 년/월/일 분리
+const syncFromBirthDate = () => {
+  if (birthDate.value) {
+    const [y, m, d] = birthDate.value.split('-')
+    birthYear.value = parseInt(y)
+    birthMonth.value = parseInt(m)
+    birthDay.value = parseInt(d)
+  }
+}
+
+// 입력값 검증
+const isValidDate = computed(() => {
+  if (inputMode.value === 'picker') {
+    return !!birthDate.value
+  }
+
+  const y = parseInt(birthYear.value)
+  const m = parseInt(birthMonth.value)
+  const d = parseInt(birthDay.value)
+
+  if (!y || !m || !d) return false
+  if (y < 1900 || y > currentYear) return false
+  if (m < 1 || m > 12) return false
+  if (d < 1 || d > 31) return false
+
+  // 월별 일수 검증
+  const daysInMonth = new Date(y, m, 0).getDate()
+  if (d > daysInMonth) return false
+
+  return true
+})
 
 // 별자리 데이터
 const zodiacSigns = [
@@ -186,7 +239,12 @@ onMounted(() => {
 })
 
 const viewFortune = () => {
-  if (!birthDate.value) return
+  // 직접 입력 모드일 경우 동기화
+  if (inputMode.value === 'select') {
+    syncBirthDate()
+  }
+
+  if (!birthDate.value || !isValidDate.value) return
 
   showResult.value = true
 
@@ -202,6 +260,9 @@ const viewFortune = () => {
 const reset = () => {
   showResult.value = false
   birthDate.value = ''
+  birthYear.value = ''
+  birthMonth.value = ''
+  birthDay.value = ''
   localStorage.removeItem(STORAGE_KEY)
 }
 
@@ -265,17 +326,84 @@ const share = async () => {
           {{ t('tools.fortune.inputDescription') }}
         </p>
 
-        <div class="max-w-xs mx-auto">
-          <input
-            v-model="birthDate"
-            type="date"
-            class="input w-full text-center text-lg mb-4"
-            :max="new Date().toISOString().split('T')[0]"
-          />
+        <div class="max-w-sm mx-auto">
+          <!-- 입력 모드 토글 -->
+          <div class="flex rounded-lg bg-gray-100 dark:bg-gray-700 p-1 mb-4">
+            <button
+              @click="inputMode = 'select'"
+              class="flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors"
+              :class="inputMode === 'select'
+                ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+            >
+              {{ t('tools.fortune.directInput') }}
+            </button>
+            <button
+              @click="inputMode = 'picker'"
+              class="flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors"
+              :class="inputMode === 'picker'
+                ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'"
+            >
+              {{ t('tools.fortune.datePicker') }}
+            </button>
+          </div>
+
+          <!-- 직접 입력 (년/월/일) -->
+          <div v-if="inputMode === 'select'" class="mb-4">
+            <div class="flex gap-2 items-center justify-center">
+              <div class="flex-1">
+                <input
+                  v-model="birthYear"
+                  type="number"
+                  :placeholder="t('tools.fortune.year')"
+                  class="input w-full text-center"
+                  min="1900"
+                  :max="currentYear"
+                  @input="syncBirthDate"
+                />
+              </div>
+              <span class="text-gray-400">.</span>
+              <div class="w-20">
+                <input
+                  v-model="birthMonth"
+                  type="number"
+                  :placeholder="t('tools.fortune.month')"
+                  class="input w-full text-center"
+                  min="1"
+                  max="12"
+                  @input="syncBirthDate"
+                />
+              </div>
+              <span class="text-gray-400">.</span>
+              <div class="w-20">
+                <input
+                  v-model="birthDay"
+                  type="number"
+                  :placeholder="t('tools.fortune.day')"
+                  class="input w-full text-center"
+                  min="1"
+                  max="31"
+                  @input="syncBirthDate"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- 날짜 선택기 -->
+          <div v-else class="mb-4">
+            <input
+              v-model="birthDate"
+              type="date"
+              class="input w-full text-center text-lg"
+              :max="new Date().toISOString().split('T')[0]"
+              @change="syncFromBirthDate"
+            />
+          </div>
 
           <button
             @click="viewFortune"
-            :disabled="!birthDate"
+            :disabled="!isValidDate"
             class="btn btn-primary w-full text-lg py-3"
           >
             {{ t('tools.fortune.viewFortune') }}
