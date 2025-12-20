@@ -482,6 +482,454 @@
         "negativity": "Negative thoughts can ruin your day.",
         "excess": "Excess is not good today. Moderation is best."
       }
+    },
+    "mbti": {
+      "title": "MBTI Personality Test",
+      "description": "Discover your personality type",
+      "intro": {
+        "title": "Discover Your MBTI Type",
+        "description": "Answer honestly for the most accurate results",
+        "standardMode": "Standard Mode (36 questions)",
+        "standardDesc": "About 3-4 minutes, quick and accurate",
+        "precisionMode": "Precision Mode (60 questions)",
+        "precisionDesc": "About 6-8 minutes, more detailed analysis"
+      },
+      "responses": {
+        "stronglyDisagree": "Strongly Disagree",
+        "disagree": "Disagree",
+        "neutral": "Neutral",
+        "agree": "Agree",
+        "stronglyAgree": "Strongly Agree"
+      },
+      "prev": "Previous",
+      "cancel": "Cancel",
+      "share": "Share",
+      "retake": "Retake Test",
+      "shareText": "My MBTI type is",
+      "disclaimer": "This test is for entertainment purposes only and is not a professional psychological assessment.",
+      "result": {
+        "yourType": "Your Type"
+      },
+      "reliability": {
+        "high": "Reliability: High",
+        "medium": "Reliability: Medium",
+        "low": "Reliability: Low (Many borderline values)"
+      },
+      "subTypes": {
+        "stable": "🌱 Stable State",
+        "overload": "🔥 Overload State",
+        "recovery": "💤 Recovery Needed",
+        "focus": "🎯 Focus State"
+      },
+      "tabs": {
+        "summary": "Summary",
+        "strengths": "Strengths",
+        "stress": "Stress",
+        "relationship": "Relationship",
+        "work": "Work",
+        "growth": "Growth"
+      },
+      "weaknesses": "Weaknesses",
+      "stressSignals": "Stress Signals",
+      "recovery": "Recovery Methods",
+      "communicationStyle": "Communication Style",
+      "tips": "Relationship Tips",
+      "workStyle": "Work Style",
+      "collaboration": "Collaboration Tips",
+      "growthTips": "Growth Points",
+      "todayAction": "Try This Today",
+      "compare": {
+        "title": "Compare Types",
+        "selectType": "Select type to compare",
+        "compatibility": "Compatibility"
+      },
+      "history": {
+        "title": "Test History"
+      },
+      "questions": {
+        "ei1": "Talking to new people gives me energy",
+        "ei2": "I feel restless when I'm alone for too long",
+        "ei3": "I tend to speak up first in meetings",
+        "ei4": "I feel my thoughts are understood even without speaking",
+        "ei5": "I find it easy to keep a conversation going spontaneously",
+        "ei6": "I get tired easily when with many people for a long time",
+        "ei7": "I want to break the silence when it's too quiet",
+        "ei8": "I prefer to organize my thoughts before speaking",
+        "ei9": "I feel more energized when with others than alone",
+        "ei10": "Ideas come to me better when I'm around people",
+        "ei11": "I prefer expressing myself in writing than in conversation",
+        "ei12": "I'm comfortable with spontaneous questions",
+        "ei13": "Talking about myself takes energy",
+        "ei14": "I don't mind being in the spotlight",
+        "ei15": "Silence doesn't feel awkward to me",
+        "sn1": "I understand explanations better when they're specific",
+        "sn2": "I tend to see the big picture before details",
+        "sn3": "I trust things I've actually experienced",
+        "sn4": "I enjoy imagining possibilities and ideas",
+        "sn5": "I don't easily believe unverified information",
+        "sn6": "I think more about 'what could change' than 'why'",
+        "sn7": "I feel the present reality is more important",
+        "sn8": "I don't find it hard to work with abstract concepts",
+        "sn9": "Familiar methods make me feel comfortable",
+        "sn10": "Ideas without practical potential don't interest me",
+        "sn11": "I understand explanations better through metaphors",
+        "sn12": "I focus on information I need right now",
+        "sn13": "Long-term direction is more important to me",
+        "sn14": "I prefer proven methods",
+        "sn15": "Even failed new attempts are meaningful",
+        "tf1": "I find logic more convincing than emotions",
+        "tf2": "I feel uncomfortable deciding without considering feelings",
+        "tf3": "I tend to set emotions aside when problem-solving",
+        "tf4": "In conflict, I worry about the other person's feelings first",
+        "tf5": "Fairness is often more important than consideration",
+        "tf6": "I hesitate to be honest if it might hurt someone",
+        "tf7": "I prefer direct feedback",
+        "tf8": "How the other person feels greatly affects my judgment",
+        "tf9": "I believe work and emotions should be separated",
+        "tf10": "I'm uncomfortable deciding based only on emotional reasons",
+        "tf11": "I've often delayed decisions fearing it would hurt relationships",
+        "tf12": "Standards should be consistent",
+        "tf13": "I think standards can change depending on the situation",
+        "tf14": "I tend to objectify problems",
+        "tf15": "I feel being understood is the start of resolution",
+        "jp1": "I feel comfortable when I have a plan",
+        "jp2": "Spontaneous choices are more enjoyable",
+        "jp3": "I want to finish deadlines with time to spare",
+        "jp4": "I don't mind schedules that change with circumstances",
+        "jp5": "I feel anxious if I don't have a to-do list",
+        "jp6": "I tend to go with the flow rather than plans",
+        "jp7": "Deciding in advance is efficient",
+        "jp8": "I like keeping options open",
+        "jp9": "An organized environment helps me focus",
+        "jp10": "Schedule changes stress me out",
+        "jp11": "Spontaneous trips are more memorable",
+        "jp12": "I find it hard to start without preparation",
+        "jp13": "I try things even if they're not perfect",
+        "jp14": "I dislike postponing decisions",
+        "jp15": "Having open possibilities feels comfortable"
+      },
+      "types": {
+        "ISTJ": {
+          "name": "The Logistician",
+          "tagline": "Quietly fulfills responsibilities to the end",
+          "keywords": ["Responsibility", "Trust", "System"],
+          "summary": "ISTJs are reliable and responsible types. They value rules and traditions, and have the diligence to complete any task.",
+          "strengths": ["Earns trust through consistent responsibility", "Systematic and thorough work", "Strictly keeps promises and rules", "Realistic and practical judgment"],
+          "weaknesses": ["Takes time to adapt to change", "May struggle with emotional expression", "Can appear inflexible"],
+          "stress": ["Many unexpected changes", "Environment where rules are ignored", "Work piling up without results"],
+          "recovery": ["Returning to familiar routines", "Organizing while clearing the mind", "Alone time in a quiet space"],
+          "relationship": {
+            "style": "Expresses love through actions rather than words.",
+            "tips": ["Don't force emotional expression", "Show consistency and reliability", "Express gratitude for practical help"]
+          },
+          "work": {
+            "style": "Plans systematically and executes steadily.",
+            "tips": ["Provide clear guidelines and expectations", "Minimize sudden changes", "Recognize their diligence"]
+          },
+          "growth": ["Be open to new approaches", "Consider emotions as data too", "Start with small changes", "Listen to others' perspectives"],
+          "todayAction": "Try doing one thing differently than usual"
+        },
+        "ISFJ": {
+          "name": "The Defender",
+          "tagline": "Cares for people behind the scenes",
+          "keywords": ["Care", "Dedication", "Stability"],
+          "summary": "ISFJs are warm and dedicated types. They quietly care for those around them and work to create harmonious environments.",
+          "strengths": ["Attentive care and observation", "Dedicated and responsible", "Provides practical help", "Maintains harmonious relationships"],
+          "weaknesses": ["Puts own needs last", "Difficulty saying no", "May be uncomfortable with change"],
+          "stress": ["Efforts not recognized", "Caught in conflicts", "Unpredictable situations"],
+          "recovery": ["Comfortable conversation with familiar people", "Favorite hobbies", "Rest in organized spaces"],
+          "relationship": {
+            "style": "Takes care of partner's needs first and remembers small things.",
+            "tips": ["Express gratitude for small gestures", "Encourage them to share their needs", "Provide stability"]
+          },
+          "work": {
+            "style": "Watches team atmosphere and quietly supports.",
+            "tips": ["Specific expressions of thanks", "Be careful not to overload work", "Create comfortable environment"]
+          },
+          "growth": ["Express your own needs too", "Practice saying 'no'", "See change as growth opportunity", "Prioritize self-care time"],
+          "todayAction": "Give yourself a small gift today"
+        },
+        "INFJ": {
+          "name": "The Advocate",
+          "tagline": "Sees people and meaning together",
+          "keywords": ["Insight", "Ideals", "Empathy"],
+          "summary": "INFJs have deep insight and strong ideals. They read people's emotions well and want to lead meaningful change.",
+          "strengths": ["Deep insight and intuition", "Empathy for others' emotions", "Pursues meaningful goals", "Creative problem solving"],
+          "weaknesses": ["Excessive idealism", "Frequent energy depletion", "Exhausted from pursuing perfection"],
+          "stress": ["Values being ignored", "Only superficial relationships", "Meaningless work repeating"],
+          "recovery": ["Alone time for reflection", "Meaningful content consumption", "Deep conversation with trusted people"],
+          "relationship": {
+            "style": "Wants deep and authentic connections.",
+            "tips": ["Have deep conversation time", "Show authenticity", "Respect their ideals"]
+          },
+          "work": {
+            "style": "Shows creativity in meaningful projects.",
+            "tips": ["Share purpose and meaning of work", "Give autonomy", "Minimize superficial tasks"]
+          },
+          "growth": ["Accept that imperfect is okay", "Practice setting boundaries", "Find balance between reality and ideals", "Prioritize self-care"],
+          "todayAction": "Write down the emotions you felt today"
+        },
+        "INTJ": {
+          "name": "The Architect",
+          "tagline": "Strategically designs the world",
+          "keywords": ["Strategy", "Independence", "Efficiency"],
+          "summary": "INTJs have strong strategic thinking and independence. They set long-term visions and move systematically to realize them.",
+          "strengths": ["Strategic long-term planning", "Logical analysis", "Independent execution", "High standards and self-motivation"],
+          "weaknesses": ["May overlook others' emotions", "May delay due to perfectionism", "Prefers independence over collaboration"],
+          "stress": ["Inefficient systems", "Situations appearing incompetent", "Meaningless rules"],
+          "recovery": ["Analyzing problems alone", "Strategy games or reading", "Acquiring new knowledge"],
+          "relationship": {
+            "style": "Wants deep and intellectual connections.",
+            "tips": ["Enjoy intellectual conversations", "Respect independence", "Expect but don't force emotional expression"]
+          },
+          "work": {
+            "style": "Sees the big picture and executes efficiently.",
+            "tips": ["Give autonomy and authority", "Minimize inefficiency", "Recognize their competence"]
+          },
+          "growth": ["Recognize emotions as important information", "Experience the value of collaboration", "Start even if not perfect", "Receive feedback with open mind"],
+          "todayAction": "Ask a colleague for their opinion first"
+        },
+        "ISTP": {
+          "name": "The Virtuoso",
+          "tagline": "Moves precisely when needed",
+          "keywords": ["Practical", "Analysis", "Action"],
+          "summary": "ISTPs are practical and analytical types. They solve problems immediately through action and enjoy hands-on work.",
+          "strengths": ["Immediate problem solving", "Practical and efficient", "Calm in crisis situations", "Quick to learn new skills"],
+          "weaknesses": ["May struggle with emotional expression", "Difficulty with long-term planning", "Feels constrained by rules"],
+          "stress": ["Freedom restricted", "Many emotional demands", "Inefficient rules"],
+          "recovery": ["Hands-on activities", "Time in nature", "Solo hobbies"],
+          "relationship": {
+            "style": "Shows through actions rather than words.",
+            "tips": ["Respect their freedom", "Understand meaning behind actions", "Don't force emotions"]
+          },
+          "work": {
+            "style": "Excels at practical problem solving.",
+            "tips": ["Give autonomy", "Evaluate by results", "Avoid micromanagement"]
+          },
+          "growth": ["Try expressing emotions", "Set long-term goals", "Invest in relationships", "Communicate with words too"],
+          "todayAction": "Express one thing you felt today in words"
+        },
+        "ISFP": {
+          "name": "The Adventurer",
+          "tagline": "Lives in the sensation of this moment",
+          "keywords": ["Sensitivity", "Freedom", "Harmony"],
+          "summary": "ISFPs are sensitive and free-spirited types. They fully feel the present moment and express beauty in their own way.",
+          "strengths": ["Artistic sensibility", "Present-focused", "Flexible and open", "Makes others comfortable"],
+          "weaknesses": ["Conflict avoidance", "Difficulty with long-term planning", "May struggle with self-expression"],
+          "stress": ["Values being ignored", "Excessive rules", "Conflict situations"],
+          "recovery": ["Time in nature", "Artistic activities", "Peaceful alone time"],
+          "relationship": {
+            "style": "Quiet but expresses deep affection.",
+            "tips": ["Respect freedom", "Share experiences together", "Understand their values"]
+          },
+          "work": {
+            "style": "Shines in creative and practical work.",
+            "tips": ["Give creative freedom", "Work connected to values", "Avoid excessive structure"]
+          },
+          "growth": ["Practice expressing opinions", "Try setting long-term goals", "See conflict as growth opportunity", "Share your values"],
+          "todayAction": "Express your feelings through drawing or writing"
+        },
+        "INFP": {
+          "name": "The Mediator",
+          "tagline": "Moves according to values",
+          "keywords": ["Empathy", "Values", "Imagination"],
+          "summary": "INFPs have deep values and rich imagination. They value authenticity and pour passion into meaningful work.",
+          "strengths": ["Deep empathy", "Creative imagination", "Authentic communication", "Values-centered life"],
+          "weaknesses": ["Gap between reality and ideals", "Postponing decisions", "Sensitive to criticism"],
+          "stress": ["Values being violated", "Only superficial relationships", "Creativity blocked"],
+          "recovery": ["Solo creative time", "Walking in nature", "Meaningful content consumption"],
+          "relationship": {
+            "style": "Pursues deep and authentic connections.",
+            "tips": ["Show authenticity", "Share emotions", "Respect their ideals"]
+          },
+          "work": {
+            "style": "Shows creativity in meaningful projects.",
+            "tips": ["Connect work to meaning", "Give creative freedom", "Give criticism constructively"]
+          },
+          "growth": ["Make realistic plans", "Practice with small decisions", "See criticism as growth feedback", "Act even if not perfect"],
+          "todayAction": "Make one small decision you've been putting off"
+        },
+        "INTP": {
+          "name": "The Logician",
+          "tagline": "Interprets the world through logic",
+          "keywords": ["Logic", "Analysis", "Curiosity"],
+          "summary": "INTPs are logical and analytical types. They explore complex problems theoretically and search for new ideas with endless curiosity.",
+          "strengths": ["Logical analysis", "Creative problem solving", "Endless curiosity", "Independent thinking"],
+          "weaknesses": ["Awkward emotional expression", "Prefers theory over execution", "Uncomfortable in social situations"],
+          "stress": ["Illogical environment", "Emotional demands", "Simple repetitive tasks"],
+          "recovery": ["Exploring new knowledge", "Alone time for analysis", "Deep diving into interests"],
+          "relationship": {
+            "style": "Values intellectual connection.",
+            "tips": ["Have intellectual conversations", "Respect independence", "Don't force emotions"]
+          },
+          "work": {
+            "style": "Analyzes and solves complex problems.",
+            "tips": ["Give autonomy", "Provide intellectual challenges", "Avoid micromanagement"]
+          },
+          "growth": ["See emotions as important data", "Turn ideas into action", "Practice connecting with people", "Share even if not perfect"],
+          "todayAction": "Share one idea you've only been thinking about"
+        },
+        "ESTP": {
+          "name": "The Entrepreneur",
+          "tagline": "Enjoys this moment",
+          "keywords": ["Action", "Reality", "Energy"],
+          "summary": "ESTPs are energetic and action-oriented types. They enjoy the present moment to the fullest and don't hesitate to take risks.",
+          "strengths": ["Immediate action", "Crisis response ability", "Realistic problem solving", "Social and persuasive"],
+          "weaknesses": ["Difficulty with long-term planning", "Can be impulsive", "Lack emotional depth"],
+          "stress": ["Freedom restricted", "Boring routine", "Excessive theory"],
+          "recovery": ["Physical activity", "New experiences", "Socializing with people"],
+          "relationship": {
+            "style": "Wants fun and energetic relationships.",
+            "tips": ["Do activities together", "Respect freedom", "Communicate with fun"]
+          },
+          "work": {
+            "style": "Excellent at quick situation judgment and execution.",
+            "tips": ["Give autonomy", "Evaluate by results", "Provide various challenges"]
+          },
+          "growth": ["Try setting long-term goals", "Practice impulse control", "Build deep relationships", "Consider consequences"],
+          "todayAction": "Think about the long-term impact of what you're about to do"
+        },
+        "ESFP": {
+          "name": "The Entertainer",
+          "tagline": "Energy that lights up the room",
+          "keywords": ["Passion", "Fun", "Social"],
+          "summary": "ESFPs are passionate and social types. They enjoy being with people and have the ability to brighten any atmosphere.",
+          "strengths": ["Excellent sociability", "Atmosphere maker", "Present-focused", "Positive energy"],
+          "weaknesses": ["Difficulty with long-term planning", "Conflict avoidance", "Impulsive decisions"],
+          "stress": ["Freedom restricted", "Time alone", "Boring repetition"],
+          "recovery": ["Socializing with people", "Fun activities", "New experiences"],
+          "relationship": {
+            "style": "Wants fun and passionate relationships.",
+            "tips": ["Do fun activities together", "Share emotions", "Respect freedom"]
+          },
+          "work": {
+            "style": "Collaborates with people and leads atmosphere.",
+            "tips": ["Provide collaboration opportunities", "Various tasks", "Positive feedback"]
+          },
+          "growth": ["Set long-term goals", "Have time alone", "Have difficult conversations too", "Practice impulse control"],
+          "todayAction": "Spend just 5 minutes quietly alone today"
+        },
+        "ENFP": {
+          "name": "The Campaigner",
+          "tagline": "Connects ideas and people",
+          "keywords": ["Passion", "Possibility", "Creativity"],
+          "summary": "ENFPs are passionate and creative types. They explore new possibilities and inspire people.",
+          "strengths": ["Endless ideas", "Ability to inspire", "Flexible and adaptable", "Authentic communication"],
+          "weaknesses": ["Scattered focus", "Difficulty finishing", "Lack of practicality"],
+          "stress": ["Freedom restricted", "Repetitive work", "Value conflicts"],
+          "recovery": ["Exploring new ideas", "Conversation with inspiring people", "Creative activities"],
+          "relationship": {
+            "style": "Wants deep and meaningful connections.",
+            "tips": ["Share ideas together", "Respect freedom", "Enjoy deep conversations"]
+          },
+          "work": {
+            "style": "Shines in creative and people-centered projects.",
+            "tips": ["Give creative freedom", "Various projects", "Connect to meaning"]
+          },
+          "growth": ["Try focusing on one thing", "See things through", "Make realistic plans", "Keep promises"],
+          "todayAction": "Finish one thing you started today"
+        },
+        "ENTP": {
+          "name": "The Debater",
+          "tagline": "Shakes things up with questions",
+          "keywords": ["Debate", "Innovation", "Challenge"],
+          "summary": "ENTPs are argumentative and innovative types. They enjoy ideas that break conventions and love intellectual challenges.",
+          "strengths": ["Quick thinking", "Creative problem solving", "Persuasive communication", "Understanding various perspectives"],
+          "weaknesses": ["Difficulty finishing", "Excessive debate", "Ignoring emotions"],
+          "stress": ["Lack of intellectual stimulation", "Repetitive work", "Illogical environment"],
+          "recovery": ["Intellectual debate", "Exploring new ideas", "Conversation with various people"],
+          "relationship": {
+            "style": "Wants intellectual and stimulating relationships.",
+            "tips": ["Enjoy intellectual debate", "Don't personalize arguments", "Share emotions too"]
+          },
+          "work": {
+            "style": "Pours ideas into innovative projects.",
+            "tips": ["Provide intellectual challenges", "Various projects", "Support finishing"]
+          },
+          "growth": ["Finish to the end", "Consider others' emotions", "Step back from debates", "Turn into action"],
+          "todayAction": "Listen instead of debating today"
+        },
+        "ESTJ": {
+          "name": "The Executive",
+          "tagline": "Organized world is comfortable",
+          "keywords": ["Organization", "Responsibility", "Efficiency"],
+          "summary": "ESTJs are organized and responsible types. They value clear structure and rules and achieve goals efficiently.",
+          "strengths": ["Excellent organization", "Responsible leadership", "Efficient execution", "Clear communication"],
+          "weaknesses": ["Lack of flexibility", "Overlooks others' emotions", "Resists change"],
+          "stress": ["Inefficient situations", "Irresponsible people", "Environment without plans"],
+          "recovery": ["Making and executing plans", "Organizing", "Achieving goals"],
+          "relationship": {
+            "style": "Wants stable and practical relationships.",
+            "tips": ["Keep promises", "Provide practical help", "Express emotions too"]
+          },
+          "work": {
+            "style": "Organizes team and leads toward goals.",
+            "tips": ["Give clear roles", "Recognize authority", "Evaluate by results"]
+          },
+          "growth": ["Consider others' emotions", "Try new approaches", "Accept imperfection", "Listen more"],
+          "todayAction": "Listen to someone's opinion completely today"
+        },
+        "ESFJ": {
+          "name": "The Consul",
+          "tagline": "Connects people together",
+          "keywords": ["Care", "Harmony", "Dedication"],
+          "summary": "ESFJs are warm and social types. They care for those around them and work to create harmonious environments.",
+          "strengths": ["Excellent sociability", "Attentive care", "Pursues harmony", "Dedicated support"],
+          "weaknesses": ["Sensitive to others' evaluation", "Conflict avoidance", "Ignores own needs"],
+          "stress": ["Not being recognized", "Conflict situations", "Harmony being broken"],
+          "recovery": ["Time with loved ones", "Being appreciated", "Harmonious environment"],
+          "relationship": {
+            "style": "Wants warm and dedicated relationships.",
+            "tips": ["Express gratitude", "Reciprocate care", "Encourage them to share their needs"]
+          },
+          "work": {
+            "style": "Watches team atmosphere and leads collaboration.",
+            "tips": ["Recognition and gratitude", "Collaboration opportunities", "Minimize conflict"]
+          },
+          "growth": ["Express your needs", "Say 'no'", "Accept criticism", "Prioritize self-care"],
+          "todayAction": "Take 30 minutes for yourself today"
+        },
+        "ENFJ": {
+          "name": "The Protagonist",
+          "tagline": "Brings out people's potential",
+          "keywords": ["Inspiration", "Leadership", "Growth"],
+          "summary": "ENFJs are charismatic and inspiring types. They discover people's potential and help them grow.",
+          "strengths": ["Inspiring leadership", "Excellent empathy", "Discovers people's potential", "Persuasive communication"],
+          "weaknesses": ["Puts self last", "Excessive responsibility", "Sensitive to criticism"],
+          "stress": ["Value conflicts", "Relationship conflicts", "Feeling powerless"],
+          "recovery": ["Meaningful conversations", "Helping others", "Inspiring content"],
+          "relationship": {
+            "style": "Wants deep and growth-oriented relationships.",
+            "tips": ["Share growth together", "Show authenticity", "Encourage them to care for themselves"]
+          },
+          "work": {
+            "style": "Inspires team and leads toward goals.",
+            "tips": ["Opportunity to share vision", "Support team growth", "Recognition and gratitude"]
+          },
+          "growth": ["Prioritize your needs", "Imperfect is okay", "Accept you can't save everyone", "Set boundaries"],
+          "todayAction": "Make one decision for yourself today"
+        },
+        "ENTJ": {
+          "name": "The Commander",
+          "tagline": "Makes goals reality",
+          "keywords": ["Leadership", "Strategy", "Execution"],
+          "summary": "ENTJs are decisive and strategic types. They set big visions and lead teams to realize them.",
+          "strengths": ["Strong leadership", "Strategic thinking", "Decisiveness", "Efficient execution"],
+          "weaknesses": ["Overlooks others' emotions", "Excessive control", "Lack of patience"],
+          "stress": ["Inefficient situations", "Appearing incompetent", "Loss of control"],
+          "recovery": ["Making strategies", "Achieving goals", "Challenging tasks"],
+          "relationship": {
+            "style": "Wants growth-oriented and challenging relationships.",
+            "tips": ["Take on challenges together", "Recognize independence", "Value emotions too"]
+          },
+          "work": {
+            "style": "Organizes team and leads powerfully toward goals.",
+            "tips": ["Authority and autonomy", "Challenging goals", "Evaluate by results"]
+          },
+          "growth": ["Consider others' emotions", "Let go of control", "Enjoy the process too", "Develop patience"],
+          "todayAction": "Ask a team member how they feel first"
+        }
+      }
     }
   }
 }

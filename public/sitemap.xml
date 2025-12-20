@@ -26,6 +26,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://utils-hub.app/games/mbti</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://utils-hub.app/developer/json</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
