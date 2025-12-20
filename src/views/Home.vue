@@ -37,7 +37,8 @@ const categories = [
     color: 'bg-green-500',
     tools: [
       { id: 'converter', route: '/converter/image', icon: '🖼️' },
-      { id: 'qrcode', route: '/converter/qrcode', icon: '📱' }
+      { id: 'qrcode', route: '/converter/qrcode', icon: '📱' },
+      { id: 'metadata', route: '/converter/metadata', icon: '🔍' }
     ]
   },
   {

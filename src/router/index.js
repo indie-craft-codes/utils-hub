@@ -32,6 +32,11 @@ const routes = [
     component: () => import('../views/converter/QRCodeGenerator.vue')
   },
   {
+    path: '/converter/metadata',
+    name: 'ImageMetadata',
+    component: () => import('../views/converter/ImageMetadata.vue')
+  },
+  {
     path: '/developer/uuid',
     name: 'UUIDGenerator',
     component: () => import('../views/developer/UUIDGenerator.vue')

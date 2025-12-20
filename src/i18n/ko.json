@@ -177,6 +177,33 @@
         "temperature": "온도",
         "data": "데이터"
       }
+    },
+    "metadata": {
+      "title": "이미지 메타데이터",
+      "description": "이미지 EXIF 및 메타데이터 추출",
+      "selectFile": "이미지 선택",
+      "dragDrop": "또는 여기에 파일을 드래그하세요",
+      "loading": "메타데이터 추출 중...",
+      "changeFile": "다른 파일",
+      "fileSize": "파일 크기",
+      "format": "포맷",
+      "dimensions": "해상도",
+      "megapixels": "메가픽셀",
+      "aspectRatio": "비율",
+      "lastModified": "수정일",
+      "exifData": "EXIF 데이터",
+      "cameraInfo": "카메라 정보",
+      "make": "제조사",
+      "model": "모델",
+      "shootingSettings": "촬영 설정",
+      "shutter": "셔터속도",
+      "aperture": "조리개",
+      "focalLength": "초점거리",
+      "dateTime": "촬영 일시",
+      "gpsInfo": "위치 정보",
+      "coordinates": "좌표",
+      "openMaps": "지도에서 보기",
+      "noExif": "EXIF 데이터가 없습니다"
     }
   }
 }
