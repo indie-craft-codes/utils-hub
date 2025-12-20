@@ -208,25 +208,40 @@
     "fortune": {
       "title": "Daily Fortune",
       "description": "Check today's fortune with your birth date",
-      "birthDate": "Birth Date",
-      "selectDate": "Select your birth date",
-      "checkFortune": "Check Fortune",
-      "todaysFortune": "Today's Fortune",
-      "zodiac": "Zodiac",
-      "chineseZodiac": "Chinese Zodiac",
+      "inputTitle": "Enter your birth date",
+      "inputDescription": "We'll tell you today's fortune based on your zodiac and Chinese zodiac",
+      "viewFortune": "Check Fortune",
+      "todayScore": "Today's Fortune Score",
+      "points": "pts",
+      "todayKeywords": "Today's Keywords",
+      "detailedFortune": "Detailed Fortune",
+      "luckyElements": "Lucky Elements",
       "luckyColor": "Lucky Color",
       "luckyNumbers": "Lucky Numbers",
       "luckyDirection": "Lucky Direction",
-      "keyword": "Today's Keyword",
-      "advice": "Advice",
+      "todayAdvice": "Today's Advice",
+      "share": "Share",
+      "reset": "Check Again",
+      "shareText": "Today's fortune score is",
+      "disclaimer": "This is just for fun. Your choices matter most!",
+      "types": {
+        "stable": "Day of Stability",
+        "opportunity": "Day of Opportunity",
+        "caution": "Day of Caution",
+        "communication": "Day of Communication",
+        "recovery": "Day of Rest",
+        "focus": "Day of Focus",
+        "wealth": "Day of Abundance",
+        "relationship": "Day of Connection"
+      },
       "categories": {
         "general": "Overall",
-        "love": "Love",
-        "money": "Money",
+        "love": "Love & Relationships",
+        "money": "Finance",
         "health": "Health",
-        "work": "Work"
+        "work": "Work & Study"
       },
-      "zodiacSigns": {
+      "zodiac": {
         "aries": "Aries",
         "taurus": "Taurus",
         "gemini": "Gemini",
@@ -240,7 +255,7 @@
         "aquarius": "Aquarius",
         "pisces": "Pisces"
       },
-      "chineseZodiacSigns": {
+      "chinese": {
         "rat": "Rat",
         "ox": "Ox",
         "tiger": "Tiger",
@@ -260,87 +275,110 @@
         "yellow": "Yellow",
         "green": "Green",
         "blue": "Blue",
-        "navy": "Navy",
         "purple": "Purple",
         "pink": "Pink",
         "white": "White",
         "black": "Black",
-        "gold": "Gold",
-        "silver": "Silver"
+        "gold": "Gold"
       },
       "directions": {
-        "east": "East",
-        "west": "West",
-        "south": "South",
-        "north": "North",
-        "southeast": "Southeast",
-        "southwest": "Southwest",
-        "northeast": "Northeast",
-        "northwest": "Northwest"
+        "0": "North",
+        "1": "Northeast",
+        "2": "East",
+        "3": "Southeast",
+        "4": "South",
+        "5": "Southwest",
+        "6": "West",
+        "7": "Northwest"
       },
-      "keywords": [
-        "Challenge", "Harmony", "Passion", "Patience", "Wisdom",
-        "Love", "Success", "Health", "Joy", "Luck",
-        "Growth", "Peace", "Creativity", "Friendship", "Trust"
-      ],
+      "keywords": {
+        "0": "New Beginning",
+        "1": "Prudence",
+        "2": "Communication",
+        "3": "Challenge",
+        "4": "Rest",
+        "5": "Patience",
+        "6": "Gratitude",
+        "7": "Decision",
+        "8": "Cooperation",
+        "9": "Growth"
+      },
       "messages": {
-        "excellent": "A great day is coming! Trust yourself and move forward boldly.",
-        "great": "Good energy surrounds you. Something positive is happening.",
-        "good": "A stable day. Take on small challenges.",
-        "average": "A day of balance. Enjoy routine life.",
-        "careful": "Be a little careful today. Think carefully before you act."
+        "0": "Today is a day with good energy for a new start.",
+        "1": "Look around calmly and you may discover hidden opportunities.",
+        "2": "A positive mindset will lead to good results.",
+        "3": "It's okay to take a break today. You need to recharge.",
+        "4": "Communication with people around you will bring luck.",
+        "5": "Being grateful for small things brings great happiness.",
+        "6": "Today's choices can change your future. Decide carefully.",
+        "7": "Unexpected good news may come your way.",
+        "8": "Believe in yourself and take a step forward.",
+        "9": "Today will be a peaceful day."
       },
-      "advices": [
-        "Taking time for yourself today is a good idea.",
-        "Don't miss the little opportunities around you.",
-        "Approach things with a positive attitude.",
-        "Spend meaningful time with important people.",
-        "Don't forget to take care of your health.",
-        "Open your mind to new challenges.",
-        "Rest and relaxation are also important.",
-        "Express gratitude to those around you.",
-        "Take a step closer to your goals.",
-        "Believe in yourself."
-      ],
+      "advices": {
+        "0": "Don't rush your decisions. It's good to take a tempo break.",
+        "1": "Try reaching out to people around you first. It could be a good connection.",
+        "2": "How about taking some time for yourself today?",
+        "3": "Start achieving your goals one small step at a time.",
+        "4": "Try expressing your feelings honestly. You can be understood.",
+        "5": "It's a good time to try something new.",
+        "6": "It's better to move according to plan today.",
+        "7": "Don't dwell on the past, move forward.",
+        "8": "Pay a little more attention to your health.",
+        "9": "Positive thinking creates good results."
+      },
       "categoryMessages": {
         "general": {
-          "excellent": "Your overall luck is at its peak today! Whatever you do will turn out well.",
-          "great": "The energy around you is very positive today.",
-          "good": "A day where you can expect good luck overall.",
-          "average": "A day with slight ups and downs.",
-          "careful": "Not everything may go as planned today."
+          "0": "It will be a smooth day overall. Have confidence.",
+          "1": "Unexpected changes may occur. Be flexible.",
+          "2": "A peaceful day. Things will proceed without major issues.",
+          "3": "Small fortunes may come your way today.",
+          "4": "It might be tough, but it will get better by evening.",
+          "5": "You can get help from those around you. Don't worry alone.",
+          "6": "Concentration is high today. Good for handling important tasks.",
+          "7": "You may have mood swings. Find peace of mind."
         },
         "love": {
-          "excellent": "Romantic opportunities may come. Stay open to love.",
-          "great": "Good energy in relationships. It's a good day for deep conversations.",
-          "good": "A day to deepen relationships with those around you.",
-          "average": "Love relationships are stable. Enjoy a peaceful time.",
-          "careful": "Small misunderstandings may occur. Express yourself clearly."
+          "0": "Have a deep conversation with someone precious to you.",
+          "1": "New connections may come your way today.",
+          "2": "Try to understand the other person's heart.",
+          "3": "Small gestures can give great impressions.",
+          "4": "Time alone is also precious. Take a break.",
+          "5": "Expressing your honest feelings will get good responses.",
+          "6": "Take it easy in your relationships.",
+          "7": "Communicate clearly to avoid misunderstandings."
         },
         "money": {
-          "excellent": "Unexpected financial luck may come. Stay alert to opportunities.",
-          "great": "Financial flow is smooth. Good for saving.",
-          "good": "Normal spending is fine. Enjoy within budget.",
-          "average": "Financial stability is maintained. Avoid big expenses.",
-          "careful": "Watch your spending. Postpone non-essential purchases."
+          "0": "Unexpected income may come your way.",
+          "1": "It's better to avoid impulsive spending.",
+          "2": "Good day to review your financial plans.",
+          "3": "Small saving habits create big results.",
+          "4": "Better to seek stability than investments.",
+          "5": "Spending where needed will return as greater value.",
+          "6": "Make financial decisions carefully.",
+          "7": "Try to reduce spending and prepare for the future."
         },
         "health": {
-          "excellent": "You're in great shape. Good for new exercises.",
-          "great": "Your condition is very good. Stay active.",
-          "good": "Maintain your health steadily. Walking is recommended.",
-          "average": "No particular health issues. Maintain your daily routine.",
-          "careful": "You may feel a bit tired today. Get enough rest."
+          "0": "It will be an energetic day.",
+          "1": "Don't forget to drink enough water.",
+          "2": "Light exercise helps refresh your mood.",
+          "3": "Pay attention to improving your sleep quality.",
+          "4": "Stress management is needed today.",
+          "5": "Fill up your energy with a healthy diet.",
+          "6": "Don't overdo it and rest appropriately.",
+          "7": "A positive mind also has a good effect on health."
         },
         "work": {
-          "excellent": "Work luck is excellent. Your abilities will be recognized.",
-          "great": "Work efficiency is high. Take on important tasks today.",
-          "good": "Good for steady progress. Focus on your work.",
-          "average": "A normal workday. Handle routine tasks well.",
-          "careful": "Mistakes may occur. Double-check everything."
+          "0": "Work efficiency is high today. Handle important tasks.",
+          "1": "Cooperation with colleagues will bring good results.",
+          "2": "New ideas may come to you.",
+          "3": "Double-checking can reduce mistakes.",
+          "4": "Focus on important tasks rather than urgent ones.",
+          "5": "Learning opportunities may come your way.",
+          "6": "Calm progress will lead to good results.",
+          "7": "Taking a short break will bring better ideas."
         }
-      },
-      "dailyLimit": "You can check your fortune once per day. Come back tomorrow!",
-      "alreadyChecked": "You've already checked your fortune today."
+      }
     }
   }
 }
