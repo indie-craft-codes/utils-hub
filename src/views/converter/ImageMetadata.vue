@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import exifr from 'exifr'
 
 const { t } = useI18n()
 
@@ -14,7 +15,7 @@ const copied = ref('')
 
 const handleFileSelect = (event) => {
   const selectedFile = event.target.files?.[0]
-  if (selectedFile && selectedFile.type.startsWith('image/')) {
+  if (selectedFile) {
     loadFile(selectedFile)
   }
 }
@@ -23,7 +24,7 @@ const handleDrop = (event) => {
   event.preventDefault()
   isDragging.value = false
   const droppedFile = event.dataTransfer.files?.[0]
-  if (droppedFile && droppedFile.type.startsWith('image/')) {
+  if (droppedFile) {
     loadFile(droppedFile)
   }
 }
@@ -43,11 +44,17 @@ const formatSize = (bytes) => {
   return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
 }
 
+const isHeic = (file) => {
+  const name = file.name.toLowerCase()
+  return name.endsWith('.heic') || name.endsWith('.heif')
+}
+
 const loadFile = async (selectedFile) => {
   file.value = selectedFile
   loading.value = true
   metadata.value = null
   exifData.value = null
+  preview.value = ''
 
   try {
     // 기본 파일 정보
@@ -55,31 +62,155 @@ const loadFile = async (selectedFile) => {
       name: selectedFile.name,
       size: formatSize(selectedFile.size),
       sizeBytes: selectedFile.size,
-      type: selectedFile.type,
+      type: selectedFile.type || getTypeFromExtension(selectedFile.name),
       lastModified: new Date(selectedFile.lastModified).toLocaleString()
     }
 
-    // 이미지 로드 및 크기 정보
-    const imageInfo = await getImageInfo(selectedFile)
+    // EXIF 데이터 추출 (exifr 사용)
+    const exif = await extractExifWithExifr(selectedFile)
 
-    // EXIF 데이터 추출
-    const exif = await extractExif(selectedFile)
+    // 이미지 크기 정보
+    let imageInfo = { width: 0, height: 0, aspectRatio: '0', megapixels: '0' }
+
+    // EXIF에서 이미지 크기 가져오기
+    if (exif?.ImageWidth && exif?.ImageHeight) {
+      imageInfo = {
+        width: exif.ImageWidth,
+        height: exif.ImageHeight,
+        aspectRatio: (exif.ImageWidth / exif.ImageHeight).toFixed(2),
+        megapixels: ((exif.ImageWidth * exif.ImageHeight) / 1000000).toFixed(2)
+      }
+    } else if (exif?.ExifImageWidth && exif?.ExifImageHeight) {
+      imageInfo = {
+        width: exif.ExifImageWidth,
+        height: exif.ExifImageHeight,
+        aspectRatio: (exif.ExifImageWidth / exif.ExifImageHeight).toFixed(2),
+        megapixels: ((exif.ExifImageWidth * exif.ExifImageHeight) / 1000000).toFixed(2)
+      }
+    } else if (!isHeic(selectedFile)) {
+      // HEIC가 아닌 경우 Image API로 크기 가져오기
+      imageInfo = await getImageInfo(selectedFile)
+    }
 
     metadata.value = { ...basicInfo, ...imageInfo }
     exifData.value = exif
 
-    // 미리보기 생성
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      preview.value = e.target?.result
+    // 미리보기 생성 (HEIC가 아닌 경우)
+    if (!isHeic(selectedFile)) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        preview.value = e.target?.result
+      }
+      reader.readAsDataURL(selectedFile)
+    } else {
+      // HEIC는 썸네일 추출 시도
+      try {
+        const thumb = await exifr.thumbnail(selectedFile)
+        if (thumb) {
+          const blob = new Blob([thumb], { type: 'image/jpeg' })
+          preview.value = URL.createObjectURL(blob)
+        }
+      } catch (e) {
+        // 썸네일 없음
+      }
     }
-    reader.readAsDataURL(selectedFile)
 
   } catch (e) {
     console.error('Failed to extract metadata:', e)
   } finally {
     loading.value = false
   }
+}
+
+const getTypeFromExtension = (filename) => {
+  const ext = filename.split('.').pop()?.toLowerCase()
+  const types = {
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    png: 'image/png',
+    gif: 'image/gif',
+    webp: 'image/webp',
+    heic: 'image/heic',
+    heif: 'image/heif',
+    tiff: 'image/tiff',
+    tif: 'image/tiff'
+  }
+  return types[ext] || 'image/unknown'
+}
+
+const extractExifWithExifr = async (file) => {
+  try {
+    const exif = await exifr.parse(file, {
+      // 모든 메타데이터 추출
+      tiff: true,
+      exif: true,
+      gps: true,
+      ifd0: true,
+      ifd1: true,
+      // HEIC 지원
+      icc: false,
+      iptc: false,
+      xmp: false
+    })
+
+    if (!exif) return null
+
+    // 정리된 EXIF 데이터
+    const result = {}
+
+    // 카메라 정보
+    if (exif.Make) result.make = exif.Make
+    if (exif.Model) result.model = exif.Model
+
+    // 촬영 설정
+    if (exif.ExposureTime) result.exposureTime = exif.ExposureTime
+    if (exif.FNumber) result.fNumber = exif.FNumber
+    if (exif.ISO) result.iso = exif.ISO
+    if (exif.FocalLength) result.focalLength = exif.FocalLength
+    if (exif.FocalLengthIn35mmFormat) result.focalLength35mm = exif.FocalLengthIn35mmFormat
+
+    // 날짜
+    if (exif.DateTimeOriginal) {
+      result.dateTimeOriginal = formatExifDate(exif.DateTimeOriginal)
+    } else if (exif.CreateDate) {
+      result.dateTimeOriginal = formatExifDate(exif.CreateDate)
+    } else if (exif.ModifyDate) {
+      result.dateTime = formatExifDate(exif.ModifyDate)
+    }
+
+    // GPS
+    if (exif.latitude && exif.longitude) {
+      result.gps = {
+        latitude: exif.latitude.toFixed(6),
+        longitude: exif.longitude.toFixed(6)
+      }
+    }
+
+    // 이미지 크기
+    if (exif.ImageWidth) result.ImageWidth = exif.ImageWidth
+    if (exif.ImageHeight) result.ImageHeight = exif.ImageHeight
+    if (exif.ExifImageWidth) result.ExifImageWidth = exif.ExifImageWidth
+    if (exif.ExifImageHeight) result.ExifImageHeight = exif.ExifImageHeight
+
+    // 렌즈 정보
+    if (exif.LensModel) result.lensModel = exif.LensModel
+
+    // 기타
+    if (exif.Software) result.software = exif.Software
+    if (exif.Orientation) result.orientation = exif.Orientation
+
+    return Object.keys(result).length > 0 ? result : null
+  } catch (e) {
+    console.error('EXIF parsing error:', e)
+    return null
+  }
+}
+
+const formatExifDate = (date) => {
+  if (date instanceof Date) {
+    return date.toLocaleString()
+  }
+  return String(date)
 }
 
 const getImageInfo = (file) => {
@@ -104,229 +235,6 @@ const getImageInfo = (file) => {
 
     img.src = url
   })
-}
-
-// EXIF 데이터 추출 (JPEG/TIFF)
-const extractExif = (file) => {
-  return new Promise((resolve) => {
-    const reader = new FileReader()
-
-    reader.onload = (e) => {
-      const buffer = e.target.result
-      const exif = parseExif(buffer)
-      resolve(exif)
-    }
-
-    reader.onerror = () => resolve(null)
-    reader.readAsArrayBuffer(file)
-  })
-}
-
-const parseExif = (buffer) => {
-  const view = new DataView(buffer)
-
-  // JPEG 확인
-  if (view.getUint16(0) !== 0xFFD8) {
-    return null
-  }
-
-  let offset = 2
-  const length = view.byteLength
-
-  while (offset < length) {
-    if (view.getUint8(offset) !== 0xFF) {
-      return null
-    }
-
-    const marker = view.getUint8(offset + 1)
-
-    // APP1 마커 (EXIF)
-    if (marker === 0xE1) {
-      const exifOffset = offset + 4
-      const exifHeader = String.fromCharCode(
-        view.getUint8(exifOffset),
-        view.getUint8(exifOffset + 1),
-        view.getUint8(exifOffset + 2),
-        view.getUint8(exifOffset + 3)
-      )
-
-      if (exifHeader === 'Exif') {
-        return parseExifData(view, exifOffset + 6)
-      }
-    }
-
-    // 다음 마커로 이동
-    if (marker === 0xD8 || marker === 0xD9) {
-      offset += 2
-    } else {
-      const segmentLength = view.getUint16(offset + 2)
-      offset += 2 + segmentLength
-    }
-  }
-
-  return null
-}
-
-const parseExifData = (view, tiffOffset) => {
-  try {
-    const littleEndian = view.getUint16(tiffOffset) === 0x4949
-    const ifdOffset = view.getUint32(tiffOffset + 4, littleEndian)
-
-    const exif = {}
-    const tags = {
-      0x010F: 'make',
-      0x0110: 'model',
-      0x0112: 'orientation',
-      0x011A: 'xResolution',
-      0x011B: 'yResolution',
-      0x0132: 'dateTime',
-      0x829A: 'exposureTime',
-      0x829D: 'fNumber',
-      0x8827: 'iso',
-      0x9003: 'dateTimeOriginal',
-      0x9004: 'dateTimeDigitized',
-      0x920A: 'focalLength',
-      0xA002: 'imageWidth',
-      0xA003: 'imageHeight',
-      0xA405: 'focalLengthIn35mm'
-    }
-
-    const gpsIfdPointer = parseIFD(view, tiffOffset, tiffOffset + ifdOffset, littleEndian, tags, exif)
-
-    // EXIF SubIFD
-    if (exif.exifIfdPointer) {
-      parseIFD(view, tiffOffset, tiffOffset + exif.exifIfdPointer, littleEndian, tags, exif)
-      delete exif.exifIfdPointer
-    }
-
-    // GPS IFD
-    if (exif.gpsInfoIfdPointer) {
-      const gps = parseGPSData(view, tiffOffset, tiffOffset + exif.gpsInfoIfdPointer, littleEndian)
-      if (gps) {
-        exif.gps = gps
-      }
-      delete exif.gpsInfoIfdPointer
-    }
-
-    return Object.keys(exif).length > 0 ? exif : null
-  } catch (e) {
-    return null
-  }
-}
-
-const parseIFD = (view, tiffOffset, ifdOffset, littleEndian, tags, result) => {
-  try {
-    const numEntries = view.getUint16(ifdOffset, littleEndian)
-
-    for (let i = 0; i < numEntries; i++) {
-      const entryOffset = ifdOffset + 2 + (i * 12)
-      const tag = view.getUint16(entryOffset, littleEndian)
-      const type = view.getUint16(entryOffset + 2, littleEndian)
-      const numValues = view.getUint32(entryOffset + 4, littleEndian)
-      const valueOffset = entryOffset + 8
-
-      // EXIF SubIFD 포인터
-      if (tag === 0x8769) {
-        result.exifIfdPointer = view.getUint32(valueOffset, littleEndian)
-        continue
-      }
-
-      // GPS IFD 포인터
-      if (tag === 0x8825) {
-        result.gpsInfoIfdPointer = view.getUint32(valueOffset, littleEndian)
-        continue
-      }
-
-      if (!tags[tag]) continue
-
-      const value = readTagValue(view, tiffOffset, type, numValues, valueOffset, littleEndian)
-      if (value !== null) {
-        result[tags[tag]] = value
-      }
-    }
-  } catch (e) {
-    // 파싱 오류 무시
-  }
-}
-
-const parseGPSData = (view, tiffOffset, ifdOffset, littleEndian) => {
-  try {
-    const numEntries = view.getUint16(ifdOffset, littleEndian)
-    const gps = {}
-
-    const gpsTags = {
-      0x0001: 'latitudeRef',
-      0x0002: 'latitude',
-      0x0003: 'longitudeRef',
-      0x0004: 'longitude',
-      0x0005: 'altitudeRef',
-      0x0006: 'altitude'
-    }
-
-    for (let i = 0; i < numEntries; i++) {
-      const entryOffset = ifdOffset + 2 + (i * 12)
-      const tag = view.getUint16(entryOffset, littleEndian)
-      const type = view.getUint16(entryOffset + 2, littleEndian)
-      const numValues = view.getUint32(entryOffset + 4, littleEndian)
-      const valueOffset = entryOffset + 8
-
-      if (!gpsTags[tag]) continue
-
-      if (tag === 0x0002 || tag === 0x0004) {
-        // GPS 좌표 (rational 배열)
-        const dataOffset = view.getUint32(valueOffset, littleEndian)
-        const degrees = view.getUint32(tiffOffset + dataOffset, littleEndian) / view.getUint32(tiffOffset + dataOffset + 4, littleEndian)
-        const minutes = view.getUint32(tiffOffset + dataOffset + 8, littleEndian) / view.getUint32(tiffOffset + dataOffset + 12, littleEndian)
-        const seconds = view.getUint32(tiffOffset + dataOffset + 16, littleEndian) / view.getUint32(tiffOffset + dataOffset + 20, littleEndian)
-        gps[gpsTags[tag]] = degrees + (minutes / 60) + (seconds / 3600)
-      } else {
-        const value = readTagValue(view, tiffOffset, type, numValues, valueOffset, littleEndian)
-        if (value !== null) {
-          gps[gpsTags[tag]] = value
-        }
-      }
-    }
-
-    if (gps.latitude && gps.longitude) {
-      const lat = gps.latitudeRef === 'S' ? -gps.latitude : gps.latitude
-      const lng = gps.longitudeRef === 'W' ? -gps.longitude : gps.longitude
-      return { latitude: lat.toFixed(6), longitude: lng.toFixed(6) }
-    }
-
-    return null
-  } catch (e) {
-    return null
-  }
-}
-
-const readTagValue = (view, tiffOffset, type, numValues, valueOffset, littleEndian) => {
-  try {
-    switch (type) {
-      case 1: // BYTE
-      case 7: // UNDEFINED
-        return view.getUint8(valueOffset)
-      case 2: // ASCII
-        const strOffset = numValues > 4 ? view.getUint32(valueOffset, littleEndian) + tiffOffset : valueOffset
-        let str = ''
-        for (let i = 0; i < numValues - 1; i++) {
-          str += String.fromCharCode(view.getUint8(strOffset + i))
-        }
-        return str.trim()
-      case 3: // SHORT
-        return view.getUint16(valueOffset, littleEndian)
-      case 4: // LONG
-        return view.getUint32(valueOffset, littleEndian)
-      case 5: // RATIONAL
-        const ratOffset = view.getUint32(valueOffset, littleEndian) + tiffOffset
-        const numerator = view.getUint32(ratOffset, littleEndian)
-        const denominator = view.getUint32(ratOffset + 4, littleEndian)
-        return denominator ? (numerator / denominator) : 0
-      default:
-        return null
-    }
-  } catch (e) {
-    return null
-  }
 }
 
 const formatExposure = (value) => {
@@ -368,6 +276,9 @@ const openInMaps = () => {
     window.open(`https://www.google.com/maps?q=${latitude},${longitude}`, '_blank')
   }
 }
+
+// 지원 포맷 목록
+const supportedFormats = 'JPEG, PNG, WebP, HEIC, HEIF, TIFF'
 </script>
 
 <template>
@@ -385,6 +296,9 @@ const openInMaps = () => {
       </h1>
       <p class="text-gray-600 dark:text-gray-400 mt-2">
         {{ t('tools.metadata.description') }}
+      </p>
+      <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+        {{ supportedFormats }}
       </p>
     </div>
 
@@ -407,7 +321,7 @@ const openInMaps = () => {
         <span class="text-sm text-gray-500 dark:text-gray-400">
           {{ t('tools.metadata.dragDrop') }}
         </span>
-        <input type="file" accept="image/*" @change="handleFileSelect" class="hidden" />
+        <input type="file" accept="image/*,.heic,.heif" @change="handleFileSelect" class="hidden" />
       </label>
     </div>
 
@@ -425,8 +339,11 @@ const openInMaps = () => {
       <!-- Preview & File Info -->
       <div class="card">
         <div class="flex items-start gap-6">
-          <div class="w-32 h-32 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0">
-            <img :src="preview" alt="Preview" class="w-full h-full object-cover" />
+          <div class="w-32 h-32 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0 flex items-center justify-center">
+            <img v-if="preview" :src="preview" alt="Preview" class="w-full h-full object-cover" />
+            <svg v-else class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
           </div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center justify-between mb-4">
@@ -446,15 +363,15 @@ const openInMaps = () => {
                 <span class="text-gray-500 dark:text-gray-400">{{ t('tools.metadata.format') }}:</span>
                 <span class="ml-2 text-gray-900 dark:text-white">{{ metadata.type }}</span>
               </div>
-              <div>
+              <div v-if="metadata.width > 0">
                 <span class="text-gray-500 dark:text-gray-400">{{ t('tools.metadata.dimensions') }}:</span>
                 <span class="ml-2 text-gray-900 dark:text-white">{{ metadata.width }} x {{ metadata.height }}</span>
               </div>
-              <div>
+              <div v-if="metadata.megapixels !== '0'">
                 <span class="text-gray-500 dark:text-gray-400">{{ t('tools.metadata.megapixels') }}:</span>
                 <span class="ml-2 text-gray-900 dark:text-white">{{ metadata.megapixels }} MP</span>
               </div>
-              <div>
+              <div v-if="metadata.aspectRatio !== '0'">
                 <span class="text-gray-500 dark:text-gray-400">{{ t('tools.metadata.aspectRatio') }}:</span>
                 <span class="ml-2 text-gray-900 dark:text-white">{{ metadata.aspectRatio }}</span>
               </div>
@@ -474,7 +391,7 @@ const openInMaps = () => {
         </h2>
 
         <!-- Camera Info -->
-        <div v-if="exifData.make || exifData.model" class="mb-6">
+        <div v-if="exifData.make || exifData.model || exifData.lensModel" class="mb-6">
           <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
             {{ t('tools.metadata.cameraInfo') }}
           </h3>
@@ -486,6 +403,10 @@ const openInMaps = () => {
             <div v-if="exifData.model" class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
               <span class="text-gray-600 dark:text-gray-400">{{ t('tools.metadata.model') }}</span>
               <span class="text-gray-900 dark:text-white font-medium">{{ exifData.model }}</span>
+            </div>
+            <div v-if="exifData.lensModel" class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg col-span-2">
+              <span class="text-gray-600 dark:text-gray-400">Lens</span>
+              <span class="text-gray-900 dark:text-white font-medium">{{ exifData.lensModel }}</span>
             </div>
           </div>
         </div>
@@ -510,7 +431,10 @@ const openInMaps = () => {
             </div>
             <div v-if="exifData.focalLength" class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-center">
               <p class="text-gray-500 dark:text-gray-400 text-xs mb-1">{{ t('tools.metadata.focalLength') }}</p>
-              <p class="text-gray-900 dark:text-white font-medium">{{ formatFocalLength(exifData.focalLength) }}</p>
+              <p class="text-gray-900 dark:text-white font-medium">
+                {{ formatFocalLength(exifData.focalLength) }}
+                <span v-if="exifData.focalLength35mm" class="text-xs text-gray-500">({{ exifData.focalLength35mm }}mm)</span>
+              </p>
             </div>
           </div>
         </div>
@@ -522,6 +446,16 @@ const openInMaps = () => {
           </h3>
           <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-sm">
             <span class="text-gray-900 dark:text-white">{{ exifData.dateTimeOriginal || exifData.dateTime }}</span>
+          </div>
+        </div>
+
+        <!-- Software -->
+        <div v-if="exifData.software" class="mb-6">
+          <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-3">
+            Software
+          </h3>
+          <div class="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg text-sm">
+            <span class="text-gray-900 dark:text-white">{{ exifData.software }}</span>
           </div>
         </div>
 
