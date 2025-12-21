@@ -263,6 +263,10 @@ const calculateResult = () => {
   // 서브타입(상태) 결정
   const subTypes = ['stable', 'overload', 'recovery', 'focus']
   const subType = subTypes[Math.floor(cryptoRandom() * subTypes.length)]
+  const timestamp = Date.now()
+
+  // soft-hash: 결과 무결성 검증용 (보안 목적 X, 신뢰도 목적 O)
+  const hash = btoa(`${type}-${timestamp}`).substring(0, 12)
 
   result.value = {
     type,
@@ -271,7 +275,8 @@ const calculateResult = () => {
     subType,
     mode: testMode.value,
     date: new Date().toISOString().split('T')[0],
-    timestamp: Date.now()
+    timestamp,
+    hash
   }
 
   // 저장
@@ -292,7 +297,14 @@ const saveResult = () => {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(testHistory.value))
 }
 
-// 히스토리 로드 (30일 이전 자동 삭제)
+// 해시 검증 (soft validation)
+const validateHash = (item) => {
+  if (!item.hash || !item.type || !item.timestamp) return true // 이전 버전 호환
+  const expectedHash = btoa(`${item.type}-${item.timestamp}`).substring(0, 12)
+  return item.hash === expectedHash
+}
+
+// 히스토리 로드 (30일 이전 자동 삭제 + 해시 검증)
 const EXPIRY_DAYS = 30
 const loadHistory = () => {
   const saved = localStorage.getItem(HISTORY_KEY)
@@ -301,11 +313,13 @@ const loadHistory = () => {
       const parsed = JSON.parse(saved)
       const now = Date.now()
       const expiryMs = EXPIRY_DAYS * 24 * 60 * 60 * 1000
-      // 30일 이내 결과만 유지
+      // 30일 이내 + 해시 유효한 결과만 유지
       testHistory.value = parsed.filter(item => {
-        return item.timestamp && (now - item.timestamp) < expiryMs
+        const notExpired = item.timestamp && (now - item.timestamp) < expiryMs
+        const hashValid = validateHash(item)
+        return notExpired && hashValid
       })
-      // 만료된 항목이 있었다면 저장
+      // 만료되거나 변조된 항목이 있었다면 저장
       if (testHistory.value.length !== parsed.length) {
         localStorage.setItem(HISTORY_KEY, JSON.stringify(testHistory.value))
       }

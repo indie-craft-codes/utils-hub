@@ -511,9 +511,9 @@
         "yourType": "당신의 유형"
       },
       "reliability": {
-        "high": "신뢰도: 높음",
-        "medium": "신뢰도: 보통",
-        "low": "신뢰도: 낮음 (경계값 많음)"
+        "high": "뚜렷한 성향",
+        "medium": "일부 중립적 성향",
+        "low": "중립에 가까움"
       },
       "subTypes": {
         "stable": "🌱 안정 상태",
@@ -959,9 +959,9 @@
         "yourType": "당신의 유형"
       },
       "reliability": {
-        "high": "신뢰도: 높음",
-        "medium": "신뢰도: 보통",
-        "low": "신뢰도: 낮음"
+        "high": "뚜렷한 성향",
+        "medium": "일부 중립적 성향",
+        "low": "중립에 가까움"
       },
       "axes": {
         "direct": "직접적",
