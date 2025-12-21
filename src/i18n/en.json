@@ -511,9 +511,9 @@
         "yourType": "Your Type"
       },
       "reliability": {
-        "high": "Reliability: High",
-        "medium": "Reliability: Medium",
-        "low": "Reliability: Low (Many borderline values)"
+        "high": "Clear tendency",
+        "medium": "Partially neutral",
+        "low": "Close to neutral"
       },
       "subTypes": {
         "stable": "🌱 Stable State",
@@ -959,9 +959,9 @@
         "yourType": "Your Type"
       },
       "reliability": {
-        "high": "Reliability: High",
-        "medium": "Reliability: Medium",
-        "low": "Reliability: Low"
+        "high": "Clear tendency",
+        "medium": "Partially neutral",
+        "low": "Close to neutral"
       },
       "axes": {
         "direct": "Direct",
