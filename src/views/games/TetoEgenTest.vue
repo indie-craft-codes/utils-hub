@@ -248,6 +248,10 @@ const calculateResult = () => {
 
   // 고유 코드 생성 (공유용)
   const shareCode = generateShareCode(percentages)
+  const timestamp = Date.now()
+
+  // soft-hash: 결과 무결성 검증용 (보안 목적 X, 신뢰도 목적 O)
+  const hash = btoa(`${typeCode}-${timestamp}`).substring(0, 12)
 
   result.value = {
     typeCode,
@@ -259,8 +263,9 @@ const calculateResult = () => {
     reliability,
     mode: testMode.value,
     date: new Date().toISOString().split('T')[0],
-    timestamp: Date.now(),
-    shareCode
+    timestamp,
+    shareCode,
+    hash
   }
 
   myCode.value = shareCode
@@ -270,36 +275,52 @@ const calculateResult = () => {
   currentStep.value = 'result'
 }
 
-// 공유 코드 생성
+// 공유 코드 생성 (checksum 포함)
 const generateShareCode = (percentages) => {
-  const t = Math.round(percentages.T / 5).toString(16)
-  const d = Math.round(percentages.D / 5).toString(16)
-  const c = Math.round(percentages.C / 5).toString(16)
+  const t = Math.round(percentages.T / 5)
+  const d = Math.round(percentages.D / 5)
+  const c = Math.round(percentages.C / 5)
+  const checksum = (t + d + c) % 16
   const rand = Math.random().toString(36).substring(2, 6)
-  return `${t}${d}${c}${rand}`.toUpperCase()
+  return `${t.toString(16)}${d.toString(16)}${c.toString(16)}${checksum.toString(16)}${rand}`.toUpperCase()
 }
 
-// 공유 코드 파싱
+// 공유 코드 파싱 (checksum 검증)
 const parseShareCode = (code) => {
-  if (!code || code.length < 7) return null
+  if (!code || code.length < 8) return null
   try {
-    const t = parseInt(code[0], 16) * 5
-    const d = parseInt(code[1], 16) * 5
-    const c = parseInt(code[2], 16) * 5
+    const t = parseInt(code[0], 16)
+    const d = parseInt(code[1], 16)
+    const c = parseInt(code[2], 16)
+    const checksum = parseInt(code[3], 16)
 
-    const mainType = t >= 50 ? 'TETO' : 'EGEN'
-    const directType = d >= 50 ? 'D' : 'I'
-    const tempType = c >= 50 ? 'C' : 'W'
+    // checksum 검증
+    if ((t + d + c) % 16 !== checksum) return null
+
+    const tPercent = t * 5
+    const dPercent = d * 5
+    const cPercent = c * 5
+
+    const mainType = tPercent >= 50 ? 'TETO' : 'EGEN'
+    const directType = dPercent >= 50 ? 'D' : 'I'
+    const tempType = cPercent >= 50 ? 'C' : 'W'
     const typeCode = `${mainType}-${directType}${tempType}`
 
     return {
       typeCode,
       typeName: typeDefinitions[typeCode]?.name || 'unknown',
-      percentages: { T: t, E: 100 - t, D: d, I: 100 - d, C: c, W: 100 - c }
+      percentages: { T: tPercent, E: 100 - tPercent, D: dPercent, I: 100 - dPercent, C: cPercent, W: 100 - cPercent }
     }
   } catch (e) {
     return null
   }
+}
+
+// 친구 코드 입력 정제 (대문자 + hex만 허용)
+const sanitizeFriendCode = () => {
+  friendCode.value = friendCode.value
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
 }
 
 // 결과 저장
@@ -315,7 +336,14 @@ const saveResult = () => {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(testHistory.value))
 }
 
-// 히스토리 로드 (30일 이전 자동 삭제)
+// 해시 검증 (soft validation)
+const validateHash = (item) => {
+  if (!item.hash || !item.typeCode || !item.timestamp) return true // 이전 버전 호환
+  const expectedHash = btoa(`${item.typeCode}-${item.timestamp}`).substring(0, 12)
+  return item.hash === expectedHash
+}
+
+// 히스토리 로드 (30일 이전 자동 삭제 + 해시 검증)
 const EXPIRY_DAYS = 30
 const loadHistory = () => {
   const saved = localStorage.getItem(HISTORY_KEY)
@@ -324,11 +352,13 @@ const loadHistory = () => {
       const parsed = JSON.parse(saved)
       const now = Date.now()
       const expiryMs = EXPIRY_DAYS * 24 * 60 * 60 * 1000
-      // 30일 이내 결과만 유지
+      // 30일 이내 + 해시 유효한 결과만 유지
       testHistory.value = parsed.filter(item => {
-        return item.timestamp && (now - item.timestamp) < expiryMs
+        const notExpired = item.timestamp && (now - item.timestamp) < expiryMs
+        const hashValid = validateHash(item)
+        return notExpired && hashValid
       })
-      // 만료된 항목이 있었다면 저장
+      // 만료되거나 변조된 항목이 있었다면 저장
       if (testHistory.value.length !== parsed.length) {
         localStorage.setItem(HISTORY_KEY, JSON.stringify(testHistory.value))
       }
@@ -945,6 +975,7 @@ const mbtiConnections = {
           <div class="flex gap-2">
             <input
               v-model="friendCode"
+              @input="sanitizeFriendCode"
               type="text"
               :placeholder="t('tools.tetoEgen.compare.placeholder')"
               class="input flex-1 font-mono uppercase"
