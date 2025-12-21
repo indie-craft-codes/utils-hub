@@ -72,6 +72,11 @@ const routes = [
     component: () => import('../views/games/TetoEgenTest.vue')
   },
   {
+    path: '/games/roulette',
+    name: 'RouletteWheel',
+    component: () => import('../views/games/RouletteWheel.vue')
+  },
+  {
     path: '/developer/password',
     name: 'PasswordGenerator',
     component: () => import('../views/developer/PasswordGenerator.vue')
