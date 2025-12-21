@@ -208,15 +208,24 @@ const fortune = computed(() => {
 
   // 행운 요소
   const luckyColor = luckyColors[Math.floor(seededRandom(seed + 7) * luckyColors.length)]
-  const luckyNumber1 = Math.floor(seededRandom(seed + 8) * 45) + 1
-  const luckyNumber2 = Math.floor(seededRandom(seed + 9) * 45) + 1
 
-  // 키워드 인덱스 (3개)
-  const keywordIndices = [
-    Math.floor(seededRandom(seed + 10) * 10),
-    Math.floor(seededRandom(seed + 11) * 10),
-    Math.floor(seededRandom(seed + 12) * 10)
-  ]
+  // 행운 숫자 (중복 방지)
+  const luckyNumber1 = Math.floor(seededRandom(seed + 8) * 45) + 1
+  let luckyNumber2 = Math.floor(seededRandom(seed + 9) * 44) + 1
+  if (luckyNumber2 >= luckyNumber1) luckyNumber2++ // 중복 회피
+
+  // 키워드 인덱스 (3개, 중복 방지)
+  const getUniqueIndices = (seed, count, max) => {
+    const indices = []
+    const available = Array.from({ length: max }, (_, i) => i)
+    for (let i = 0; i < count; i++) {
+      const randomIdx = Math.floor(seededRandom(seed + i) * available.length)
+      indices.push(available[randomIdx])
+      available.splice(randomIdx, 1)
+    }
+    return indices
+  }
+  const keywordIndices = getUniqueIndices(seed + 10, 3, 10)
 
   // 메시지 인덱스
   const messageIndex = Math.floor(seededRandom(seed + 13) * 10)

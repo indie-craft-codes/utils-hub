@@ -14,7 +14,8 @@ const categories = [
       { id: 'ladder', route: '/games/ladder', icon: '🪜' },
       { id: 'numberPicker', route: '/games/number', icon: '🎲' },
       { id: 'teamDivider', route: '/games/team', icon: '👥' },
-      { id: 'fortune', route: '/games/fortune', icon: '🔮' }
+      { id: 'fortune', route: '/games/fortune', icon: '🔮' },
+      { id: 'mbti', route: '/games/mbti', icon: '🧠' }
     ]
   },
   {

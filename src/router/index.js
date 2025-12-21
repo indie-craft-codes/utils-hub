@@ -62,6 +62,11 @@ const routes = [
     component: () => import('../views/games/DailyFortune.vue')
   },
   {
+    path: '/games/mbti',
+    name: 'MbtiTest',
+    component: () => import('../views/games/MbtiTest.vue')
+  },
+  {
     path: '/developer/password',
     name: 'PasswordGenerator',
     component: () => import('../views/developer/PasswordGenerator.vue')
