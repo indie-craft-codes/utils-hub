@@ -67,6 +67,11 @@ const routes = [
     component: () => import('../views/games/MbtiTest.vue')
   },
   {
+    path: '/games/teto-egen',
+    name: 'TetoEgenTest',
+    component: () => import('../views/games/TetoEgenTest.vue')
+  },
+  {
     path: '/developer/password',
     name: 'PasswordGenerator',
     component: () => import('../views/developer/PasswordGenerator.vue')

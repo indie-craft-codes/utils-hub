@@ -930,6 +930,338 @@
           "todayAction": "Ask a team member how they feel first"
         }
       }
+    },
+    "tetoEgen": {
+      "title": "TETO·EGEN Type Test",
+      "description": "Conflict Resolution & Communication Style Analysis",
+      "intro": {
+        "title": "Discover Your TETO·EGEN Type",
+        "description": "Find out how you handle conflict situations",
+        "tetoDesc": "Confrontational - Tends to directly resolve problems",
+        "egenDesc": "Relationship-first - Prioritizes harmony and relationships",
+        "standardMode": "Standard Mode (24 questions)",
+        "standardDesc": "About 3-4 minutes, quick results",
+        "precisionMode": "Precision Mode (40 questions)",
+        "precisionDesc": "About 6-8 minutes, more detailed analysis"
+      },
+      "responses": {
+        "stronglyDisagree": "Strongly Disagree",
+        "disagree": "Disagree",
+        "neutral": "Neutral",
+        "agree": "Agree",
+        "stronglyAgree": "Strongly Agree"
+      },
+      "prev": "Previous",
+      "cancel": "Cancel",
+      "retake": "Retake Test",
+      "disclaimer": "This test is for entertainment purposes only and is not a professional psychological assessment.",
+      "result": {
+        "yourType": "Your Type"
+      },
+      "reliability": {
+        "high": "Reliability: High",
+        "medium": "Reliability: Medium",
+        "low": "Reliability: Low"
+      },
+      "axes": {
+        "direct": "Direct",
+        "indirect": "Indirect",
+        "cold": "Analytical",
+        "warm": "Warm"
+      },
+      "directTypes": {
+        "direct": "Direct Expression",
+        "indirect": "Indirect Expression"
+      },
+      "tempTypes": {
+        "cold": "Analytical Approach",
+        "warm": "Warm Approach"
+      },
+      "tabs": {
+        "summary": "Summary",
+        "conflict": "Conflict",
+        "communication": "Communication",
+        "relationship": "Relationship",
+        "work": "Work",
+        "growth": "Growth"
+      },
+      "conflictTips": "Conflict Resolution Tips",
+      "goodAt": "Strengths",
+      "watchOut": "Watch Out",
+      "idealPartner": "Ideal Partner",
+      "teamRole": "Team Role",
+      "todayAction": "Try This Today",
+      "share": {
+        "button": "Share",
+        "codeLabel": "Share this code to compare with friends"
+      },
+      "shareText": "My TETO·EGEN type is {type}! Code: {code}",
+      "compare": {
+        "title": "Compare with Friends/Partner",
+        "description": "Enter your friend's share code to check compatibility",
+        "placeholder": "Enter share code",
+        "button": "Compare",
+        "invalidCode": "Invalid code",
+        "me": "Me",
+        "friend": "Friend",
+        "compatibility": "Compatibility",
+        "perfect": "Perfect match! You complement each other perfectly",
+        "good": "Great compatibility! You create synergy together",
+        "normal": "Good relationship, but requires effort to understand each other",
+        "challenging": "Challenging relationship, but can be an opportunity for growth",
+        "reset": "Compare Again"
+      },
+      "mbtiConnection": {
+        "title": "MBTI Connection",
+        "description": "MBTI types often associated with this type"
+      },
+      "history": {
+        "title": "Test History"
+      },
+      "questions": {
+        "te1": "I try to resolve conflicts immediately when they arise",
+        "te2": "I often hold back what I want to say to avoid hurting others",
+        "te3": "I think it's better to speak directly about problems",
+        "te4": "I avoid uncomfortable conversations to protect relationships",
+        "te5": "I approach conflict situations logically",
+        "te6": "I tend to consider others' feelings first",
+        "te7": "If I think I'm right, I persist with my opinion",
+        "te8": "I believe compromise is better for relationships than conflict",
+        "te9": "Analyzing the root cause of problems is important",
+        "te10": "I wait for the other person to initiate reconciliation",
+        "te11": "I focus a lot on relationship recovery after conflicts",
+        "te12": "Problems should be resolved quickly before they escalate",
+        "te13": "Winning arguments is important",
+        "te14": "I try to understand the other person's position first",
+        "te15": "I think avoiding conflict makes problems worse",
+        "te16": "People sometimes say I'm too aggressive",
+        "te17": "A harmonious atmosphere is more important than efficiency",
+        "te18": "Wrong things should be pointed out immediately",
+        "te19": "I phrase things carefully to avoid hurting others",
+        "te20": "Process conflicts are okay if the result is good",
+        "di1": "I say what I mean directly without beating around the bush",
+        "di2": "I read the room before choosing when to speak",
+        "di3": "Being honest reduces misunderstandings",
+        "di4": "I adjust my expression style based on the situation",
+        "di5": "I communicate my opinions clearly",
+        "di6": "Sometimes I hope others will pick up on hints",
+        "di7": "I prefer straightforward expression",
+        "di8": "I tend to soften my words",
+        "di9": "I speak concisely, focusing on key points",
+        "di10": "I anticipate others' reactions before speaking",
+        "cw1": "I focus on facts rather than emotions in conversations",
+        "cw2": "I try to read others' emotions first",
+        "cw3": "Objective analysis is important",
+        "cw4": "I offer empathetic words first",
+        "cw5": "I tend to state conclusions first",
+        "cw6": "I make others feel comfortable in conversations",
+        "cw7": "I prefer logical explanations",
+        "cw8": "Conversations flow better in a warm atmosphere",
+        "cw9": "Emotional conversations feel difficult for me",
+        "cw10": "I often express empathy when others speak"
+      },
+      "types": {
+        "leader": {
+          "name": "Leader",
+          "tagline": "The one who provides solutions and leads",
+          "keywords": ["Decisive", "Driven", "Clear"],
+          "summary": "Quickly finds solutions in conflict situations and takes charge to resolve issues. A type that leads with clear communication and logical approach.",
+          "conflict": {
+            "style": "Immediately analyzes causes and proposes solutions when problems arise. Focuses on facts over emotions and prefers quick decisions.",
+            "tips": ["Add a word acknowledging others' feelings", "Listen before proposing solutions", "Don't try to solve everything alone"]
+          },
+          "communication": {
+            "style": "Communicates directly and clearly. Tends to quickly grasp the core and state conclusions first.",
+            "good": ["Clear communication", "Quick decisions and execution"],
+            "watch": ["May intimidate others", "May seem lacking in empathy"]
+          },
+          "relationship": {
+            "style": "A reliable partner who's solid at problem-solving.",
+            "ideal": "Works well with warm EGEN types who can help with emotional exchange"
+          },
+          "work": {
+            "style": "Excels in roles that lead projects and make decisions.",
+            "role": "A leader who sets team direction and removes obstacles"
+          },
+          "growth": ["See emotions as data - use others' feelings as information", "Pause before speaking - listen before reacting", "Value the process of working together over perfect solutions"],
+          "todayAction": "Before offering a solution, ask 'How do you feel about this?'"
+        },
+        "strategy": {
+          "name": "Strategist",
+          "tagline": "A negotiator who persuades warmly",
+          "keywords": ["Persuasive", "Strategic", "Considerate"],
+          "summary": "Takes a balanced approach to resolve conflicts while maintaining relationships. A strategist who gets desired results while respecting others.",
+          "conflict": {
+            "style": "Identifies the essence of conflict and finds solutions while considering others. Skilled at persuasion and negotiation.",
+            "tips": ["Remember that direct expression is sometimes needed", "Don't be too concerned about others' reactions", "State your needs clearly too"]
+          },
+          "communication": {
+            "style": "Reads situations and communicates appropriately. Can be warm yet clear.",
+            "good": ["Communication that maintains atmosphere", "Achieving goals without conflict"],
+            "watch": ["May hide true thoughts sometimes", "Can be too indirect"]
+          },
+          "relationship": {
+            "style": "A considerate yet goal-oriented partner.",
+            "ideal": "Creates good synergy with other TETO types who can work toward goals together"
+          },
+          "work": {
+            "style": "Excels in roles requiring negotiation and coordination.",
+            "role": "A coordinator handling inter-team adjustment and stakeholder management"
+          },
+          "growth": ["Accept that being direct is sometimes okay", "Accept you can't satisfy everyone", "Remember that conflict is part of growth"],
+          "todayAction": "Express one thing directly today without hedging"
+        },
+        "coolhead": {
+          "name": "Coolhead",
+          "tagline": "An observer who analyzes situations objectively",
+          "keywords": ["Analytical", "Objective", "Careful"],
+          "summary": "Analyzes situations objectively without being swayed by emotions. Steps back to see the big picture and finds optimal solutions.",
+          "conflict": {
+            "style": "Excludes emotions and focuses on facts in conflict. Uses logical analysis to identify the core of problems.",
+            "tips": ["Acknowledge that emotions are important too", "Act instead of just analyzing", "Show that you care about others"]
+          },
+          "communication": {
+            "style": "Communicates indirectly but objectively. Prefers conversations based on data and facts.",
+            "good": ["Provides objective perspective", "Doesn't get swayed by emotions"],
+            "watch": ["May seem cold", "May appear uninvolved"]
+          },
+          "relationship": {
+            "style": "A stable and reliable partner.",
+            "ideal": "Balances well with warm types who can help with emotional expression"
+          },
+          "work": {
+            "style": "Excels in analysis and strategy development.",
+            "role": "An advisor providing data analysis and objective judgment"
+          },
+          "growth": ["Practice expressing emotions - feelings matter as much as thoughts", "Take action - analysis is a tool for action", "Invest in relationships - people matter as much as data"],
+          "todayAction": "Say 'That must have been hard' to show empathy"
+        },
+        "driver": {
+          "name": "Driver",
+          "tagline": "An executor who pushes gently but persistently",
+          "keywords": ["Execution", "Patience", "Persistence"],
+          "summary": "Shows change through action rather than direct words. Achieves goals with gentle but unwavering persistence.",
+          "conflict": {
+            "style": "Takes indirect approaches rather than direct confrontation but never gives up. Creates desired results even if it takes time.",
+            "tips": ["Remember direct conversation can be faster sometimes", "Express your opinions clearly too", "Ask for help instead of handling alone"]
+          },
+          "communication": {
+            "style": "Communicates warmly and considerately but conveys key points indirectly.",
+            "good": ["Creates comfortable atmosphere", "Persistent persuasion"],
+            "watch": ["True intentions may not come across", "Can take longer"]
+          },
+          "relationship": {
+            "style": "A reliable partner who never gives up.",
+            "ideal": "Works well with direct types who can help with clear expression"
+          },
+          "work": {
+            "style": "Excels in long-term projects and continuous improvement.",
+            "role": "An executor who quietly drives team momentum"
+          },
+          "growth": ["Experience that being direct doesn't destroy relationships", "Practice getting recognition for your contributions", "Accept that quick feedback is sometimes needed"],
+          "todayAction": "Start a conversation you've been putting off"
+        },
+        "care": {
+          "name": "Caregiver",
+          "tagline": "A protector who takes direct care of others",
+          "keywords": ["Caring", "Responsible", "Practical"],
+          "summary": "Steps up directly to take care of others when problems arise. A type that protects relationships through practical help and direct care.",
+          "conflict": {
+            "style": "Prioritizes relationship maintenance over conflict, but steps up directly when needed. Has a strong desire to protect others.",
+            "tips": ["Value your own feelings too", "Don't try to solve everything for others", "Give others space to solve things themselves"]
+          },
+          "communication": {
+            "style": "Communicates directly yet warmly. Says what's needed while being considerate.",
+            "good": ["Trustworthy communication", "Practical advice"],
+            "watch": ["May over-interfere", "May undermine others' autonomy"]
+          },
+          "relationship": {
+            "style": "A reliable and responsible partner.",
+            "ideal": "Works well with independent types who can accept care"
+          },
+          "work": {
+            "style": "Takes care of team members and provides practical support.",
+            "role": "A caretaker responsible for team stability and member wellbeing"
+          },
+          "growth": ["Practice caring for yourself first", "Practice receiving help as much as giving", "Leave space for others to grow"],
+          "todayAction": "When you want to help someone, just say 'Let me know if you need anything'"
+        },
+        "buffer": {
+          "name": "Mediator",
+          "tagline": "A mediator who harmonizes between conflicts",
+          "keywords": ["Harmony", "Mediation", "Flexible"],
+          "summary": "Takes on the role of understanding and mediating both sides in conflict. Creates harmony with warm and flexible approaches.",
+          "conflict": {
+            "style": "Becomes a bridge connecting both sides rather than avoiding conflict. Finds solutions by helping each side understand the other.",
+            "tips": ["Don't lose your own opinion while mediating", "Accept you don't need to intervene in every conflict", "Maintain your own boundaries"]
+          },
+          "communication": {
+            "style": "Communicates with balance - direct yet attentive to others' feelings.",
+            "good": ["Listens well to both sides", "Resolves conflicts smoothly"],
+            "watch": ["May lose your own position", "May feel responsible for everything"]
+          },
+          "relationship": {
+            "style": "A comfortable and understanding partner.",
+            "ideal": "Balances well with types who express opinions clearly"
+          },
+          "work": {
+            "style": "Excels in inter-team conflict resolution and collaboration.",
+            "role": "A mediator who creates team harmony and resolves conflicts"
+          },
+          "growth": ["Treat your opinions as important too", "Accept you're not responsible for solving all conflicts", "Remember that conflict can be a growth opportunity"],
+          "todayAction": "Before mediating, start with 'I think...'"
+        },
+        "empathy": {
+          "name": "Empath",
+          "tagline": "A companion who deeply understands and stands with you",
+          "keywords": ["Empathy", "Understanding", "Support"],
+          "summary": "Deeply understands others' emotions and stands with them. A type that provides emotional support rather than direct solutions.",
+          "conflict": {
+            "style": "Focuses on others' feelings rather than conflict. Understanding hearts comes before solving problems.",
+            "tips": ["Remember that solutions are important too, not just empathy", "Take care of your own feelings too", "Accept that distance is sometimes needed"]
+          },
+          "communication": {
+            "style": "Reads others' emotions and communicates accordingly. Prefers deep conversations.",
+            "good": ["Deep empathy ability", "Provides safe conversation space"],
+            "watch": ["May get too absorbed in others' emotions", "May put own opinions aside"]
+          },
+          "relationship": {
+            "style": "A partner who deeply understands and accompanies you.",
+            "ideal": "Works well with warm types who can express and receive emotions"
+          },
+          "work": {
+            "style": "Excels in roles that understand and support team members' hearts.",
+            "role": "A supporter responsible for team's emotional stability"
+          },
+          "growth": ["Practice expressing your own opinions too", "Maintain boundaries while empathizing", "Remember you don't need to carry all emotions"],
+          "todayAction": "After listening to someone, ask 'May I share my thoughts too?'"
+        },
+        "balance": {
+          "name": "Balancer",
+          "tagline": "A harmonizer who leads situations with balance",
+          "keywords": ["Balance", "Stability", "Wisdom"],
+          "summary": "Takes a balanced approach considering both relationships and situations. Creates best results by taking time without rushing.",
+          "conflict": {
+            "style": "Resolves conflicts with time rather than rushing. Seeks methods acceptable to everyone.",
+            "tips": ["Accept that quick decisions are sometimes needed", "Sometimes progress matters more than perfect balance", "Clarify your preferences"]
+          },
+          "communication": {
+            "style": "Communicates softly and carefully. Adjusts flexibly to situations and people.",
+            "good": ["Creates stable atmosphere", "Communication considering everyone"],
+            "watch": ["Decisions may be slow", "Opinions may be unclear"]
+          },
+          "relationship": {
+            "style": "A stable and comfortable partner.",
+            "ideal": "Works well with patient types who can grow together slowly"
+          },
+          "work": {
+            "style": "Maintains team stability from a long-term perspective.",
+            "role": "A stabilizer who sets team balance and long-term direction"
+          },
+          "growth": ["Accept that decisions are sometimes more important than perfect balance", "Express your preferences clearly", "Remember that change is part of balance"],
+          "todayAction": "When you want to postpone a decision, make one small decision anyway"
+        }
+      }
     }
   }
 }

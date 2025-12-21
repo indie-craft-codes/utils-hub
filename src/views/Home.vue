@@ -15,7 +15,8 @@ const categories = [
       { id: 'numberPicker', route: '/games/number', icon: '🎲' },
       { id: 'teamDivider', route: '/games/team', icon: '👥' },
       { id: 'fortune', route: '/games/fortune', icon: '🔮' },
-      { id: 'mbti', route: '/games/mbti', icon: '🧠' }
+      { id: 'mbti', route: '/games/mbti', icon: '🧠' },
+      { id: 'tetoEgen', route: '/games/teto-egen', icon: '🎭' }
     ]
   },
   {
