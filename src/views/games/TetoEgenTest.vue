@@ -2,10 +2,16 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n()
+const { t, te } = useI18n()
+
+// 안전한 번역 함수 (fallback 지원)
+const safeT = (key, fallback = '') => {
+  return te(key) ? t(key) : fallback
+}
 
 // 상태
 const currentStep = ref('intro') // intro, test, result
+const shareStatus = ref('') // '', 'success', 'error'
 const testMode = ref('standard') // standard(24), precision(40)
 const currentQuestion = ref(0)
 const answers = ref([])
@@ -106,23 +112,28 @@ const questionList = computed(() => {
     })
   })
 
-  // 섞기 (시드 기반)
-  return shuffleArray(allQuestions, Date.now())
+  // 섞기 (crypto 기반)
+  return shuffleArray(allQuestions)
 })
 
-// 배열 섞기
-const shuffleArray = (array, seed) => {
+// 암호학적으로 안전한 랜덤 함수
+const cryptoRandom = () => {
+  if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+    const array = new Uint32Array(1)
+    crypto.getRandomValues(array)
+    return array[0] / (0xFFFFFFFF + 1)
+  }
+  return Math.random()
+}
+
+// 배열 섞기 (Fisher-Yates with crypto random)
+const shuffleArray = (array) => {
   const arr = [...array]
   for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(seededRandom(seed + i) * (i + 1))
+    const j = Math.floor(cryptoRandom() * (i + 1))
     ;[arr[i], arr[j]] = [arr[j], arr[i]]
   }
   return arr
-}
-
-const seededRandom = (seed) => {
-  const x = Math.sin(seed) * 10000
-  return x - Math.floor(x)
 }
 
 // 총 문항 수
@@ -304,16 +315,34 @@ const saveResult = () => {
   localStorage.setItem(HISTORY_KEY, JSON.stringify(testHistory.value))
 }
 
-// 히스토리 로드
+// 히스토리 로드 (30일 이전 자동 삭제)
+const EXPIRY_DAYS = 30
 const loadHistory = () => {
   const saved = localStorage.getItem(HISTORY_KEY)
   if (saved) {
     try {
-      testHistory.value = JSON.parse(saved)
+      const parsed = JSON.parse(saved)
+      const now = Date.now()
+      const expiryMs = EXPIRY_DAYS * 24 * 60 * 60 * 1000
+      // 30일 이내 결과만 유지
+      testHistory.value = parsed.filter(item => {
+        return item.timestamp && (now - item.timestamp) < expiryMs
+      })
+      // 만료된 항목이 있었다면 저장
+      if (testHistory.value.length !== parsed.length) {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(testHistory.value))
+      }
     } catch (e) {
       testHistory.value = []
     }
   }
+}
+
+// 전체 히스토리 삭제
+const clearAllHistory = () => {
+  testHistory.value = []
+  localStorage.removeItem(HISTORY_KEY)
+  localStorage.removeItem(STORAGE_KEY)
 }
 
 // 초기화
@@ -337,19 +366,30 @@ const share = async () => {
   if (!result.value) return
 
   const text = t('tools.tetoEgen.shareText', {
-    type: t(`tools.tetoEgen.types.${result.value.typeName}.name`),
+    type: safeT(`tools.tetoEgen.types.${result.value.typeName}.name`, result.value.typeName),
     code: result.value.shareCode
   })
+
+  shareStatus.value = ''
 
   if (navigator.share) {
     try {
       await navigator.share({ text, url: window.location.href })
-    } catch (e) {}
+      shareStatus.value = 'success'
+    } catch (e) {
+      if (e.name !== 'AbortError') {
+        shareStatus.value = 'error'
+      }
+    }
   } else {
     try {
       await navigator.clipboard.writeText(text)
-      alert(t('common.copied'))
-    } catch (e) {}
+      shareStatus.value = 'success'
+      setTimeout(() => { shareStatus.value = '' }, 2000)
+    } catch (e) {
+      shareStatus.value = 'error'
+      console.error('Clipboard write failed:', e)
+    }
   }
 }
 
@@ -358,8 +398,12 @@ const copyCode = async () => {
   if (!result.value?.shareCode) return
   try {
     await navigator.clipboard.writeText(result.value.shareCode)
-    alert(t('common.copied'))
-  } catch (e) {}
+    shareStatus.value = 'success'
+    setTimeout(() => { shareStatus.value = '' }, 2000)
+  } catch (e) {
+    shareStatus.value = 'error'
+    console.error('Clipboard write failed:', e)
+  }
 }
 
 // 친구 비교
@@ -477,11 +521,20 @@ const mbtiConnections = {
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
           {{ t('tools.tetoEgen.history.title') }}
         </h3>
-        <button @click="showHistory = false" class="text-gray-400 hover:text-gray-600">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
+        <div class="flex items-center gap-2">
+          <button
+            v-if="testHistory.length > 0"
+            @click="clearAllHistory"
+            class="text-xs text-red-500 hover:text-red-700"
+          >
+            {{ safeT('tools.tetoEgen.history.clearAll', '전체 삭제') }}
+          </button>
+          <button @click="showHistory = false" class="text-gray-400 hover:text-gray-600">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
       </div>
       <div class="space-y-2 max-h-64 overflow-y-auto">
         <div
@@ -958,18 +1011,21 @@ const mbtiConnections = {
 
       <!-- 버튼 그룹 -->
       <div class="flex gap-3">
-        <button @click="share" class="btn btn-primary flex-1">
-          {{ t('tools.tetoEgen.share.button') }}
+        <button @click="share" class="btn btn-primary flex-1 relative">
+          <span v-if="shareStatus === 'success'" class="text-green-200">{{ t('common.copied') }}</span>
+          <span v-else-if="shareStatus === 'error'" class="text-red-200">{{ safeT('common.shareFailed', '공유 실패') }}</span>
+          <span v-else>{{ t('tools.tetoEgen.share.button') }}</span>
         </button>
         <button @click="resetTest" class="btn btn-secondary flex-1">
           {{ t('tools.tetoEgen.retake') }}
         </button>
       </div>
 
-      <!-- 면책 조항 -->
-      <p class="text-xs text-center text-gray-400 dark:text-gray-500">
-        {{ t('tools.tetoEgen.disclaimer') }}
-      </p>
+      <!-- 면책 조항 및 개인정보 안내 -->
+      <div class="text-xs text-center text-gray-400 dark:text-gray-500 space-y-1">
+        <p>{{ t('tools.tetoEgen.disclaimer') }}</p>
+        <p>{{ safeT('tools.tetoEgen.privacyNotice', '결과는 브라우저에만 저장되며, 서버로 전송되지 않습니다.') }}</p>
+      </div>
     </div>
   </div>
 </template>
