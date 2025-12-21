@@ -11,6 +11,7 @@ const categories = [
     </svg>`,
     color: 'bg-pink-500',
     tools: [
+      { id: 'roulette', route: '/games/roulette', icon: '🎡' },
       { id: 'ladder', route: '/games/ladder', icon: '🪜' },
       { id: 'numberPicker', route: '/games/number', icon: '🎲' },
       { id: 'teamDivider', route: '/games/team', icon: '👥' },
