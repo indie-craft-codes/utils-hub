@@ -85,12 +85,30 @@ const routes = [
     path: '/calculator/unit',
     name: 'UnitConverter',
     component: () => import('../views/calculator/UnitConverter.vue')
+  },
+  {
+    path: '/privacy',
+    name: 'Privacy',
+    component: () => import('../views/Privacy.vue')
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes
+})
+
+// SPA 라우팅 시 광고 새로고침
+router.afterEach(() => {
+  setTimeout(() => {
+    try {
+      if (window.adsbygoogle) {
+        (window.adsbygoogle = window.adsbygoogle || []).push({})
+      }
+    } catch (e) {
+      // 이미 로드된 광고는 무시
+    }
+  }, 100)
 })
 
 export default router

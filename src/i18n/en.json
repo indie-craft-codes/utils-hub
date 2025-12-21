@@ -1263,5 +1263,47 @@
         }
       }
     }
+  },
+  "footer": {
+    "privacy": "Privacy Policy"
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "overview": {
+      "title": "Overview",
+      "content": "Utils Hub (\"this site\") values your privacy and complies with applicable laws and regulations."
+    },
+    "collection": {
+      "title": "Information We Collect",
+      "content": "This site does not collect personal information. All data is stored only in your browser (localStorage) and is not transmitted to any server."
+    },
+    "advertising": {
+      "title": "Advertising",
+      "content": "This site uses Google AdSense to display advertisements. Google may use cookies to show ads based on your interests.",
+      "optout": "You can opt out of personalized advertising in Google Ads Settings:"
+    },
+    "cookies": {
+      "title": "Cookies and Local Storage",
+      "localStorage": "Test results and settings are stored in your browser's localStorage.",
+      "adsense": "Google AdSense may use cookies for advertising purposes.",
+      "clear": "You can delete cookies and stored data at any time through your browser settings."
+    },
+    "thirdParty": {
+      "title": "Third-Party Services",
+      "adsense": "Advertising"
+    },
+    "retention": {
+      "title": "Data Retention",
+      "content": "Data stored in localStorage is automatically deleted after 30 days or can be manually deleted by the user."
+    },
+    "contact": {
+      "title": "Contact",
+      "content": "For privacy-related inquiries, please contact us through GitHub Issues."
+    },
+    "changes": {
+      "title": "Policy Changes",
+      "content": "This privacy policy may be updated due to legal changes or service updates. Any changes will be posted on this page."
+    },
+    "effectiveDate": "Effective Date: December 21, 2024"
   }
 }
