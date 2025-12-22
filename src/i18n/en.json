@@ -1332,7 +1332,10 @@
     }
   },
   "footer": {
-    "privacy": "Privacy Policy"
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contact": "Contact",
+    "about": "About"
   },
   "privacy": {
     "title": "Privacy Policy",
@@ -1372,5 +1375,150 @@
       "content": "This privacy policy may be updated due to legal changes or service updates. Any changes will be posted on this page."
     },
     "effectiveDate": "Effective Date: December 21, 2024"
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "introduction": {
+      "title": "Service Introduction",
+      "content": "Utils Hub (\"this service\") is a web service that provides various online utility tools for free. These Terms of Service set forth the basic rules for using the service."
+    },
+    "conditions": {
+      "title": "Terms of Use",
+      "item1": "This service is available to everyone for free.",
+      "item2": "Users must comply with applicable laws and these terms when using the service.",
+      "item3": "The service may not be used to infringe on others' rights or for illegal purposes."
+    },
+    "services": {
+      "title": "Services Provided",
+      "content": "This service provides the following utility tools:",
+      "item1": "Games/Random tools: Ladder game, Roulette, Number picker, Team divider, etc.",
+      "item2": "Developer tools: JSON parser, UUID generator, Timestamp converter, etc.",
+      "item3": "Converter tools: Image converter, QR code generator, Metadata extractor, etc.",
+      "item4": "Text tools: Encoding/decoding, Hash generation, String conversion, etc.",
+      "item5": "Calculators: D-day calculator, Unit converter, etc."
+    },
+    "data": {
+      "title": "Data Processing",
+      "item1": "All data processing occurs in the user's browser and is not transmitted to any server.",
+      "item2": "Some features use the browser's localStorage to store data.",
+      "item3": "Stored data can be deleted by the user directly or through browser settings."
+    },
+    "advertising": {
+      "title": "Advertising",
+      "content": "This service displays advertisements through Google AdSense. Advertising is used to operate and maintain the service."
+    },
+    "disclaimer": {
+      "title": "Disclaimer",
+      "item1": "This service is provided \"as is\" and does not guarantee fitness for any particular purpose.",
+      "item2": "We are not responsible for any direct or indirect damages resulting from use of the service.",
+      "item3": "We do not warrant the accuracy, completeness, or reliability of the service.",
+      "item4": "We may change or discontinue the service without prior notice."
+    },
+    "intellectual": {
+      "title": "Intellectual Property",
+      "content": "The design, logo, software, and other intellectual property rights of this service belong to Utils Hub. Unauthorized reproduction, distribution, or modification is prohibited."
+    },
+    "changes": {
+      "title": "Changes to Terms",
+      "content": "These Terms of Service may be changed as needed, and changes will be posted on this page. Changed terms take effect immediately upon posting."
+    },
+    "contact": {
+      "title": "Contact",
+      "content": "For inquiries about the Terms of Service, please contact us through GitHub Issues."
+    },
+    "effectiveDate": "Effective Date: December 22, 2024"
+  },
+  "contact": {
+    "title": "Contact",
+    "methods": {
+      "title": "Contact Methods",
+      "content": "For inquiries, suggestions, or bug reports about Utils Hub, please contact us through the following methods."
+    },
+    "github": {
+      "title": "GitHub Issues",
+      "content": "We accept feature requests, bug reports, and improvement suggestions through GitHub Issues.",
+      "button": "Open GitHub Issues"
+    },
+    "types": {
+      "title": "Inquiry Types",
+      "bug": {
+        "title": "Bug Report",
+        "content": "Please let us know about any errors or issues you encounter while using the service."
+      },
+      "feature": {
+        "title": "Feature Request",
+        "content": "Share your ideas for new tools or features."
+      },
+      "feedback": {
+        "title": "Feedback",
+        "content": "Send us your opinions or suggestions for service improvement."
+      },
+      "privacy": {
+        "title": "Privacy Related",
+        "content": "For inquiries about privacy, please contact us separately."
+      }
+    },
+    "response": {
+      "title": "Response Information",
+      "content": "We review and respond to inquiries in order. Please understand that it may take time to respond."
+    }
+  },
+  "about": {
+    "title": "About Utils Hub",
+    "intro": {
+      "title": "Service Introduction",
+      "content": "Utils Hub is a web service that provides various free online utility tools for daily life and development. You can use them directly in your browser without any installation."
+    },
+    "features": {
+      "title": "Key Features",
+      "privacy": {
+        "title": "Privacy Protection",
+        "content": "All data processing occurs in your browser and is not transmitted to any server."
+      },
+      "fast": {
+        "title": "Fast Speed",
+        "content": "We provide a fast and responsive user experience using the latest web technologies."
+      },
+      "language": {
+        "title": "Multi-language Support",
+        "content": "We support Korean and English, with more languages planned."
+      },
+      "theme": {
+        "title": "Dark Mode",
+        "content": "We support both light and dark modes for a comfortable viewing experience."
+      },
+      "responsive": {
+        "title": "Responsive Design",
+        "content": "We provide optimized screens for all devices including PC, tablet, and mobile."
+      }
+    },
+    "tools": {
+      "title": "Tools Provided",
+      "games": {
+        "title": "Games/Random",
+        "content": "Ladder game, Roulette, Number picker, Team divider, Fortune, MBTI test, etc."
+      },
+      "developer": {
+        "title": "Developer Tools",
+        "content": "JSON parser, UUID generator, Timestamp converter, Password generator"
+      },
+      "converter": {
+        "title": "Converter Tools",
+        "content": "Image converter, QR code generator, Image metadata extractor"
+      },
+      "text": {
+        "title": "Text Tools",
+        "content": "Base64, URL encoding/decoding, MD5/SHA hash, Case conversion"
+      },
+      "calculator": {
+        "title": "Calculators",
+        "content": "D-day calculator, Unit converter"
+      }
+    },
+    "opensource": {
+      "title": "Open Source",
+      "content": "Utils Hub is an open source project. You can view and contribute to the source code on GitHub.",
+      "link": "View on GitHub"
+    }
   }
 }
