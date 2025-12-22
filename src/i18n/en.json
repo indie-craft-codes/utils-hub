@@ -12,6 +12,56 @@
     "input": "Input",
     "output": "Output"
   },
+  "home": {
+    "subtitle": "All-in-one utility tools for everyday use",
+    "description": "Utils Hub is a collection of free online tools you can use directly in your browser without installation. All data is processed in your browser and never sent to any server, ensuring your privacy.",
+    "features": {
+      "privacy": "Privacy",
+      "privacyDesc": "No server transfer",
+      "fast": "Fast",
+      "fastDesc": "Use instantly",
+      "language": "Multi-language",
+      "languageDesc": "Korean, English",
+      "responsive": "Responsive",
+      "responsiveDesc": "All devices"
+    },
+    "toolsTitle": "Available Tools",
+    "toolsDescription": "Click any tool below to get started",
+    "howToUse": {
+      "title": "How to Use",
+      "step1": {
+        "title": "Select Tool",
+        "description": "Click on the tool you need from the list above."
+      },
+      "step2": {
+        "title": "Enter Data",
+        "description": "Enter the required information or upload a file."
+      },
+      "step3": {
+        "title": "Get Results",
+        "description": "View results instantly and download or copy them."
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "q1": {
+        "question": "Q. Is it free to use?",
+        "answer": "A. Yes, all tools are provided for free. You can use them without registration."
+      },
+      "q2": {
+        "question": "Q. Is my data safe?",
+        "answer": "A. Yes, all data processing happens in your browser and is never sent to any server. Your privacy is fully protected."
+      },
+      "q3": {
+        "question": "Q. Can I use it on mobile?",
+        "answer": "A. Yes, with responsive design, you can use it on smartphones, tablets, PCs, and all other devices."
+      },
+      "q4": {
+        "question": "Q. Can I request new tools?",
+        "answer": "A. Yes, you can request new tools or features through GitHub Issues."
+      }
+    }
+  },
   "categories": {
     "games": "Games/Random",
     "developer": "Developer Tools",

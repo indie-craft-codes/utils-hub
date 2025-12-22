@@ -12,6 +12,56 @@
     "input": "입력",
     "output": "출력"
   },
+  "home": {
+    "subtitle": "일상과 개발에 필요한 다양한 온라인 유틸리티 도구",
+    "description": "Utils Hub는 복잡한 설치 없이 브라우저에서 바로 사용할 수 있는 무료 온라인 도구 모음입니다. 모든 데이터는 브라우저에서 처리되어 서버로 전송되지 않으므로 개인정보가 보호됩니다.",
+    "features": {
+      "privacy": "개인정보 보호",
+      "privacyDesc": "서버 전송 없음",
+      "fast": "빠른 속도",
+      "fastDesc": "설치 없이 즉시 사용",
+      "language": "다국어 지원",
+      "languageDesc": "한국어, 영어",
+      "responsive": "반응형",
+      "responsiveDesc": "모든 기기 지원"
+    },
+    "toolsTitle": "제공 도구",
+    "toolsDescription": "아래 도구들을 클릭하여 바로 사용해 보세요",
+    "howToUse": {
+      "title": "사용 방법",
+      "step1": {
+        "title": "도구 선택",
+        "description": "위 목록에서 필요한 도구를 클릭하세요."
+      },
+      "step2": {
+        "title": "데이터 입력",
+        "description": "필요한 정보를 입력하거나 파일을 업로드하세요."
+      },
+      "step3": {
+        "title": "결과 확인",
+        "description": "즉시 결과를 확인하고 다운로드하거나 복사하세요."
+      }
+    },
+    "faq": {
+      "title": "자주 묻는 질문",
+      "q1": {
+        "question": "Q. 무료로 사용할 수 있나요?",
+        "answer": "A. 네, 모든 도구는 무료로 제공됩니다. 회원가입 없이 바로 사용할 수 있습니다."
+      },
+      "q2": {
+        "question": "Q. 내 데이터는 안전한가요?",
+        "answer": "A. 네, 모든 데이터 처리는 브라우저에서 이루어지며 서버로 전송되지 않습니다. 개인정보가 완전히 보호됩니다."
+      },
+      "q3": {
+        "question": "Q. 모바일에서도 사용할 수 있나요?",
+        "answer": "A. 네, 반응형 디자인으로 스마트폰, 태블릿, PC 등 모든 기기에서 사용할 수 있습니다."
+      },
+      "q4": {
+        "question": "Q. 새로운 도구를 요청할 수 있나요?",
+        "answer": "A. 네, GitHub Issues를 통해 새로운 도구나 기능을 요청하실 수 있습니다."
+      }
+    }
+  },
   "categories": {
     "games": "게임/랜덤",
     "developer": "개발자 도구",
