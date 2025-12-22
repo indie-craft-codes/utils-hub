@@ -28,8 +28,8 @@
 | 항목 | 값 |
 |------|-----|
 | Project ID | `utils-hub` |
-| Measurement ID | `G-P9R4JCL6WD` |
-| App ID | `1:837485702440:web:53395f0e532d3f20fdb41d` |
+| Measurement ID | `G-**********` |
+| App ID | `index.html` 참조 |
 | Auth Domain | `utils-hub.firebaseapp.com` |
 | Storage Bucket | `utils-hub.firebasestorage.app` |
 
@@ -47,7 +47,7 @@ https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js
 ### 관리 콘솔
 
 - [Firebase Console](https://console.firebase.google.com/project/utils-hub)
-- [Google Analytics](https://analytics.google.com/) (Measurement ID: G-P9R4JCL6WD)
+- [Google Analytics](https://analytics.google.com/)
 
 ---
 
@@ -60,7 +60,7 @@ https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js
 
 | 항목 | 값 |
 |------|-----|
-| Publisher ID | `ca-pub-4977445987108311` |
+| Publisher ID | `ca-pub-**************` (index.html 참조) |
 | ads.txt | `public/ads.txt`에 설정됨 |
 
 ### 관련 파일
@@ -75,7 +75,7 @@ https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js
 ### ads.txt 내용
 
 ```
-google.com, pub-4977445987108311, DIRECT, f08c47fec0942fa0
+google.com, pub-**************, DIRECT, ****************
 ```
 
 ### 관리 콘솔
@@ -121,7 +121,7 @@ google.com, pub-4977445987108311, DIRECT, f08c47fec0942fa0
 
 | 항목 | 값 |
 |------|-----|
-| Site Verification | `-TUK2xHXbdUzvo08YKJ6HQgAH1vZSVwubthg63TM9Og` |
+| Site Verification | `index.html` 참조 |
 
 ### 관련 파일
 
