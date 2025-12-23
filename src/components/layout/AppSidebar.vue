@@ -10,6 +10,8 @@ const router = useRouter()
 
 const hoveredCategory = ref(null)
 const popupPosition = ref({ top: 0 })
+const isPopupHovered = ref(false)
+const leaveTimer = ref(null)
 
 // 현재 활성화된 카테고리 및 도구 찾기
 const activeItem = computed(() => {
@@ -17,23 +19,38 @@ const activeItem = computed(() => {
 })
 
 function handleCategoryHover(category, event) {
+  // 기존 타이머 취소
+  if (leaveTimer.value) {
+    clearTimeout(leaveTimer.value)
+    leaveTimer.value = null
+  }
+
   hoveredCategory.value = category
   const rect = event.currentTarget.getBoundingClientRect()
   popupPosition.value = { top: rect.top }
 }
 
 function handleCategoryLeave() {
-  // 팝업으로 마우스가 이동할 수 있도록 약간의 딜레이
-  setTimeout(() => {
+  // 기존 타이머 취소
+  if (leaveTimer.value) {
+    clearTimeout(leaveTimer.value)
+  }
+
+  // 팝업으로 마우스가 이동할 수 있도록 딜레이 (200ms로 증가)
+  leaveTimer.value = setTimeout(() => {
     if (!isPopupHovered.value) {
       hoveredCategory.value = null
     }
-  }, 100)
+    leaveTimer.value = null
+  }, 200)
 }
 
-const isPopupHovered = ref(false)
-
 function handlePopupEnter() {
+  // 타이머 취소
+  if (leaveTimer.value) {
+    clearTimeout(leaveTimer.value)
+    leaveTimer.value = null
+  }
   isPopupHovered.value = true
 }
 
@@ -49,6 +66,7 @@ function goToHome() {
 function goToTool(toolRoute) {
   router.push(toolRoute)
   hoveredCategory.value = null
+  isPopupHovered.value = false
 }
 
 function isCategoryActive(category) {
