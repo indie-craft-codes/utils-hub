@@ -92,6 +92,11 @@ const routes = [
     component: () => import('../views/calculator/UnitConverter.vue')
   },
   {
+    path: '/calculator/korean-age',
+    name: 'KoreanAgeCalculator',
+    component: () => import('../views/calculator/KoreanAgeCalculator.vue')
+  },
+  {
     path: '/privacy',
     name: 'Privacy',
     component: () => import('../views/Privacy.vue')

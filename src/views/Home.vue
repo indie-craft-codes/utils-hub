@@ -63,7 +63,8 @@ const categories = [
     color: 'bg-orange-500',
     tools: [
       { id: 'dday', route: '/calculator/dday', icon: '📅' },
-      { id: 'unit', route: '/calculator/unit', icon: '📐' }
+      { id: 'unit', route: '/calculator/unit', icon: '📐' },
+      { id: 'koreanAge', route: '/calculator/korean-age', icon: '👶' }
     ]
   }
 ]
