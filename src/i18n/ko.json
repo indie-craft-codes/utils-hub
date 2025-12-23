@@ -69,6 +69,11 @@
     "text": "텍스트 도구",
     "calculator": "계산기"
   },
+  "navigation": {
+    "menu": "메뉴",
+    "close": "닫기",
+    "allTools": "전체 도구"
+  },
   "tools": {
     "ladder": {
       "title": "사다리타기",
