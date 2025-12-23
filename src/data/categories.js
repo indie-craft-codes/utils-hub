@@ -27,7 +27,8 @@ export const categories = [
       { id: 'json', route: '/developer/json', icon: '{ }' },
       { id: 'uuid', route: '/developer/uuid', icon: '🔑' },
       { id: 'timestamp', route: '/developer/timestamp', icon: '⏱️' },
-      { id: 'password', route: '/developer/password', icon: '🔒' }
+      { id: 'password', route: '/developer/password', icon: '🔒' },
+      { id: 'jwt', route: '/developer/jwt', icon: '🎫' }
     ]
   },
   {
