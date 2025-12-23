@@ -229,6 +229,57 @@
         "data": "Data"
       }
     },
+    "koreanAge": {
+      "title": "Korean Age Calculator (Official Standard)",
+      "description": "Accurately calculates your legal/administrative age based on official standards",
+      "birthDateLabel": "Birth Date",
+      "baseDateLabel": "Base Date",
+      "baseDateHint": "Default is today. Select a date to calculate based on a specific date.",
+      "advancedOptions": "Advanced Options",
+      "leapYearLabel": "Leap Year (Feb 29) Handling",
+      "leapYearMarch1": "March 1 (Legal Standard, Recommended)",
+      "leapYearFeb28": "February 28",
+      "leapYearHint": "Choose how to handle birthdays in non-leap years. Legal/administrative practice typically uses March 1.",
+      "errors": {
+        "futureDate": "Birth date is in the future. Please check the dates again."
+      },
+      "result": {
+        "koreanAge": "Korean Age",
+        "baseDate": "Base Date",
+        "birthDate": "Birth Date",
+        "yearsOld": "years old",
+        "ageDisplay": "{age} years old",
+        "birthdayToday": "Today is your birthday!",
+        "birthdayPassed": "Birthday has passed",
+        "birthdayNotPassed": "Birthday hasn't passed yet",
+        "birthdayPassedMessage": "Your birthday has already passed",
+        "birthdayNotPassedMessage": "Your birthday hasn't passed yet (age is 1 year less before birthday)",
+        "daysUntilNext": "{days} days until next birthday",
+        "daysUntilBirthday": "{days} days until birthday",
+        "copy": "Copy Result"
+      },
+      "calculation": {
+        "title": "Age Calculation Details",
+        "birthDate": "Birth Date",
+        "baseDate": "Base Date",
+        "step1": "Base Year − Birth Year",
+        "step2": "Birthday not reached",
+        "subtract": "subtract",
+        "result": "Korean Age",
+        "leapYearInfo": "Born on leap year February 29"
+      },
+      "lifeInfo": {
+        "title": "Life Statistics (Reference)",
+        "days": "days",
+        "weeks": "weeks",
+        "months": "months",
+        "note": "📌 Days/months are for reference only. Use \"Korean Age\" for official purposes."
+      },
+      "info": {
+        "important": "The most important factor for Korean age is whether your birthday has passed.",
+        "usage": "Official documents, hospitals, insurance, and schools use only Korean age."
+      }
+    },
     "metadata": {
       "title": "Image Metadata",
       "description": "Extract image EXIF and metadata",
