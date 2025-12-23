@@ -82,6 +82,11 @@ const routes = [
     component: () => import('../views/developer/PasswordGenerator.vue')
   },
   {
+    path: '/developer/jwt',
+    name: 'JwtParser',
+    component: () => import('../views/developer/JwtParser.vue')
+  },
+  {
     path: '/calculator/dday',
     name: 'DdayCalculator',
     component: () => import('../views/calculator/DdayCalculator.vue')

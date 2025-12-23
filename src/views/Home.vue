@@ -28,6 +28,7 @@ const categories = [
     color: 'bg-blue-500',
     tools: [
       { id: 'json', route: '/developer/json', icon: '{ }' },
+      { id: 'jwt', route: '/developer/jwt', icon: '🔐' },
       { id: 'uuid', route: '/developer/uuid', icon: '🔑' },
       { id: 'timestamp', route: '/developer/timestamp', icon: '⏱️' },
       { id: 'password', route: '/developer/password', icon: '🔒' }
