@@ -69,6 +69,11 @@
     "text": "Text Tools",
     "calculator": "Calculators"
   },
+  "navigation": {
+    "menu": "Menu",
+    "close": "Close",
+    "allTools": "All Tools"
+  },
   "tools": {
     "ladder": {
       "title": "Ladder Game",
