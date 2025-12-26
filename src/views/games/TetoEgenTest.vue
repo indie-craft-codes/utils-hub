@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import AdBanner from '../../components/AdBanner.vue'
 
 const { t, te } = useI18n()
 
@@ -1058,5 +1059,8 @@ const mbtiConnections = {
         <p>{{ safeT('tools.tetoEgen.privacyNotice', '결과는 브라우저에만 저장되며, 서버로 전송되지 않습니다.') }}</p>
       </div>
     </div>
+
+    <!-- Ad Banner -->
+    <AdBanner adSlot="2345678901" adFormat="horizontal" :fullWidth="true" />
   </div>
 </template>
