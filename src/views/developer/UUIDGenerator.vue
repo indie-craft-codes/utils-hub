@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AdBanner from '../../components/AdBanner.vue'
+import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
 
@@ -19,10 +20,12 @@ const generateUUID = () => {
 
 const generate = () => {
   uuids.value = [generateUUID()]
+  trackToolUsage('uuid_generate', { count: 1 })
 }
 
 const generateMultiple = () => {
   uuids.value = Array.from({ length: count.value }, () => generateUUID())
+  trackToolUsage('uuid_generate', { count: count.value })
 }
 
 const copyOne = async (uuid) => {

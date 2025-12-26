@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AdBanner from '../../components/AdBanner.vue'
+import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
 
@@ -98,6 +99,8 @@ const addDday = () => {
 
   ddays.value.unshift(newDday)
   saveDdays()
+
+  trackToolUsage('dday_add', { has_title: !!title.value })
 
   // 입력 초기화
   title.value = ''

@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import heic2any from 'heic2any'
 import AdBanner from '../../components/AdBanner.vue'
+import { trackConversion } from '../../utils/analytics'
 
 const { t } = useI18n()
 
@@ -130,6 +131,14 @@ const convert = async () => {
     const qualityValue = outputFormat.value === 'png' ? undefined : quality.value
 
     convertedUrl.value = canvas.toDataURL(mimeType, qualityValue)
+
+    // Analytics 추적
+    trackConversion('image_convert', {
+      from_format: file.value?.type || 'unknown',
+      to_format: outputFormat.value,
+      quality: qualityValue,
+      is_heic: isHeic.value
+    })
   } catch (e) {
     console.error('Conversion failed:', e)
   } finally {

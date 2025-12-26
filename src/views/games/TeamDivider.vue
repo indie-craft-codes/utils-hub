@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AdBanner from '../../components/AdBanner.vue'
+import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
 
@@ -45,6 +46,11 @@ const divideTeams = () => {
   })
 
   teams.value = result
+
+  trackToolUsage('team_divide', {
+    member_count: members.length,
+    team_count: teamCount.value
+  })
 }
 </script>
 

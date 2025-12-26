@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AdBanner from '../../components/AdBanner.vue'
+import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
 
@@ -41,6 +42,15 @@ const generate = () => {
   }
 
   password.value = result
+
+  // Analytics 추적
+  trackToolUsage('password_generate', {
+    length: length.value,
+    has_uppercase: useUppercase.value,
+    has_lowercase: useLowercase.value,
+    has_numbers: useNumbers.value,
+    has_symbols: useSymbols.value
+  })
 }
 
 const strength = computed(() => {

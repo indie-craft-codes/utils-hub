@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import html2canvas from 'html2canvas'
 import AdBanner from '../../components/AdBanner.vue'
+import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -276,6 +277,13 @@ const selectResult = (random) => {
 // 회전 애니메이션
 const spin = async () => {
   if (!canSpin.value) return
+
+  // Analytics 추적
+  trackToolUsage('roulette_spin', {
+    item_count: activeItems.value.length,
+    weight_mode: weightMode.value,
+    fairness_mode: fairnessMode.value
+  })
 
   isSpinning.value = true
   showResult.value = false

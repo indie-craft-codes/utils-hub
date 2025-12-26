@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AdBanner from '../../components/AdBanner.vue'
+import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
 
@@ -30,6 +31,7 @@ const format = () => {
     const parsed = JSON.parse(inputJson.value)
     outputJson.value = JSON.stringify(parsed, null, 2)
     error.value = ''
+    trackToolUsage('json_format', { size: inputJson.value.length })
   } catch (e) {
     error.value = e.message
     outputJson.value = ''
@@ -41,6 +43,7 @@ const minify = () => {
     const parsed = JSON.parse(inputJson.value)
     outputJson.value = JSON.stringify(parsed)
     error.value = ''
+    trackToolUsage('json_minify', { size: inputJson.value.length })
   } catch (e) {
     error.value = e.message
     outputJson.value = ''
@@ -52,6 +55,7 @@ const validate = () => {
     JSON.parse(inputJson.value)
     error.value = ''
     outputJson.value = t('tools.json.valid')
+    trackToolUsage('json_validate', { size: inputJson.value.length })
   } catch (e) {
     error.value = e.message
     outputJson.value = ''
