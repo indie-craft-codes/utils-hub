@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import html2canvas from 'html2canvas'
 import GIF from 'gif.js'
 import AdBanner from '../../components/AdBanner.vue'
+import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
 
@@ -154,6 +155,11 @@ const startGame = () => {
   revealedResults.value = []
   animatingIndex.value = -1
   animationProgress.value = 0
+
+  trackToolUsage('ladder_start', {
+    participant_count: participants.value.filter(p => p.trim()).length,
+    ladder_rows: ladderRows.value
+  })
 }
 
 const animatePath = (index, path, endCol) => {

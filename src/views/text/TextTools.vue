@@ -3,6 +3,7 @@ import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import CryptoJS from 'crypto-js'
 import AdBanner from '../../components/AdBanner.vue'
+import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
 
@@ -32,6 +33,9 @@ const stats = computed(() => {
 })
 
 watch([inputText, selectedTool], () => {
+  if (inputText.value) {
+    trackToolUsage('text_transform', { tool: selectedTool.value, input_length: inputText.value.length })
+  }
   transform()
 })
 

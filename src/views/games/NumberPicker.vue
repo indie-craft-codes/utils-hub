@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AdBanner from '../../components/AdBanner.vue'
+import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
 
@@ -35,6 +36,12 @@ const generateNumbers = () => {
 
     numbers.value = result
   }
+
+  trackToolUsage('number_pick', {
+    range: range,
+    count: numCount.value,
+    allow_duplicate: allowDuplicate.value
+  })
 }
 </script>
 

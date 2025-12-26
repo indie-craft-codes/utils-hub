@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import QRCode from 'qrcode'
 import AdBanner from '../../components/AdBanner.vue'
+import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
 
@@ -39,6 +40,7 @@ watch([text, size], async () => {
 
 const downloadPng = () => {
   if (!qrDataUrl.value) return
+  trackToolUsage('qrcode_download', { format: 'png', size: size.value })
   const link = document.createElement('a')
   link.download = 'qrcode.png'
   link.href = qrDataUrl.value

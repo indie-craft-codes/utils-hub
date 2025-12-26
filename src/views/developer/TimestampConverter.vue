@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AdBanner from '../../components/AdBanner.vue'
+import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
 
@@ -60,6 +61,7 @@ const toDatetime = () => {
     datetime.value = 'Invalid timestamp'
   } else {
     datetime.value = formatDatetime(date)
+    trackToolUsage('timestamp_to_datetime', { unit: unit.value })
   }
 }
 
@@ -74,6 +76,7 @@ const toTimestamp = () => {
     timestamp.value = unit.value === 'seconds'
       ? Math.floor(date.getTime() / 1000).toString()
       : date.getTime().toString()
+    trackToolUsage('datetime_to_timestamp', { unit: unit.value })
   }
 }
 
