@@ -1,5 +1,6 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
+import AdBanner from '../components/AdBanner.vue'
 
 const { t } = useI18n()
 
@@ -85,6 +86,9 @@ const categories = [
         {{ t('home.description', 'Utils Hub는 복잡한 설치 없이 브라우저에서 바로 사용할 수 있는 무료 온라인 도구 모음입니다. 모든 데이터는 브라우저에서 처리되어 서버로 전송되지 않으므로 개인정보가 보호됩니다.') }}
       </p>
     </div>
+
+    <!-- Ad Banner - Top -->
+    <AdBanner adSlot="1234567890" adFormat="auto" :fullWidth="true" />
 
     <!-- Features Section -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">

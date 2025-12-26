@@ -1,5 +1,6 @@
 <script setup>
 import { useI18n } from 'vue-i18n'
+import AdBanner from '../components/AdBanner.vue'
 
 const { t, te } = useI18n()
 
@@ -126,5 +127,8 @@ const safeT = (key, fallback = '') => {
         </p>
       </section>
     </div>
+
+    <!-- Ad Banner -->
+    <AdBanner adSlot="7890123456" adFormat="auto" :fullWidth="true" />
   </div>
 </template>

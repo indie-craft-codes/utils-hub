@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import exifr from 'exifr'
+import AdBanner from '../../components/AdBanner.vue'
 
 const { t } = useI18n()
 
@@ -534,5 +535,8 @@ const supportedFormats = 'JPEG, PNG, WebP, HEIC, HEIF, TIFF'
         <p class="text-gray-500 dark:text-gray-400">{{ t('tools.metadata.noExif') }}</p>
       </div>
     </div>
+
+    <!-- Ad Banner -->
+    <AdBanner adSlot="4567890123" adFormat="horizontal" :fullWidth="true" />
   </div>
 </template>

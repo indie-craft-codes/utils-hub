@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import AdBanner from '../../components/AdBanner.vue'
 
 const { t } = useI18n()
 
@@ -778,6 +779,9 @@ const allClaims = computed(() => {
         </div>
       </div>
     </div>
+
+    <!-- Ad Banner -->
+    <AdBanner adSlot="3456789012" adFormat="horizontal" :fullWidth="true" />
   </div>
 </template>
 

@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import heic2any from 'heic2any'
+import AdBanner from '../../components/AdBanner.vue'
 
 const { t } = useI18n()
 
@@ -296,5 +297,8 @@ const reset = () => {
         </button>
       </div>
     </div>
+
+    <!-- Ad Banner -->
+    <AdBanner adSlot="4567890123" adFormat="horizontal" :fullWidth="true" />
   </div>
 </template>

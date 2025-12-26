@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import html2canvas from 'html2canvas'
 import GIF from 'gif.js'
+import AdBanner from '../../components/AdBanner.vue'
 
 const { t } = useI18n()
 
@@ -650,5 +651,8 @@ const saveGif = async () => {
         </div>
       </div>
     </div>
+
+    <!-- Ad Banner -->
+    <AdBanner adSlot="2345678901" adFormat="horizontal" :fullWidth="true" />
   </div>
 </template>
