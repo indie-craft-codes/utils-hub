@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { trackPageView } from '../utils/analytics'
 
 const routes = [
   {
@@ -128,8 +129,13 @@ const router = createRouter({
   routes
 })
 
-// SPA 라우팅 시 광고 새로고침
-router.afterEach(() => {
+// SPA 라우팅 시 페이지 뷰 추적 및 광고 새로고침
+router.afterEach((to) => {
+  // Google Analytics 페이지 뷰 추적
+  const pageTitle = to.name || to.path
+  trackPageView(to.path, pageTitle)
+
+  // AdSense 광고 새로고침
   setTimeout(() => {
     try {
       if (window.adsbygoogle) {

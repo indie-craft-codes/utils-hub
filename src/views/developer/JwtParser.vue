@@ -2,6 +2,7 @@
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AdBanner from '../../components/AdBanner.vue'
+import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
 
@@ -256,12 +257,14 @@ const copyToClipboard = async (text, label) => {
 const copyHeader = () => {
   if (currentData.value?.decoded?.headerJson) {
     copyToClipboard(formatJson(currentData.value.decoded.headerJson), 'header')
+    trackToolUsage('jwt_copy_header', { algorithm: currentData.value.decoded.headerJson?.alg })
   }
 }
 
 const copyPayload = () => {
   if (currentData.value?.decoded?.payloadJson) {
     copyToClipboard(formatJson(currentData.value.decoded.payloadJson), 'payload')
+    trackToolUsage('jwt_copy_payload')
   }
 }
 
@@ -316,6 +319,8 @@ const verifySignature = async () => {
     verifyResult.value = { success: false, message: `Algorithm ${alg} verification not supported in browser. Only HS256/384/512 are supported.` }
     return
   }
+
+  trackToolUsage('jwt_verify', { algorithm: alg })
 
   try {
     const encoder = new TextEncoder()
