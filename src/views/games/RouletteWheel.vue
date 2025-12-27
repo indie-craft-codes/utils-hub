@@ -312,8 +312,19 @@ const spin = async () => {
   // 목표 각도 계산 (선택된 항목이 포인터 위치에 오도록)
   const section = sections.value.find(s => s.id === selected.id)
   const targetAngle = 90 - section.midAngle // 포인터가 오른쪽(90도)에 있음
+
+  // 현재 회전 각도를 정규화 (0~360 범위로)
+  const currentNormalized = currentRotation.value % 360
+  const targetNormalized = ((targetAngle % 360) + 360) % 360
+
+  // 현재 위치에서 목표 위치까지의 각도 차이 계산
+  let angleDiff = targetNormalized - currentNormalized
+  if (angleDiff < 0) {
+    angleDiff += 360 // 항상 시계방향으로 회전
+  }
+
   const fullRotations = 5 + Math.floor(Math.random() * 3) // 5~7바퀴
-  const newTarget = currentRotation.value + fullRotations * 360 + targetAngle
+  const newTarget = currentRotation.value + fullRotations * 360 + angleDiff
 
   targetRotation.value = newTarget
 
