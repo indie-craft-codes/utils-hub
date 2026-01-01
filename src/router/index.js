@@ -129,22 +129,11 @@ const router = createRouter({
   routes
 })
 
-// SPA 라우팅 시 페이지 뷰 추적 및 광고 새로고침
+// SPA 라우팅 시 페이지 뷰 추적
 router.afterEach((to) => {
   // Google Analytics 페이지 뷰 추적
   const pageTitle = to.name || to.path
   trackPageView(to.path, pageTitle)
-
-  // AdSense 광고 새로고침
-  setTimeout(() => {
-    try {
-      if (window.adsbygoogle) {
-        (window.adsbygoogle = window.adsbygoogle || []).push({})
-      }
-    } catch (e) {
-      // 이미 로드된 광고는 무시
-    }
-  }, 100)
 })
 
 export default router

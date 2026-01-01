@@ -1,6 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { onMounted, nextTick } from 'vue'
 
 const props = defineProps({
   adSlot: { type: String, required: true },
@@ -8,35 +7,21 @@ const props = defineProps({
   fullWidth: { type: Boolean, default: true }
 })
 
-const route = useRoute()
-const adKey = ref(0)
-const adLoaded = ref(false)
-
-const loadAd = () => {
-  try {
-    if (window.adsbygoogle) {
-      (window.adsbygoogle = window.adsbygoogle || []).push({})
-      adLoaded.value = true
-    }
-  } catch (e) {
-    // 광고 로드 실패 시 무시 (이미 로드된 경우 등)
-  }
-}
-
 onMounted(() => {
-  loadAd()
-})
-
-// 라우트 변경 시 광고 새로고침
-watch(() => route.fullPath, () => {
-  adKey.value++
-  adLoaded.value = false
-  setTimeout(loadAd, 100)
+  // DOM이 완전히 렌더링된 후 광고 로드
+  nextTick(() => {
+    try {
+      (window.adsbygoogle = window.adsbygoogle || []).push({})
+    } catch (e) {
+      // 광고 로드 실패 시 무시 (광고 차단기 등)
+      console.debug('AdSense load failed:', e.message)
+    }
+  })
 })
 </script>
 
 <template>
-  <div class="ad-container my-4" :key="adKey">
+  <div class="ad-container my-4">
     <ins
       class="adsbygoogle"
       style="display: block"
