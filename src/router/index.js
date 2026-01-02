@@ -88,6 +88,11 @@ const routes = [
     component: () => import('../views/developer/JwtParser.vue')
   },
   {
+    path: '/developer/erd',
+    name: 'ERDGenerator',
+    component: () => import('../views/developer/ERDGenerator.vue')
+  },
+  {
     path: '/calculator/dday',
     name: 'DdayCalculator',
     component: () => import('../views/calculator/DdayCalculator.vue')
