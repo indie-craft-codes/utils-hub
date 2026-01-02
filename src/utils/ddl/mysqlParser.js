@@ -22,6 +22,9 @@ export function parseMySQLDDL(ddl) {
     const indexes = []
     let primaryKey = null
 
+    // AST 구조 디버깅
+    console.log(`🔍 ${tableName} AST 구조:`, JSON.stringify(ast.create_definitions, null, 2))
+
     // 컬럼 정보 추출
     if (ast.create_definitions) {
       for (const def of ast.create_definitions) {
