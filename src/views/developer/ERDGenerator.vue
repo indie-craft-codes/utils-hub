@@ -1,7 +1,7 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { VueFlow, useVueFlow } from '@vue-flow/core'
+import { VueFlow } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import { Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
@@ -13,9 +13,6 @@ import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
 
-// Vue Flow setup
-const { onNodesChange, onEdgesChange, onNodeDragStop, fitView } = useVueFlow()
-
 // 상태
 const ddlInput = ref('')
 const ddlList = ref([])
@@ -26,6 +23,9 @@ const error = ref('')
 const useLogicalNames = ref(false)
 const vendor = ref('mysql')
 const showMiniMap = ref(true)
+
+// VueFlow 인스턴스 ref
+const vueFlowRef = ref(null)
 
 // 커스텀 노드 타입
 const nodeTypes = {
@@ -90,9 +90,11 @@ const generateERD = () => {
   edges.value = elements.edges
 
   // 자동 정렬
-  setTimeout(() => {
-    fitView({ padding: 0.2, duration: 500 })
-  }, 100)
+  nextTick(() => {
+    if (vueFlowRef.value) {
+      vueFlowRef.value.fitView({ padding: 0.2, duration: 500 })
+    }
+  })
 
   trackToolUsage('erd_generate', { tableCount: tables.value.length })
 }
@@ -123,9 +125,9 @@ watch(useLogicalNames, (newValue) => {
 })
 
 // 노드 드래그 종료 시 위치 저장
-onNodeDragStop(() => {
+const handleNodeDragStop = () => {
   saveNodePositions(nodes.value)
-})
+}
 
 // 파일 업로드
 const handleFileUpload = (event) => {
@@ -278,11 +280,11 @@ const downloadImage = () => {
     <!-- ERD 다이어그램 -->
     <div class="card p-0 overflow-hidden" style="height: 700px;">
       <VueFlow
+        ref="vueFlowRef"
         v-model:nodes="nodes"
         v-model:edges="edges"
         :node-types="nodeTypes"
-        @nodes-change="onNodesChange"
-        @edges-change="onEdgesChange"
+        @node-drag-stop="handleNodeDragStop"
         class="erd-canvas"
         :default-edge-options="{ type: 'smoothstep' }"
       >
