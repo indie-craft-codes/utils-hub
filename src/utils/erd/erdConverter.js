@@ -21,14 +21,18 @@ export function convertToFlowElements(tables, useLogicalNames = false) {
   // FK 관계를 엣지로 변환
   tables.forEach((table) => {
     if (table.foreignKeys && table.foreignKeys.length > 0) {
+      console.log(`🔗 ${table.name}의 FK 변환 중:`, table.foreignKeys)
       table.foreignKeys.forEach((fk, fkIndex) => {
         const edge = createForeignKeyEdge(table, fk, fkIndex)
         if (edge) {
           edges.push(edge)
+          console.log('✅ 엣지 생성:', edge.id, `${edge.source} → ${edge.target}`)
         }
       })
     }
   })
+
+  console.log(`📈 ERD 생성 완료: 노드 ${nodes.length}개, 엣지 ${edges.length}개`)
 
   return { nodes, edges }
 }
