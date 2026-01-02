@@ -43,8 +43,10 @@ export function parseMySQLDDL(ddl) {
           }
           columns.push(column)
         } else if (def.resource === 'constraint') {
+          const constraintType = (def.constraint_type || '').toLowerCase()
+
           // PRIMARY KEY 제약조건
-          if (def.constraint_type === 'primary key') {
+          if (constraintType === 'primary key') {
             primaryKey = def.definition.map(d => d.column).join(',')
             def.definition.forEach(d => {
               const col = columns.find(c => c.name === d.column)
@@ -52,7 +54,7 @@ export function parseMySQLDDL(ddl) {
             })
           }
           // FOREIGN KEY 제약조건
-          else if (def.constraint_type === 'foreign key') {
+          else if (constraintType === 'foreign key') {
             try {
               const fk = {
                 columns: def.definition.map(d => d.column),
@@ -70,7 +72,7 @@ export function parseMySQLDDL(ddl) {
             }
           }
           // UNIQUE 제약조건
-          else if (def.constraint_type === 'unique key' || def.constraint_type === 'unique') {
+          else if (constraintType === 'unique key' || constraintType === 'unique') {
             def.definition.forEach(d => {
               const col = columns.find(c => c.name === d.column)
               if (col) col.isUnique = true
