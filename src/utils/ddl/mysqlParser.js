@@ -26,6 +26,7 @@ export function parseMySQLDDL(ddl) {
     if (ast.create_definitions) {
       for (const def of ast.create_definitions) {
         if (def.resource === 'column') {
+          const comment = def.comment?.value?.value || ''
           const column = {
             name: def.column.column,
             type: formatColumnType(def.definition),
@@ -33,7 +34,8 @@ export function parseMySQLDDL(ddl) {
             isPrimaryKey: false,
             isAutoIncrement: def.auto_increment === true,
             isUnique: false,
-            comment: def.comment?.value?.value || '',
+            comment: comment,
+            logicalName: extractLogicalName(comment) || def.column.column,
             defaultValue: def.default_val?.value?.value || null
           }
           columns.push(column)
@@ -48,16 +50,21 @@ export function parseMySQLDDL(ddl) {
           }
           // FOREIGN KEY 제약조건
           else if (def.constraint_type === 'foreign key') {
-            const fk = {
-              columns: def.definition.map(d => d.column),
-              references: {
-                table: def.reference_definition.table[0].table,
-                columns: def.reference_definition.definition.map(d => d.column)
-              },
-              onDelete: def.reference_definition.on_action?.find(a => a.type === 'on delete')?.value || 'NO ACTION',
-              onUpdate: def.reference_definition.on_action?.find(a => a.type === 'on update')?.value || 'NO ACTION'
+            try {
+              const fk = {
+                columns: def.definition.map(d => d.column),
+                references: {
+                  table: def.reference_definition.table[0].table,
+                  columns: def.reference_definition.definition.map(d => d.column)
+                },
+                onDelete: def.reference_definition.on_action?.find(a => a.type === 'on delete')?.value || 'NO ACTION',
+                onUpdate: def.reference_definition.on_action?.find(a => a.type === 'on update')?.value || 'NO ACTION'
+              }
+              foreignKeys.push(fk)
+              console.log('✅ FK 파싱 성공:', fk)
+            } catch (fkError) {
+              console.warn('⚠️ FK 파싱 실패:', def, fkError)
             }
-            foreignKeys.push(fk)
           }
           // UNIQUE 제약조건
           else if (def.constraint_type === 'unique key' || def.constraint_type === 'unique') {
@@ -84,7 +91,7 @@ export function parseMySQLDDL(ddl) {
       }
     }
 
-    return {
+    const result = {
       name: tableName,
       logicalName,
       columns,
@@ -92,6 +99,14 @@ export function parseMySQLDDL(ddl) {
       indexes,
       primaryKey
     }
+
+    console.log(`📊 테이블 파싱 완료: ${tableName}`, {
+      컬럼수: columns.length,
+      FK수: foreignKeys.length,
+      FK목록: foreignKeys
+    })
+
+    return result
   } catch (error) {
     console.error('DDL 파싱 오류:', error)
     throw new Error(`DDL 파싱 실패: ${error.message}`)
