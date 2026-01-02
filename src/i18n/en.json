@@ -10,7 +10,8 @@
     "run": "Run",
     "result": "Result",
     "input": "Input",
-    "output": "Output"
+    "output": "Output",
+    "delete": "Delete"
   },
   "home": {
     "subtitle": "All-in-one utility tools for everyday use",
@@ -252,6 +253,25 @@
       "secretKey": "Secret Key",
       "secretKeyPlaceholder": "Enter the secret key used for HMAC signature",
       "verify": "Verify"
+    },
+    "erd": {
+      "title": "ERD Generator",
+      "description": "Generate ERD diagrams from DDL",
+      "vendor": "Database",
+      "inputDDL": "Input DDL",
+      "placeholder": "CREATE TABLE users (\n  user_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'User ID',\n  email VARCHAR(255) NOT NULL UNIQUE COMMENT 'Email',\n  name VARCHAR(100) NOT NULL COMMENT 'Name',\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Created At'\n) COMMENT='Users';",
+      "addDDL": "Add DDL",
+      "uploadFile": "Upload File",
+      "ddlList": "DDL List",
+      "logicalModel": "Logical Model",
+      "physicalModel": "Physical Model",
+      "showMiniMap": "Show MiniMap",
+      "downloadImage": "Download Image",
+      "emptyDDL": "Please enter DDL",
+      "parseError": "DDL parsing error",
+      "noTables": "No valid tables found",
+      "emptyState": "Enter DDL and click Add button",
+      "emptyStateDesc": "You can add multiple CREATE TABLE statements to generate an ERD"
     },
     "dday": {
       "title": "D-Day Calculator",

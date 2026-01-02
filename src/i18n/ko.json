@@ -10,7 +10,8 @@
     "run": "실행",
     "result": "결과",
     "input": "입력",
-    "output": "출력"
+    "output": "출력",
+    "delete": "삭제"
   },
   "home": {
     "subtitle": "일상과 개발에 필요한 다양한 온라인 유틸리티 도구",
@@ -252,6 +253,25 @@
       "secretKey": "비밀 키 (Secret)",
       "secretKeyPlaceholder": "HMAC 서명에 사용된 비밀 키를 입력하세요",
       "verify": "검증하기"
+    },
+    "erd": {
+      "title": "ERD 생성기",
+      "description": "DDL로 ERD 다이어그램 생성",
+      "vendor": "데이터베이스",
+      "inputDDL": "DDL 입력",
+      "placeholder": "CREATE TABLE users (\n  user_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '사용자ID',\n  email VARCHAR(255) NOT NULL UNIQUE COMMENT '이메일',\n  name VARCHAR(100) NOT NULL COMMENT '이름',\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시'\n) COMMENT='사용자';",
+      "addDDL": "DDL 추가",
+      "uploadFile": "파일 업로드",
+      "ddlList": "DDL 목록",
+      "logicalModel": "논리 모델",
+      "physicalModel": "물리 모델",
+      "showMiniMap": "미니맵 표시",
+      "downloadImage": "이미지 다운로드",
+      "emptyDDL": "DDL을 입력해주세요",
+      "parseError": "DDL 파싱 오류",
+      "noTables": "유효한 테이블을 찾을 수 없습니다",
+      "emptyState": "DDL을 입력하고 추가 버튼을 눌러주세요",
+      "emptyStateDesc": "여러 CREATE TABLE 문을 추가하여 ERD를 생성할 수 있습니다"
     },
     "dday": {
       "title": "D-Day 계산기",
