@@ -103,12 +103,29 @@ function createForeignKeyEdge(table, fk, index) {
     target: targetTable,
     type: 'smoothstep',
     animated: false,
-    style: { stroke: '#6366f1', strokeWidth: 2 },
+    style: {
+      stroke: '#6366f1',
+      strokeWidth: 2.5  // 조금 더 두껍게
+    },
     markerEnd: {
       type: 'arrowclosed',
       color: '#6366f1',
+      width: 20,
+      height: 20
     },
     label: fk.columns.join(', '),
+    labelStyle: {
+      fill: '#374151',
+      fontWeight: 600,
+      fontSize: 12
+    },
+    labelBgStyle: {
+      fill: '#ffffff',
+      fillOpacity: 0.9,
+      rx: 4,
+      ry: 4
+    },
+    labelBgPadding: [8, 4],
     data: {
       sourceColumns: fk.columns,
       targetColumns: fk.references.columns,

@@ -290,7 +290,14 @@ const downloadImage = () => {
       >
         <Background pattern-color="#aaa" :gap="16" />
         <Controls />
-        <MiniMap v-if="showMiniMap" />
+        <MiniMap
+          v-if="showMiniMap"
+          :node-stroke-width="3"
+          :node-color="(node) => '#6366f1'"
+          :mask-color="'rgb(240, 240, 240, 0.8)'"
+          pannable
+          zoomable
+        />
       </VueFlow>
 
       <!-- 빈 상태 -->
