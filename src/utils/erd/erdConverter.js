@@ -145,7 +145,7 @@ function createForeignKeyEdge(table, fk, index, sourceNode, targetNode) {
 }
 
 /**
- * 두 노드 간 최적의 연결 위치 계산
+ * 두 노드 간 최적의 연결 위치 계산 (실제 최단 거리 기준)
  */
 function calculateOptimalPositions(sourceNode, targetNode) {
   // 노드의 크기 추정 (dimensions가 있으면 사용, 없으면 기본값)
@@ -154,38 +154,80 @@ function calculateOptimalPositions(sourceNode, targetNode) {
   const targetWidth = targetNode.dimensions?.width || targetNode.width || 250
   const targetHeight = targetNode.dimensions?.height || targetNode.height || 200
 
-  // 노드의 중심점 계산
-  const sourceCenter = {
-    x: sourceNode.position.x + sourceWidth / 2,
-    y: sourceNode.position.y + sourceHeight / 2
-  }
-  const targetCenter = {
-    x: targetNode.position.x + targetWidth / 2,
-    y: targetNode.position.y + targetHeight / 2
+  // 노드의 경계 계산
+  const source = {
+    left: sourceNode.position.x,
+    right: sourceNode.position.x + sourceWidth,
+    top: sourceNode.position.y,
+    bottom: sourceNode.position.y + sourceHeight,
+    centerX: sourceNode.position.x + sourceWidth / 2,
+    centerY: sourceNode.position.y + sourceHeight / 2
   }
 
-  const dx = targetCenter.x - sourceCenter.x
-  const dy = targetCenter.y - sourceCenter.y
+  const target = {
+    left: targetNode.position.x,
+    right: targetNode.position.x + targetWidth,
+    top: targetNode.position.y,
+    bottom: targetNode.position.y + targetHeight,
+    centerX: targetNode.position.x + targetWidth / 2,
+    centerY: targetNode.position.y + targetHeight / 2
+  }
 
-  // 가로 방향 거리가 세로 방향 거리보다 큰 경우
-  if (Math.abs(dx) > Math.abs(dy)) {
-    if (dx > 0) {
-      // target이 source의 오른쪽에 있음
-      return { sourcePosition: 'right', targetPosition: 'left' }
-    } else {
-      // target이 source의 왼쪽에 있음
-      return { sourcePosition: 'left', targetPosition: 'right' }
-    }
-  } else {
-    // 세로 방향 거리가 더 큰 경우
-    if (dy > 0) {
-      // target이 source의 아래쪽에 있음
-      return { sourcePosition: 'bottom', targetPosition: 'top' }
-    } else {
-      // target이 source의 위쪽에 있음
-      return { sourcePosition: 'top', targetPosition: 'bottom' }
+  // 각 방향별 연결점 간 거리 계산
+  const distances = {
+    // source 오른쪽 → target 왼쪽
+    rightToLeft: {
+      distance: Math.sqrt(
+        Math.pow(target.left - source.right, 2) +
+        Math.pow(target.centerY - source.centerY, 2)
+      ),
+      sourcePosition: 'right',
+      targetPosition: 'left'
+    },
+    // source 왼쪽 → target 오른쪽
+    leftToRight: {
+      distance: Math.sqrt(
+        Math.pow(source.left - target.right, 2) +
+        Math.pow(target.centerY - source.centerY, 2)
+      ),
+      sourcePosition: 'left',
+      targetPosition: 'right'
+    },
+    // source 아래 → target 위
+    bottomToTop: {
+      distance: Math.sqrt(
+        Math.pow(target.centerX - source.centerX, 2) +
+        Math.pow(target.top - source.bottom, 2)
+      ),
+      sourcePosition: 'bottom',
+      targetPosition: 'top'
+    },
+    // source 위 → target 아래
+    topToBottom: {
+      distance: Math.sqrt(
+        Math.pow(target.centerX - source.centerX, 2) +
+        Math.pow(source.top - target.bottom, 2)
+      ),
+      sourcePosition: 'top',
+      targetPosition: 'bottom'
     }
   }
+
+  // 가장 짧은 거리를 가진 방향 선택
+  let minDistance = Infinity
+  let result = { sourcePosition: 'right', targetPosition: 'left' }
+
+  for (const [direction, info] of Object.entries(distances)) {
+    if (info.distance < minDistance) {
+      minDistance = info.distance
+      result = {
+        sourcePosition: info.sourcePosition,
+        targetPosition: info.targetPosition
+      }
+    }
+  }
+
+  return result
 }
 
 /**
