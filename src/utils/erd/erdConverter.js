@@ -171,41 +171,37 @@ function calculateOptimalPositions(sourceNode, targetNode) {
   const dx = targetCenter.x - sourceCenter.x
   const dy = targetCenter.y - sourceCenter.y
 
-  console.log('🔍 엣지 연결 위치 계산:', {
-    source: sourceNode.id,
-    target: targetNode.id,
-    sourcePos: sourceNode.position,
-    targetPos: targetNode.position,
-    sourceDimensions: { width: sourceWidth, height: sourceHeight },
-    targetDimensions: { width: targetWidth, height: targetHeight },
-    sourceCenter,
-    targetCenter,
-    dx,
-    dy,
-    absDx: Math.abs(dx),
-    absDy: Math.abs(dy)
-  })
+  console.log(`\n🔍 [${sourceNode.id} → ${targetNode.id}] 엣지 연결 위치 계산`)
+  console.log(`  📍 Source Position: (${sourceNode.position.x}, ${sourceNode.position.y})`)
+  console.log(`  📍 Target Position: (${targetNode.position.x}, ${targetNode.position.y})`)
+  console.log(`  📐 Source Dimensions: ${sourceWidth} x ${sourceHeight}`)
+  console.log(`  📐 Target Dimensions: ${targetWidth} x ${targetHeight}`)
+  console.log(`  🎯 Source Center: (${sourceCenter.x}, ${sourceCenter.y})`)
+  console.log(`  🎯 Target Center: (${targetCenter.x}, ${targetCenter.y})`)
+  console.log(`  📏 Distance: dx=${dx}, dy=${dy}`)
+  console.log(`  📊 Absolute: |dx|=${Math.abs(dx)}, |dy|=${Math.abs(dy)}`)
+  console.log(`  🔄 Comparison: |dx| ${Math.abs(dx) > Math.abs(dy) ? '>' : '<='} |dy|`)
 
   // 가로 방향 거리가 세로 방향 거리보다 큰 경우
   if (Math.abs(dx) > Math.abs(dy)) {
     if (dx > 0) {
       // target이 source의 오른쪽에 있음
-      console.log(`➡️ ${sourceNode.id} → ${targetNode.id}: right → left`)
+      console.log(`  ➡️ 결정: right → left (가로 연결, target이 오른쪽)\n`)
       return { sourcePosition: 'right', targetPosition: 'left' }
     } else {
       // target이 source의 왼쪽에 있음
-      console.log(`⬅️ ${sourceNode.id} → ${targetNode.id}: left → right`)
+      console.log(`  ⬅️ 결정: left → right (가로 연결, target이 왼쪽)\n`)
       return { sourcePosition: 'left', targetPosition: 'right' }
     }
   } else {
     // 세로 방향 거리가 더 큰 경우
     if (dy > 0) {
       // target이 source의 아래쪽에 있음
-      console.log(`⬇️ ${sourceNode.id} → ${targetNode.id}: bottom → top`)
+      console.log(`  ⬇️ 결정: bottom → top (세로 연결, target이 아래)\n`)
       return { sourcePosition: 'bottom', targetPosition: 'top' }
     } else {
       // target이 source의 위쪽에 있음
-      console.log(`⬆️ ${sourceNode.id} → ${targetNode.id}: top → bottom`)
+      console.log(`  ⬆️ 결정: top → bottom (세로 연결, target이 위)\n`)
       return { sourcePosition: 'top', targetPosition: 'bottom' }
     }
   }
