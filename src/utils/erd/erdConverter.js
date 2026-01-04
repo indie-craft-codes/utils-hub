@@ -21,7 +21,6 @@ export function convertToFlowElements(tables, useLogicalNames = false) {
   // FK 관계를 엣지로 변환
   tables.forEach((table) => {
     if (table.foreignKeys && table.foreignKeys.length > 0) {
-      console.log(`🔗 ${table.name}의 FK 변환 중:`, table.foreignKeys)
       table.foreignKeys.forEach((fk, fkIndex) => {
         const sourceNode = nodes.find(n => n.id === table.name)
         const targetNode = nodes.find(n => n.id === fk.references.table)
@@ -30,14 +29,11 @@ export function convertToFlowElements(tables, useLogicalNames = false) {
           const edge = createForeignKeyEdge(table, fk, fkIndex, sourceNode, targetNode)
           if (edge) {
             edges.push(edge)
-            console.log('✅ 엣지 생성:', edge.id, `${edge.source} → ${edge.target}`)
           }
         }
       })
     }
   })
-
-  console.log(`📈 ERD 생성 완료: 노드 ${nodes.length}개, 엣지 ${edges.length}개`)
 
   return { nodes, edges }
 }
@@ -171,37 +167,22 @@ function calculateOptimalPositions(sourceNode, targetNode) {
   const dx = targetCenter.x - sourceCenter.x
   const dy = targetCenter.y - sourceCenter.y
 
-  console.log(`\n🔍 [${sourceNode.id} → ${targetNode.id}] 엣지 연결 위치 계산`)
-  console.log(`  📍 Source Position: (${sourceNode.position.x}, ${sourceNode.position.y})`)
-  console.log(`  📍 Target Position: (${targetNode.position.x}, ${targetNode.position.y})`)
-  console.log(`  📐 Source Dimensions: ${sourceWidth} x ${sourceHeight}`)
-  console.log(`  📐 Target Dimensions: ${targetWidth} x ${targetHeight}`)
-  console.log(`  🎯 Source Center: (${sourceCenter.x}, ${sourceCenter.y})`)
-  console.log(`  🎯 Target Center: (${targetCenter.x}, ${targetCenter.y})`)
-  console.log(`  📏 Distance: dx=${dx}, dy=${dy}`)
-  console.log(`  📊 Absolute: |dx|=${Math.abs(dx)}, |dy|=${Math.abs(dy)}`)
-  console.log(`  🔄 Comparison: |dx| ${Math.abs(dx) > Math.abs(dy) ? '>' : '<='} |dy|`)
-
   // 가로 방향 거리가 세로 방향 거리보다 큰 경우
   if (Math.abs(dx) > Math.abs(dy)) {
     if (dx > 0) {
       // target이 source의 오른쪽에 있음
-      console.log(`  ➡️ 결정: right → left (가로 연결, target이 오른쪽)\n`)
       return { sourcePosition: 'right', targetPosition: 'left' }
     } else {
       // target이 source의 왼쪽에 있음
-      console.log(`  ⬅️ 결정: left → right (가로 연결, target이 왼쪽)\n`)
       return { sourcePosition: 'left', targetPosition: 'right' }
     }
   } else {
     // 세로 방향 거리가 더 큰 경우
     if (dy > 0) {
       // target이 source의 아래쪽에 있음
-      console.log(`  ⬇️ 결정: bottom → top (세로 연결, target이 아래)\n`)
       return { sourcePosition: 'bottom', targetPosition: 'top' }
     } else {
       // target이 source의 위쪽에 있음
-      console.log(`  ⬆️ 결정: top → bottom (세로 연결, target이 위)\n`)
       return { sourcePosition: 'top', targetPosition: 'bottom' }
     }
   }
