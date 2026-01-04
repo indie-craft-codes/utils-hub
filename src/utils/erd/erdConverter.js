@@ -171,22 +171,41 @@ function calculateOptimalPositions(sourceNode, targetNode) {
   const dx = targetCenter.x - sourceCenter.x
   const dy = targetCenter.y - sourceCenter.y
 
+  console.log('🔍 엣지 연결 위치 계산:', {
+    source: sourceNode.id,
+    target: targetNode.id,
+    sourcePos: sourceNode.position,
+    targetPos: targetNode.position,
+    sourceDimensions: { width: sourceWidth, height: sourceHeight },
+    targetDimensions: { width: targetWidth, height: targetHeight },
+    sourceCenter,
+    targetCenter,
+    dx,
+    dy,
+    absDx: Math.abs(dx),
+    absDy: Math.abs(dy)
+  })
+
   // 가로 방향 거리가 세로 방향 거리보다 큰 경우
   if (Math.abs(dx) > Math.abs(dy)) {
     if (dx > 0) {
       // target이 source의 오른쪽에 있음
+      console.log(`➡️ ${sourceNode.id} → ${targetNode.id}: right → left`)
       return { sourcePosition: 'right', targetPosition: 'left' }
     } else {
       // target이 source의 왼쪽에 있음
+      console.log(`⬅️ ${sourceNode.id} → ${targetNode.id}: left → right`)
       return { sourcePosition: 'left', targetPosition: 'right' }
     }
   } else {
     // 세로 방향 거리가 더 큰 경우
     if (dy > 0) {
       // target이 source의 아래쪽에 있음
+      console.log(`⬇️ ${sourceNode.id} → ${targetNode.id}: bottom → top`)
       return { sourcePosition: 'bottom', targetPosition: 'top' }
     } else {
       // target이 source의 위쪽에 있음
+      console.log(`⬆️ ${sourceNode.id} → ${targetNode.id}: top → bottom`)
       return { sourcePosition: 'top', targetPosition: 'bottom' }
     }
   }
