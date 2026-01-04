@@ -8,7 +8,7 @@ import { MiniMap } from '@vue-flow/minimap'
 import TableNode from '../../components/erd/TableNode.vue'
 import AdBanner from '../../components/AdBanner.vue'
 import { parseMultipleDDL } from '../../utils/ddl/mysqlParser'
-import { convertToFlowElements, toggleLogicalPhysical, saveNodePositions, restoreNodePositions } from '../../utils/erd/erdConverter'
+import { convertToFlowElements, toggleLogicalPhysical, saveNodePositions, restoreNodePositions, updateEdgePositions } from '../../utils/erd/erdConverter'
 import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
@@ -124,9 +124,11 @@ watch(useLogicalNames, (newValue) => {
   }
 })
 
-// 노드 드래그 종료 시 위치 저장
+// 노드 드래그 종료 시 위치 저장 및 엣지 재계산
 const handleNodeDragStop = () => {
   saveNodePositions(nodes.value)
+  edges.value = updateEdgePositions(nodes.value, edges.value)
+  console.log('🔄 엣지 위치 업데이트 완료')
 }
 
 // 파일 업로드
