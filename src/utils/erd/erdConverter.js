@@ -216,16 +216,28 @@ function calculateOptimalPositions(sourceNode, targetNode) {
   // 가장 짧은 거리를 가진 방향 선택
   let minDistance = Infinity
   let result = { sourcePosition: 'right', targetPosition: 'left' }
+  let selectedDirection = ''
 
   for (const [direction, info] of Object.entries(distances)) {
     if (info.distance < minDistance) {
       minDistance = info.distance
+      selectedDirection = direction
       result = {
         sourcePosition: info.sourcePosition,
         targetPosition: info.targetPosition
       }
     }
   }
+
+  console.log(`\n🔍 [${sourceNode.id} → ${targetNode.id}] 최단 거리 계산`)
+  console.log(`  📐 Source: (${source.left}, ${source.top}) ~ (${source.right}, ${source.bottom}) [${sourceWidth}x${sourceHeight}]`)
+  console.log(`  📐 Target: (${target.left}, ${target.top}) ~ (${target.right}, ${target.bottom}) [${targetWidth}x${targetHeight}]`)
+  console.log(`  📏 4방향 거리:`)
+  console.log(`     ➡️  right → left:  ${distances.rightToLeft.distance.toFixed(2)}`)
+  console.log(`     ⬅️  left → right:  ${distances.leftToRight.distance.toFixed(2)}`)
+  console.log(`     ⬇️  bottom → top:  ${distances.bottomToTop.distance.toFixed(2)}`)
+  console.log(`     ⬆️  top → bottom:  ${distances.topToBottom.distance.toFixed(2)}`)
+  console.log(`  ✅ 선택: ${selectedDirection} (거리: ${minDistance.toFixed(2)})\n`)
 
   return result
 }
