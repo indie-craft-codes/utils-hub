@@ -219,6 +219,31 @@ export function toggleLogicalPhysical(nodes, tables, useLogicalNames) {
 }
 
 /**
+ * 엣지 위치를 동적으로 업데이트
+ */
+export function updateEdgePositions(nodes, edges) {
+  return edges.map(edge => {
+    const sourceNode = nodes.find(n => n.id === edge.source)
+    const targetNode = nodes.find(n => n.id === edge.target)
+
+    if (sourceNode && targetNode) {
+      const { sourcePosition, targetPosition } = calculateOptimalPositions(
+        sourceNode.position,
+        targetNode.position
+      )
+
+      return {
+        ...edge,
+        sourcePosition,
+        targetPosition
+      }
+    }
+
+    return edge
+  })
+}
+
+/**
  * 노드 위치를 localStorage에 저장
  */
 export function saveNodePositions(nodes) {
