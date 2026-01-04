@@ -23,10 +23,15 @@ export function convertToFlowElements(tables, useLogicalNames = false) {
     if (table.foreignKeys && table.foreignKeys.length > 0) {
       console.log(`🔗 ${table.name}의 FK 변환 중:`, table.foreignKeys)
       table.foreignKeys.forEach((fk, fkIndex) => {
-        const edge = createForeignKeyEdge(table, fk, fkIndex)
-        if (edge) {
-          edges.push(edge)
-          console.log('✅ 엣지 생성:', edge.id, `${edge.source} → ${edge.target}`)
+        const sourceNode = nodes.find(n => n.id === table.name)
+        const targetNode = nodes.find(n => n.id === fk.references.table)
+
+        if (sourceNode && targetNode) {
+          const edge = createForeignKeyEdge(table, fk, fkIndex, sourceNode, targetNode)
+          if (edge) {
+            edges.push(edge)
+            console.log('✅ 엣지 생성:', edge.id, `${edge.source} → ${edge.target}`)
+          }
         }
       })
     }
@@ -91,21 +96,29 @@ function createTableNode(table, index, useLogicalNames) {
 /**
  * FK를 Vue Flow 엣지로 변환
  */
-function createForeignKeyEdge(table, fk, index) {
+function createForeignKeyEdge(table, fk, index, sourceNode, targetNode) {
   const sourceTable = table.name
   const targetTable = fk.references.table
 
   const edgeId = `${sourceTable}-${targetTable}-${index}`
 
+  // 노드 간 상대 위치 계산하여 최적의 연결점 결정
+  const { sourcePosition, targetPosition } = calculateOptimalPositions(
+    sourceNode.position,
+    targetNode.position
+  )
+
   return {
     id: edgeId,
     source: sourceTable,
     target: targetTable,
+    sourcePosition,
+    targetPosition,
     type: 'smoothstep',
     animated: false,
     style: {
       stroke: '#6366f1',
-      strokeWidth: 2.5  // 조금 더 두껍게
+      strokeWidth: 2.5
     },
     markerEnd: {
       type: 'arrowclosed',
@@ -131,6 +144,34 @@ function createForeignKeyEdge(table, fk, index) {
       targetColumns: fk.references.columns,
       onDelete: fk.onDelete,
       onUpdate: fk.onUpdate
+    }
+  }
+}
+
+/**
+ * 두 노드 간 최적의 연결 위치 계산
+ */
+function calculateOptimalPositions(sourcePos, targetPos) {
+  const dx = targetPos.x - sourcePos.x
+  const dy = targetPos.y - sourcePos.y
+
+  // 가로 방향 거리가 세로 방향 거리보다 큰 경우
+  if (Math.abs(dx) > Math.abs(dy)) {
+    if (dx > 0) {
+      // target이 source의 오른쪽에 있음
+      return { sourcePosition: 'right', targetPosition: 'left' }
+    } else {
+      // target이 source의 왼쪽에 있음
+      return { sourcePosition: 'left', targetPosition: 'right' }
+    }
+  } else {
+    // 세로 방향 거리가 더 큰 경우
+    if (dy > 0) {
+      // target이 source의 아래쪽에 있음
+      return { sourcePosition: 'bottom', targetPosition: 'top' }
+    } else {
+      // target이 source의 위쪽에 있음
+      return { sourcePosition: 'top', targetPosition: 'bottom' }
     }
   }
 }
