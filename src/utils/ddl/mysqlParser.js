@@ -22,9 +22,6 @@ export function parseMySQLDDL(ddl) {
     const indexes = []
     let primaryKey = null
 
-    // AST 구조 디버깅
-    console.log(`🔍 ${tableName} AST 구조:`, JSON.stringify(ast.create_definitions, null, 2))
-
     // 컬럼 정보 추출
     if (ast.create_definitions) {
       for (const def of ast.create_definitions) {
@@ -66,7 +63,6 @@ export function parseMySQLDDL(ddl) {
                 onUpdate: def.reference_definition.on_action?.find(a => a.type === 'on update')?.value || 'NO ACTION'
               }
               foreignKeys.push(fk)
-              console.log('✅ FK 파싱 성공:', fk)
             } catch (fkError) {
               console.warn('⚠️ FK 파싱 실패:', def, fkError)
             }
@@ -96,7 +92,7 @@ export function parseMySQLDDL(ddl) {
       }
     }
 
-    const result = {
+    return {
       name: tableName,
       logicalName,
       columns,
@@ -104,14 +100,6 @@ export function parseMySQLDDL(ddl) {
       indexes,
       primaryKey
     }
-
-    console.log(`📊 테이블 파싱 완료: ${tableName}`, {
-      컬럼수: columns.length,
-      FK수: foreignKeys.length,
-      FK목록: foreignKeys
-    })
-
-    return result
   } catch (error) {
     console.error('DDL 파싱 오류:', error)
     throw new Error(`DDL 파싱 실패: ${error.message}`)

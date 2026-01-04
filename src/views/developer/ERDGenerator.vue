@@ -128,7 +128,6 @@ watch(useLogicalNames, (newValue) => {
 const handleNodeDragStop = () => {
   saveNodePositions(nodes.value)
   edges.value = updateEdgePositions(nodes.value, edges.value)
-  console.log('🔄 엣지 위치 업데이트 완료')
 }
 
 // 파일 업로드
