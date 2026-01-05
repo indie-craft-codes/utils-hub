@@ -404,8 +404,12 @@ function calculateOptimalPositions(sourceNode, targetNode) {
 
 /**
  * 논리명과 물리명 토글
+ * @param {Array} nodes - 현재 노드 배열
+ * @param {Array} tables - 테이블 정보
+ * @param {boolean} useLogicalNames - 논리명 사용 여부
+ * @param {Map} actualWidths - DOM에서 읽은 실제 노드 너비 (선택)
  */
-export function toggleLogicalPhysical(nodes, tables, useLogicalNames) {
+export function toggleLogicalPhysical(nodes, tables, useLogicalNames, actualWidths = null) {
   return nodes.map(node => {
     const table = tables.find(t => t.name === node.id)
     if (!table) return node
@@ -433,17 +437,20 @@ export function toggleLogicalPhysical(nodes, tables, useLogicalNames) {
       }
     })
 
-    // 실제 렌더링된 노드 너비 사용 (dimensions가 있는 경우)
-    // 없으면 예측값 사용
-    const oldWidth = node.dimensions?.width || estimateNodeWidth(node.data.label, node.data.columns)
+    // 실제 렌더링된 노드 너비 사용 (우선순위: DOM > dimensions > 추정)
+    let oldWidth = estimateNodeWidth(node.data.label, node.data.columns)
+    if (actualWidths && actualWidths.has(node.id)) {
+      oldWidth = actualWidths.get(node.id)
+    } else if (node.dimensions?.width) {
+      oldWidth = node.dimensions.width
+    }
+
     const newWidth = estimateNodeWidth(displayName, columnsHtml)
 
-    // 너비 차이만큼 중앙 유지를 위해 position.x 조정
-    // Vue Flow는 좌측 상단이 기준이므로, 중앙을 유지하려면:
-    // 이전 중앙 = node.position.x + oldWidth / 2
-    // 새 중앙 = 이전 중앙 = newPosition.x + newWidth / 2
-    // newPosition.x = 이전 중앙 - newWidth / 2
+    // 중앙점 기준으로 위치 조정
+    // 1. 기존 중앙점 계산
     const oldCenterX = node.position.x + oldWidth / 2
+    // 2. 새 너비로 중앙점 유지하는 새 position.x 계산
     const adjustedX = oldCenterX - newWidth / 2
 
     return {

@@ -131,9 +131,23 @@ const removeDDL = (id) => {
 // 논리/물리 모델 토글
 watch(useLogicalNames, (newValue) => {
   if (nodes.value.length > 0) {
+    // 실제 렌더링된 노드 크기를 DOM에서 직접 읽어오기
+    const actualWidths = new Map()
+
+    nodes.value.forEach(node => {
+      // Vue Flow가 렌더링한 실제 DOM 요소 찾기
+      const nodeElement = document.querySelector(`[data-id="${node.id}"]`)
+      if (nodeElement) {
+        const width = nodeElement.offsetWidth || node.dimensions?.width
+        if (width) {
+          actualWidths.set(node.id, width)
+        }
+      }
+    })
+
     // 노드를 비우고 재생성 (Vue Flow 강제 갱신)
     // 중앙 위치를 유지하면서 텍스트만 변경
-    const updatedNodes = toggleLogicalPhysical(nodes.value, tables.value, newValue)
+    const updatedNodes = toggleLogicalPhysical(nodes.value, tables.value, newValue, actualWidths)
 
     // 엣지는 유지 (재계산 안 함)
     const currentEdges = [...edges.value]
