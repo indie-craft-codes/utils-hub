@@ -53,9 +53,9 @@ function createTableNode(table, index, useLogicalNames) {
       : col.name
 
     const icons = []
-    if (col.isPrimaryKey) icons.push('🔑')
-    if (col.isUnique && !col.isPrimaryKey) icons.push('⚷')
-    if (!col.isNullable && !col.isPrimaryKey) icons.push('*')
+    if (col.isPrimaryKey) icons.push('PK')
+    if (col.isUnique && !col.isPrimaryKey) icons.push('U')
+    if (!col.isNullable && !col.isPrimaryKey) icons.push('NN')
 
     return {
       name: displayColName,
@@ -110,31 +110,31 @@ function createForeignKeyEdge(table, fk, index, sourceNode, targetNode) {
     target: targetTable,
     sourcePosition,
     targetPosition,
-    type: 'smoothstep',
+    type: 'step',
     animated: false,
     style: {
-      stroke: '#6366f1',
-      strokeWidth: 2.5
+      stroke: '#6b7280',
+      strokeWidth: 1.5
     },
     markerEnd: {
       type: 'arrowclosed',
-      color: '#6366f1',
-      width: 20,
-      height: 20
+      color: '#6b7280',
+      width: 18,
+      height: 18
     },
     label: fk.columns.join(', '),
     labelStyle: {
       fill: '#374151',
-      fontWeight: 600,
-      fontSize: 12
+      fontWeight: 500,
+      fontSize: 11
     },
     labelBgStyle: {
       fill: '#ffffff',
-      fillOpacity: 0.9,
-      rx: 4,
-      ry: 4
+      fillOpacity: 0.95,
+      rx: 2,
+      ry: 2
     },
-    labelBgPadding: [8, 4],
+    labelBgPadding: [6, 3],
     data: {
       sourceColumns: fk.columns,
       targetColumns: fk.references.columns,
@@ -216,28 +216,16 @@ function calculateOptimalPositions(sourceNode, targetNode) {
   // 가장 짧은 거리를 가진 방향 선택
   let minDistance = Infinity
   let result = { sourcePosition: 'right', targetPosition: 'left' }
-  let selectedDirection = ''
 
   for (const [direction, info] of Object.entries(distances)) {
     if (info.distance < minDistance) {
       minDistance = info.distance
-      selectedDirection = direction
       result = {
         sourcePosition: info.sourcePosition,
         targetPosition: info.targetPosition
       }
     }
   }
-
-  console.log(`\n🔍 [${sourceNode.id} → ${targetNode.id}] 최단 거리 계산`)
-  console.log(`  📐 Source: (${source.left}, ${source.top}) ~ (${source.right}, ${source.bottom}) [${sourceWidth}x${sourceHeight}]`)
-  console.log(`  📐 Target: (${target.left}, ${target.top}) ~ (${target.right}, ${target.bottom}) [${targetWidth}x${targetHeight}]`)
-  console.log(`  📏 4방향 거리:`)
-  console.log(`     ➡️  right → left:  ${distances.rightToLeft.distance.toFixed(2)}`)
-  console.log(`     ⬅️  left → right:  ${distances.leftToRight.distance.toFixed(2)}`)
-  console.log(`     ⬇️  bottom → top:  ${distances.bottomToTop.distance.toFixed(2)}`)
-  console.log(`     ⬆️  top → bottom:  ${distances.topToBottom.distance.toFixed(2)}`)
-  console.log(`  ✅ 선택: ${selectedDirection} (거리: ${minDistance.toFixed(2)})\n`)
 
   return result
 }
@@ -260,9 +248,9 @@ export function toggleLogicalPhysical(nodes, tables, useLogicalNames) {
         : col.name
 
       const icons = []
-      if (col.isPrimaryKey) icons.push('🔑')
-      if (col.isUnique && !col.isPrimaryKey) icons.push('⚷')
-      if (!col.isNullable && !col.isPrimaryKey) icons.push('*')
+      if (col.isPrimaryKey) icons.push('PK')
+      if (col.isUnique && !col.isPrimaryKey) icons.push('U')
+      if (!col.isNullable && !col.isPrimaryKey) icons.push('NN')
 
       return {
         name: displayColName,
