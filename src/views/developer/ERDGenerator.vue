@@ -96,15 +96,12 @@ const generateERD = () => {
 
       // 노드가 렌더링되고 dimensions가 설정된 후 엣지 재계산
       setTimeout(() => {
-        console.log('🔧 초기 렌더링 완료 - 실제 노드 크기 기반으로 엣지 재계산')
-
         // 엣지를 완전히 비우고 재생성 (Vue Flow 강제 갱신)
         edges.value = []
 
         nextTick(() => {
           const updatedEdges = updateEdgePositions(nodes.value, elements.edges)
           edges.value = updatedEdges
-          console.log('✅ 엣지 재생성 완료:', updatedEdges.length, '개')
         })
       }, 100)
     }
@@ -140,7 +137,6 @@ watch(useLogicalNames, (newValue) => {
 
 // 노드 드래그 종료 시 위치 저장 및 엣지 재계산
 const handleNodeDragStop = () => {
-  console.log('🔧 노드 드래그 종료 - 엣지 재계산 시작')
   saveNodePositions(nodes.value)
 
   // 현재 엣지 백업
@@ -153,7 +149,6 @@ const handleNodeDragStop = () => {
   nextTick(() => {
     const updatedEdges = updateEdgePositions(nodes.value, currentEdges)
     edges.value = updatedEdges
-    console.log('✅ 엣지 재계산 완료:', updatedEdges.length, '개')
   })
 }
 
