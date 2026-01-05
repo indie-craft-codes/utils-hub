@@ -14,10 +14,15 @@ export function convertToFlowElements(tables, useLogicalNames = false) {
   const nodes = []
   const edges = []
 
-  // 테이블당 노드 생성
-  tables.forEach((table, index) => {
-    const node = createTableNode(table, index, useLogicalNames)
-    nodes.push(node)
+  // FK 관계 기반 계층 구조 분석
+  const hierarchy = buildHierarchy(tables)
+
+  // 계층별로 노드 생성
+  hierarchy.forEach((level, depth) => {
+    level.forEach((table, indexInLevel) => {
+      const node = createTableNode(table, depth, indexInLevel, level.length, useLogicalNames)
+      nodes.push(node)
+    })
   })
 
   // FK 관계를 엣지로 변환
@@ -41,9 +46,87 @@ export function convertToFlowElements(tables, useLogicalNames = false) {
 }
 
 /**
- * 테이블을 Vue Flow 노드로 변환
+ * FK 관계 기반으로 테이블 계층 구조 생성
  */
-function createTableNode(table, index, useLogicalNames) {
+function buildHierarchy(tables) {
+  // 각 테이블의 참조 관계 맵 구성
+  const tableMap = new Map(tables.map(t => [t.name, t]))
+  const referencedBy = new Map() // 누가 나를 참조하는지
+  const references = new Map()   // 내가 누구를 참조하는지
+
+  tables.forEach(table => {
+    references.set(table.name, new Set())
+    if (!referencedBy.has(table.name)) {
+      referencedBy.set(table.name, new Set())
+    }
+  })
+
+  // FK 관계 분석
+  tables.forEach(table => {
+    if (table.foreignKeys && table.foreignKeys.length > 0) {
+      table.foreignKeys.forEach(fk => {
+        const targetTable = fk.references.table
+        if (tableMap.has(targetTable)) {
+          references.get(table.name).add(targetTable)
+          if (!referencedBy.has(targetTable)) {
+            referencedBy.set(targetTable, new Set())
+          }
+          referencedBy.get(targetTable).add(table.name)
+        }
+      })
+    }
+  })
+
+  // 위상 정렬로 계층 레벨 결정
+  const depths = new Map()
+  const visited = new Set()
+
+  function calculateDepth(tableName) {
+    if (depths.has(tableName)) return depths.get(tableName)
+    if (visited.has(tableName)) return 0 // 순환 참조 방지
+
+    visited.add(tableName)
+
+    const refs = references.get(tableName)
+    if (!refs || refs.size === 0) {
+      depths.set(tableName, 0)
+      return 0
+    }
+
+    let maxDepth = 0
+    refs.forEach(refTable => {
+      const refDepth = calculateDepth(refTable)
+      maxDepth = Math.max(maxDepth, refDepth + 1)
+    })
+
+    depths.set(tableName, maxDepth)
+    return maxDepth
+  }
+
+  tables.forEach(table => calculateDepth(table.name))
+
+  // 깊이별로 그룹화
+  const hierarchy = []
+  tables.forEach(table => {
+    const depth = depths.get(table.name) || 0
+    if (!hierarchy[depth]) {
+      hierarchy[depth] = []
+    }
+    hierarchy[depth].push(table)
+  })
+
+  return hierarchy.filter(level => level && level.length > 0)
+}
+
+/**
+ * 테이블을 Vue Flow 노드로 변환 (계층형 레이아웃)
+ * @param {Object} table - 테이블 정보
+ * @param {number} depth - 계층 깊이 (0부터 시작)
+ * @param {number} indexInLevel - 같은 레벨 내 인덱스
+ * @param {number} levelSize - 같은 레벨의 총 테이블 수
+ * @param {boolean} useLogicalNames - 논리명 사용 여부
+ */
+function createTableNode(table, depth, indexInLevel, levelSize, useLogicalNames) {
   const displayName = useLogicalNames && table.logicalName
     ? table.logicalName
     : table.name
@@ -68,19 +151,27 @@ function createTableNode(table, index, useLogicalNames) {
     }
   })
 
-  // 노드 위치 자동 계산 (그리드 레이아웃)
-  const columns = 3
-  const row = Math.floor(index / columns)
-  const col = index % columns
-  const spacing = { x: 350, y: 300 }
+  // 계층형 레이아웃 위치 계산 (중앙 정렬)
+  const spacing = { x: 400, y: 400 }
+  const nodeWidth = 300 // 노드 예상 너비
+
+  // 레벨 전체 너비 계산
+  const totalWidth = levelSize * spacing.x
+
+  // 중앙 정렬을 위한 시작 X 좌표
+  const startX = -totalWidth / 2 + spacing.x / 2
+
+  // 각 노드의 위치
+  const x = startX + indexInLevel * spacing.x
+  const y = depth * spacing.y + 50
 
   return {
     id: table.name,
     type: 'custom',
     draggable: true,
     position: {
-      x: col * spacing.x + 50,
-      y: row * spacing.y + 50
+      x,
+      y
     },
     data: {
       label: displayName,
