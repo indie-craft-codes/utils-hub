@@ -89,10 +89,17 @@ const generateERD = () => {
   nodes.value = restoreNodePositions(elements.nodes)
   edges.value = elements.edges
 
-  // 자동 정렬
+  // 자동 정렬 및 엣지 재계산
   nextTick(() => {
     if (vueFlowRef.value) {
       vueFlowRef.value.fitView({ padding: 0.2, duration: 500 })
+
+      // 노드가 렌더링되고 dimensions가 설정된 후 엣지 재계산
+      setTimeout(() => {
+        console.log('🔧 초기 렌더링 완료 - 실제 노드 크기 기반으로 엣지 재계산')
+        const updatedEdges = updateEdgePositions(nodes.value, edges.value)
+        edges.value = updatedEdges
+      }, 100)
     }
   })
 

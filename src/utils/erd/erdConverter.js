@@ -113,7 +113,7 @@ function createForeignKeyEdge(table, fk, index, sourceNode, targetNode) {
     target: targetTable,
     sourcePosition,
     targetPosition,
-    type: 'step',
+    type: 'smoothstep',
     animated: false,
     style: {
       stroke: '#6b7280',
@@ -148,7 +148,7 @@ function createForeignKeyEdge(table, fk, index, sourceNode, targetNode) {
 }
 
 /**
- * Step 엣지의 실제 렌더링된 경로 길이 계산
+ * Smooth Step 엣지의 실제 렌더링된 경로 길이 계산
  */
 function calculateStepPathLength(sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition) {
   try {
@@ -210,7 +210,7 @@ function calculateOptimalPositions(sourceNode, targetNode) {
     centerY: targetNode.position.y + targetHeight / 2
   }
 
-  // Step 엣지의 실제 경로 길이 계산 - 모든 합리적인 조합 검토
+  // Smooth Step 엣지의 실제 경로 길이 계산 - 모든 합리적인 조합 검토
   // 각 handle의 실제 위치 계산
   const sourceHandles = {
     right: { x: source.right, y: source.centerY },
@@ -353,6 +353,10 @@ export function updateEdgePositions(nodes, edges) {
         sourceNode,
         targetNode
       )
+
+      console.log(`🔄 엣지 업데이트: ${edge.source} → ${edge.target}`)
+      console.log(`   이전: ${edge.sourcePosition} → ${edge.targetPosition}`)
+      console.log(`   변경: ${sourcePosition} → ${targetPosition}`)
 
       return {
         ...edge,
