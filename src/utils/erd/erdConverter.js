@@ -433,13 +433,18 @@ export function toggleLogicalPhysical(nodes, tables, useLogicalNames) {
       }
     })
 
-    // 이전 너비와 새 너비 추정
-    const oldWidth = estimateNodeWidth(node.data.label, node.data.columns)
+    // 실제 렌더링된 노드 너비 사용 (dimensions가 있는 경우)
+    // 없으면 예측값 사용
+    const oldWidth = node.dimensions?.width || estimateNodeWidth(node.data.label, node.data.columns)
     const newWidth = estimateNodeWidth(displayName, columnsHtml)
 
     // 너비 차이만큼 중앙 유지를 위해 position.x 조정
-    const widthDiff = newWidth - oldWidth
-    const adjustedX = node.position.x - widthDiff / 2
+    // Vue Flow는 좌측 상단이 기준이므로, 중앙을 유지하려면:
+    // 이전 중앙 = node.position.x + oldWidth / 2
+    // 새 중앙 = 이전 중앙 = newPosition.x + newWidth / 2
+    // newPosition.x = 이전 중앙 - newWidth / 2
+    const oldCenterX = node.position.x + oldWidth / 2
+    const adjustedX = oldCenterX - newWidth / 2
 
     return {
       ...node,

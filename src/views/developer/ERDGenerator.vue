@@ -190,10 +190,51 @@ const clearAll = () => {
   error.value = ''
 }
 
-// ERD 이미지로 다운로드 (추후 구현)
-const downloadImage = () => {
-  // TODO: html2canvas 또는 Vue Flow의 toObject() 사용
-  alert('이미지 다운로드 기능은 추후 추가 예정입니다.')
+// ERD 이미지로 다운로드
+const downloadImage = async () => {
+  if (!vueFlowRef.value || nodes.value.length === 0) {
+    return
+  }
+
+  try {
+    // html2canvas 동적 import
+    const html2canvas = (await import('html2canvas')).default
+
+    // Vue Flow 캔버스 요소 찾기
+    const vueFlowElement = vueFlowRef.value.$el.querySelector('.vue-flow__viewport')
+
+    if (!vueFlowElement) {
+      error.value = 'ERD 다이어그램을 찾을 수 없습니다.'
+      return
+    }
+
+    // 다크모드 감지
+    const isDark = document.documentElement.classList.contains('dark')
+    const backgroundColor = isDark ? '#111827' : '#fafafa'
+
+    // 캔버스로 변환
+    const canvas = await html2canvas(vueFlowElement, {
+      backgroundColor,
+      scale: 2, // 고해상도
+      logging: false,
+      useCORS: true
+    })
+
+    // 이미지로 변환 및 다운로드
+    canvas.toBlob((blob) => {
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `erd-${Date.now()}.png`
+      link.click()
+      URL.revokeObjectURL(url)
+    })
+
+    trackToolUsage('erd_download_image')
+  } catch (err) {
+    console.error('이미지 다운로드 실패:', err)
+    error.value = '이미지 다운로드 중 오류가 발생했습니다.'
+  }
 }
 </script>
 
