@@ -126,8 +126,15 @@ watch(useLogicalNames, (newValue) => {
 
 // 노드 드래그 종료 시 위치 저장 및 엣지 재계산
 const handleNodeDragStop = () => {
+  console.log('🔧 노드 드래그 종료 - 엣지 재계산 시작')
   saveNodePositions(nodes.value)
-  edges.value = updateEdgePositions(nodes.value, edges.value)
+
+  // nextTick을 사용하여 노드 위치가 완전히 업데이트된 후 엣지 재계산
+  nextTick(() => {
+    const updatedEdges = updateEdgePositions(nodes.value, edges.value)
+    edges.value = updatedEdges
+    console.log('✅ 엣지 재계산 완료:', updatedEdges.length, '개')
+  })
 }
 
 // 파일 업로드
