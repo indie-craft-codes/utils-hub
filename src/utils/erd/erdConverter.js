@@ -283,20 +283,6 @@ function calculateOptimalPositions(sourceNode, targetNode) {
     }
   })
 
-  // 디버그 로그
-  console.log(`\n🔍 [${sourceNode.id} → ${targetNode.id}] 12가지 조합 검토 (실제 path 길이 기준)`)
-  console.log(`  📐 Source: (${source.left}, ${source.top}) ~ (${source.right}, ${source.bottom})`)
-  console.log(`  📐 Target: (${target.left}, ${target.top}) ~ (${target.right}, ${target.bottom})`)
-  console.log(`  📏 모든 12가지 조합 (실제 렌더링 길이):`)
-
-  // 거리 순으로 정렬해서 전체 표시
-  const sorted = [...distances].sort((a, b) => a.distance - b.distance)
-  sorted.forEach((combo, i) => {
-    const marker = combo.name === selectedName ? '✅' : '  '
-    console.log(`    ${marker} ${i + 1}. ${combo.name}: ${combo.distance.toFixed(1)}px`)
-  })
-  console.log(`  ✅ 최종 선택: ${selectedName} (${minDistance.toFixed(1)}px)\n`)
-
   return result
 }
 
@@ -355,10 +341,6 @@ export function updateEdgePositions(nodes, edges) {
         sourceNode,
         targetNode
       )
-
-      console.log(`🔄 엣지 업데이트: ${edge.source} → ${edge.target}`)
-      console.log(`   이전: ${edge.sourcePosition} → ${edge.targetPosition}`)
-      console.log(`   변경: ${sourcePosition} → ${targetPosition}`)
 
       return {
         ...edge,
