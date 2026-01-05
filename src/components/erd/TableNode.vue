@@ -45,35 +45,42 @@ const props = defineProps({
 
 <style scoped>
 .table-node {
-  min-width: 250px;
+  min-width: 200px;
   background: white;
-  border: 2px solid #6366f1;
-  border-radius: 8px;
+  border: 1px solid #4b5563;
+  border-radius: 0;
   overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-  font-size: 13px;
+  box-shadow: none;
+  font-size: 12px;
 }
 
 .dark .table-node {
   background: #1f2937;
-  border-color: #818cf8;
+  border-color: #6b7280;
 }
 
 .table-header {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-  color: white;
-  padding: 12px;
+  background: #f3f4f6;
+  color: #1f2937;
+  padding: 8px 12px;
   font-weight: 600;
+  border-bottom: 1px solid #4b5563;
+}
+
+.dark .table-header {
+  background: #374151;
+  color: #f3f4f6;
+  border-bottom-color: #6b7280;
 }
 
 .table-name {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 700;
 }
 
 .physical-name {
-  font-size: 11px;
-  opacity: 0.8;
+  font-size: 10px;
+  opacity: 0.7;
   margin-top: 2px;
   font-weight: 400;
 }
@@ -85,17 +92,17 @@ const props = defineProps({
 .column-row {
   display: flex;
   justify-content: space-between;
-  padding: 8px 12px;
+  padding: 6px 12px;
   border-bottom: 1px solid #e5e7eb;
   transition: background-color 0.15s;
 }
 
 .dark .column-row {
-  border-bottom-color: #374151;
+  border-bottom-color: #4b5563;
 }
 
 .column-row:hover {
-  background-color: #f3f4f6;
+  background-color: #f9fafb;
 }
 
 .dark .column-row:hover {
@@ -107,12 +114,12 @@ const props = defineProps({
 }
 
 .column-row.primary-key {
-  background-color: #eef2ff;
+  background-color: #f9fafb;
   font-weight: 600;
 }
 
 .dark .column-row.primary-key {
-  background-color: #312e81;
+  background-color: #374151;
 }
 
 .column-info {
@@ -153,11 +160,12 @@ const props = defineProps({
 .handle {
   width: 8px;
   height: 8px;
-  background: #6366f1;
+  background: #6b7280;
   border: 2px solid white;
 }
 
 .dark .handle {
+  background: #9ca3af;
   border-color: #1f2937;
 }
 </style>

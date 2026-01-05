@@ -294,7 +294,7 @@ const downloadImage = () => {
         <MiniMap
           v-if="showMiniMap"
           :node-stroke-width="3"
-          :node-color="(node) => '#6366f1'"
+          :node-color="(node) => '#6b7280'"
           :mask-color="'rgb(240, 240, 240, 0.8)'"
           pannable
           zoomable
