@@ -288,6 +288,9 @@ const downloadImage = () => {
         @node-drag-stop="handleNodeDragStop"
         class="erd-canvas"
         :default-edge-options="{ type: 'smoothstep' }"
+        :nodes-connectable="false"
+        :edges-updatable="false"
+        :connect-on-click="false"
       >
         <Background pattern-color="#aaa" :gap="16" />
         <Controls />
