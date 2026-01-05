@@ -177,42 +177,45 @@ function calculateOptimalPositions(sourceNode, targetNode) {
   const handleOffset = 20 // Vue Flow step 엣지의 기본 offset
 
   const distances = {
-    // source 오른쪽 → target 왼쪽
+    // source 오른쪽 → target 왼쪽 (target이 source보다 오른쪽에 있을 때만 유효)
     rightToLeft: {
       distance: (() => {
-        const horizontal = Math.max(0, target.left - source.right)
+        if (target.left < source.right) return Infinity // 역방향: 무효
+        const horizontal = target.left - source.right
         const vertical = Math.abs(target.centerY - source.centerY)
-        // 실제 경로: 오른쪽 offset + 수직 이동 + 수평 이동 + 왼쪽 offset
         return handleOffset * 2 + horizontal + vertical
       })(),
       sourcePosition: 'right',
       targetPosition: 'left'
     },
-    // source 왼쪽 → target 오른쪽
+    // source 왼쪽 → target 오른쪽 (target이 source보다 왼쪽에 있을 때만 유효)
     leftToRight: {
       distance: (() => {
-        const horizontal = Math.max(0, source.left - target.right)
+        if (source.left < target.right) return Infinity // 역방향: 무효
+        const horizontal = source.left - target.right
         const vertical = Math.abs(target.centerY - source.centerY)
         return handleOffset * 2 + horizontal + vertical
       })(),
       sourcePosition: 'left',
       targetPosition: 'right'
     },
-    // source 아래 → target 위
+    // source 아래 → target 위 (target이 source보다 아래에 있을 때만 유효)
     bottomToTop: {
       distance: (() => {
+        if (target.top < source.bottom) return Infinity // 역방향: 무효
         const horizontal = Math.abs(target.centerX - source.centerX)
-        const vertical = Math.max(0, target.top - source.bottom)
+        const vertical = target.top - source.bottom
         return handleOffset * 2 + horizontal + vertical
       })(),
       sourcePosition: 'bottom',
       targetPosition: 'top'
     },
-    // source 위 → target 아래
+    // source 위 → target 아래 (target이 source보다 위에 있을 때만 유효)
     topToBottom: {
       distance: (() => {
+        if (source.top < target.bottom) return Infinity // 역방향: 무효
         const horizontal = Math.abs(target.centerX - source.centerX)
-        const vertical = Math.max(0, source.top - target.bottom)
+        const vertical = source.top - target.bottom
         return handleOffset * 2 + horizontal + vertical
       })(),
       sourcePosition: 'top',
@@ -240,10 +243,13 @@ function calculateOptimalPositions(sourceNode, targetNode) {
   console.log(`  📐 Source: (${source.left}, ${source.top}) ~ (${source.right}, ${source.bottom})`)
   console.log(`  📐 Target: (${target.left}, ${target.top}) ~ (${target.right}, ${target.bottom})`)
   console.log(`  📏 4방향 실제 경로 길이 (offset: ${handleOffset}px):`)
-  console.log(`     ➡️  right → left:  ${distances.rightToLeft.distance.toFixed(0)}px (H:${Math.max(0, target.left - source.right)}, V:${Math.abs(target.centerY - source.centerY).toFixed(0)})`)
-  console.log(`     ⬅️  left → right:  ${distances.leftToRight.distance.toFixed(0)}px (H:${Math.max(0, source.left - target.right)}, V:${Math.abs(target.centerY - source.centerY).toFixed(0)})`)
-  console.log(`     ⬇️  bottom → top:  ${distances.bottomToTop.distance.toFixed(0)}px (H:${Math.abs(target.centerX - source.centerX).toFixed(0)}, V:${Math.max(0, target.top - source.bottom)})`)
-  console.log(`     ⬆️  top → bottom:  ${distances.topToBottom.distance.toFixed(0)}px (H:${Math.abs(target.centerX - source.centerX).toFixed(0)}, V:${Math.max(0, source.top - target.bottom)})`)
+
+  const formatDistance = (dist) => dist === Infinity ? '∞ (역방향)' : `${dist.toFixed(0)}px`
+
+  console.log(`     ➡️  right → left:  ${formatDistance(distances.rightToLeft.distance)}`)
+  console.log(`     ⬅️  left → right:  ${formatDistance(distances.leftToRight.distance)}`)
+  console.log(`     ⬇️  bottom → top:  ${formatDistance(distances.bottomToTop.distance)}`)
+  console.log(`     ⬆️  top → bottom:  ${formatDistance(distances.topToBottom.distance)}`)
   console.log(`  ✅ 선택: ${selectedDirection} (${minDistance.toFixed(0)}px)\n`)
 
   return result
