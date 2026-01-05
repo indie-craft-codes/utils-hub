@@ -285,11 +285,11 @@ function calculateOptimalPositions(sourceNode, targetNode) {
   console.log(`\n🔍 [${sourceNode.id} → ${targetNode.id}] 12가지 조합 검토 (실제 path 길이 기준)`)
   console.log(`  📐 Source: (${source.left}, ${source.top}) ~ (${source.right}, ${source.bottom})`)
   console.log(`  📐 Target: (${target.left}, ${target.top}) ~ (${target.right}, ${target.bottom})`)
-  console.log(`  📏 모든 조합 (실제 렌더링 길이):`)
+  console.log(`  📏 모든 12가지 조합 (실제 렌더링 길이):`)
 
-  // 거리 순으로 정렬해서 상위 5개만 표시
+  // 거리 순으로 정렬해서 전체 표시
   const sorted = [...distances].sort((a, b) => a.distance - b.distance)
-  sorted.slice(0, 5).forEach((combo, i) => {
+  sorted.forEach((combo, i) => {
     const marker = combo.name === selectedName ? '✅' : '  '
     console.log(`    ${marker} ${i + 1}. ${combo.name}: ${combo.distance.toFixed(1)}px`)
   })
