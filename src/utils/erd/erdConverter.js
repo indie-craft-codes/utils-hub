@@ -2,6 +2,8 @@
  * 파싱된 테이블 스키마를 Vue Flow 노드/엣지로 변환
  */
 
+import { getSmoothStepPath } from '@vue-flow/core'
+
 /**
  * 테이블 배열을 Vue Flow 노드와 엣지로 변환
  * @param {Array} tables - 파싱된 테이블 정보 배열
@@ -146,6 +148,40 @@ function createForeignKeyEdge(table, fk, index, sourceNode, targetNode) {
 }
 
 /**
+ * Step 엣지의 실제 렌더링된 경로 길이 계산
+ */
+function calculateStepPathLength(sourceX, sourceY, targetX, targetY, sourcePosition, targetPosition) {
+  try {
+    // getSmoothStepPath로 path 데이터 생성
+    const pathData = getSmoothStepPath({
+      sourceX,
+      sourceY,
+      targetX,
+      targetY,
+      sourcePosition,
+      targetPosition
+    })
+
+    // 임시 SVG path 생성하여 실제 길이 측정
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+    path.setAttribute('d', pathData[0]) // pathData는 [path, labelX, labelY, offsetX, offsetY] 배열
+    svg.appendChild(path)
+
+    const length = path.getTotalLength()
+
+    // 메모리 정리
+    svg.remove()
+
+    return length
+  } catch (error) {
+    console.error('Path length calculation error:', error)
+    // 에러 발생 시 맨해튼 거리로 fallback
+    return Math.abs(targetX - sourceX) + Math.abs(targetY - sourceY)
+  }
+}
+
+/**
  * 두 노드 간 최적의 연결 위치 계산 (실제 최단 거리 기준)
  */
 function calculateOptimalPositions(sourceNode, targetNode) {
@@ -175,8 +211,6 @@ function calculateOptimalPositions(sourceNode, targetNode) {
   }
 
   // Step 엣지의 실제 경로 길이 계산 - 모든 합리적인 조합 검토
-  const handleOffset = 20
-
   // 각 handle의 실제 위치 계산
   const sourceHandles = {
     right: { x: source.right, y: source.centerY },
@@ -213,9 +247,15 @@ function calculateOptimalPositions(sourceNode, targetNode) {
   ]
 
   const distances = combinations.map(combo => {
-    const horizontal = Math.abs(combo.targetPos.x - combo.sourcePos.x)
-    const vertical = Math.abs(combo.targetPos.y - combo.sourcePos.y)
-    const distance = handleOffset * 2 + horizontal + vertical
+    // 실제 렌더링된 step 엣지의 경로 길이 계산
+    const distance = calculateStepPathLength(
+      combo.sourcePos.x,
+      combo.sourcePos.y,
+      combo.targetPos.x,
+      combo.targetPos.y,
+      combo.source,
+      combo.target
+    )
 
     return {
       sourcePosition: combo.source,
@@ -242,18 +282,18 @@ function calculateOptimalPositions(sourceNode, targetNode) {
   })
 
   // 디버그 로그
-  console.log(`\n🔍 [${sourceNode.id} → ${targetNode.id}] 12가지 조합 검토`)
+  console.log(`\n🔍 [${sourceNode.id} → ${targetNode.id}] 12가지 조합 검토 (실제 path 길이 기준)`)
   console.log(`  📐 Source: (${source.left}, ${source.top}) ~ (${source.right}, ${source.bottom})`)
   console.log(`  📐 Target: (${target.left}, ${target.top}) ~ (${target.right}, ${target.bottom})`)
-  console.log(`  📏 모든 조합 (offset: ${handleOffset}px):`)
+  console.log(`  📏 모든 조합 (실제 렌더링 길이):`)
 
   // 거리 순으로 정렬해서 상위 5개만 표시
   const sorted = [...distances].sort((a, b) => a.distance - b.distance)
   sorted.slice(0, 5).forEach((combo, i) => {
     const marker = combo.name === selectedName ? '✅' : '  '
-    console.log(`    ${marker} ${i + 1}. ${combo.name}: ${combo.distance.toFixed(0)}px`)
+    console.log(`    ${marker} ${i + 1}. ${combo.name}: ${combo.distance.toFixed(1)}px`)
   })
-  console.log(`  ✅ 최종 선택: ${selectedName} (${minDistance.toFixed(0)}px)\n`)
+  console.log(`  ✅ 최종 선택: ${selectedName} (${minDistance.toFixed(1)}px)\n`)
 
   return result
 }
