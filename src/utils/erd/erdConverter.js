@@ -173,29 +173,48 @@ function calculateOptimalPositions(sourceNode, targetNode) {
     centerY: targetNode.position.y + targetHeight / 2
   }
 
-  // 각 방향별 연결점 간 거리 계산 (Manhattan distance for step edges)
+  // Step 엣지의 실제 경로 길이 계산 (handle offset 포함)
+  const handleOffset = 20 // Vue Flow step 엣지의 기본 offset
+
   const distances = {
     // source 오른쪽 → target 왼쪽
     rightToLeft: {
-      distance: Math.abs(target.left - source.right) + Math.abs(target.centerY - source.centerY),
+      distance: (() => {
+        const horizontal = Math.max(0, target.left - source.right)
+        const vertical = Math.abs(target.centerY - source.centerY)
+        // 실제 경로: 오른쪽 offset + 수직 이동 + 수평 이동 + 왼쪽 offset
+        return handleOffset * 2 + horizontal + vertical
+      })(),
       sourcePosition: 'right',
       targetPosition: 'left'
     },
     // source 왼쪽 → target 오른쪽
     leftToRight: {
-      distance: Math.abs(source.left - target.right) + Math.abs(target.centerY - source.centerY),
+      distance: (() => {
+        const horizontal = Math.max(0, source.left - target.right)
+        const vertical = Math.abs(target.centerY - source.centerY)
+        return handleOffset * 2 + horizontal + vertical
+      })(),
       sourcePosition: 'left',
       targetPosition: 'right'
     },
     // source 아래 → target 위
     bottomToTop: {
-      distance: Math.abs(target.centerX - source.centerX) + Math.abs(target.top - source.bottom),
+      distance: (() => {
+        const horizontal = Math.abs(target.centerX - source.centerX)
+        const vertical = Math.max(0, target.top - source.bottom)
+        return handleOffset * 2 + horizontal + vertical
+      })(),
       sourcePosition: 'bottom',
       targetPosition: 'top'
     },
     // source 위 → target 아래
     topToBottom: {
-      distance: Math.abs(target.centerX - source.centerX) + Math.abs(source.top - target.bottom),
+      distance: (() => {
+        const horizontal = Math.abs(target.centerX - source.centerX)
+        const vertical = Math.max(0, source.top - target.bottom)
+        return handleOffset * 2 + horizontal + vertical
+      })(),
       sourcePosition: 'top',
       targetPosition: 'bottom'
     }
@@ -217,15 +236,15 @@ function calculateOptimalPositions(sourceNode, targetNode) {
     }
   }
 
-  console.log(`\n🔍 [${sourceNode.id} → ${targetNode.id}] 최단 거리 계산`)
-  console.log(`  📐 Source: (${source.left}, ${source.top}) ~ (${source.right}, ${source.bottom}) [${sourceWidth}x${sourceHeight}]`)
-  console.log(`  📐 Target: (${target.left}, ${target.top}) ~ (${target.right}, ${target.bottom}) [${targetWidth}x${targetHeight}]`)
-  console.log(`  📏 4방향 거리:`)
-  console.log(`     ➡️  right → left:  ${distances.rightToLeft.distance.toFixed(2)}`)
-  console.log(`     ⬅️  left → right:  ${distances.leftToRight.distance.toFixed(2)}`)
-  console.log(`     ⬇️  bottom → top:  ${distances.bottomToTop.distance.toFixed(2)}`)
-  console.log(`     ⬆️  top → bottom:  ${distances.topToBottom.distance.toFixed(2)}`)
-  console.log(`  ✅ 선택: ${selectedDirection} (거리: ${minDistance.toFixed(2)})\n`)
+  console.log(`\n🔍 [${sourceNode.id} → ${targetNode.id}] 실제 Step 경로 길이 계산`)
+  console.log(`  📐 Source: (${source.left}, ${source.top}) ~ (${source.right}, ${source.bottom})`)
+  console.log(`  📐 Target: (${target.left}, ${target.top}) ~ (${target.right}, ${target.bottom})`)
+  console.log(`  📏 4방향 실제 경로 길이 (offset: ${handleOffset}px):`)
+  console.log(`     ➡️  right → left:  ${distances.rightToLeft.distance.toFixed(0)}px (H:${Math.max(0, target.left - source.right)}, V:${Math.abs(target.centerY - source.centerY).toFixed(0)})`)
+  console.log(`     ⬅️  left → right:  ${distances.leftToRight.distance.toFixed(0)}px (H:${Math.max(0, source.left - target.right)}, V:${Math.abs(target.centerY - source.centerY).toFixed(0)})`)
+  console.log(`     ⬇️  bottom → top:  ${distances.bottomToTop.distance.toFixed(0)}px (H:${Math.abs(target.centerX - source.centerX).toFixed(0)}, V:${Math.max(0, target.top - source.bottom)})`)
+  console.log(`     ⬆️  top → bottom:  ${distances.topToBottom.distance.toFixed(0)}px (H:${Math.abs(target.centerX - source.centerX).toFixed(0)}, V:${Math.max(0, source.top - target.bottom)})`)
+  console.log(`  ✅ 선택: ${selectedDirection} (${minDistance.toFixed(0)}px)\n`)
 
   return result
 }
