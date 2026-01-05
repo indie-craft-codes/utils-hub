@@ -212,12 +212,31 @@ const downloadImage = async () => {
     const isDark = document.documentElement.classList.contains('dark')
     const backgroundColor = isDark ? '#111827' : '#fafafa'
 
-    // 캔버스로 변환
+    // 폰트 로딩 대기
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready
+    }
+
+    // 캔버스로 변환 (개선된 옵션)
     const canvas = await html2canvas(vueFlowElement, {
       backgroundColor,
       scale: 2, // 고해상도
       logging: false,
-      useCORS: true
+      useCORS: true,
+      allowTaint: true,
+      foreignObjectRendering: true, // 더 나은 텍스트 렌더링
+      imageTimeout: 0,
+      removeContainer: true,
+      // 폰트 렌더링 개선
+      onclone: (clonedDoc) => {
+        const clonedElement = clonedDoc.querySelector('.vue-flow__viewport')
+        if (clonedElement) {
+          // 텍스트 렌더링 품질 개선
+          clonedElement.style.fontSmooth = 'antialiased'
+          clonedElement.style.webkitFontSmoothing = 'antialiased'
+          clonedElement.style.textRendering = 'optimizeLegibility'
+        }
+      }
     })
 
     // 이미지로 변환 및 다운로드
@@ -228,7 +247,7 @@ const downloadImage = async () => {
       link.download = `erd-${Date.now()}.png`
       link.click()
       URL.revokeObjectURL(url)
-    })
+    }, 'image/png', 1.0) // 최고 품질
 
     trackToolUsage('erd_download_image')
   } catch (err) {

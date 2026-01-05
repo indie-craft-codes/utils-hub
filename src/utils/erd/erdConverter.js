@@ -468,17 +468,46 @@ function estimateNodeWidth(tableName, columns) {
   // 최소 너비
   const minWidth = 200
 
-  // 테이블명 기준 너비
-  const tableNameWidth = tableName.length * 8 + 40
+  // 테이블명 기준 너비 (폰트 크기와 패딩 고려)
+  // 한글은 영문보다 넓음
+  const tableNameWidth = calculateTextWidth(tableName, 14, true) + 40
 
   // 컬럼명 + 타입 중 가장 긴 것 찾기
-  let maxColumnWidth = 0
+  let maxColumnWidth = minWidth
   columns.forEach(col => {
-    const colWidth = (col.name.length + col.type.length) * 7 + 60
+    // 아이콘(20px) + 컬럼명 + 타입 + 여백
+    const iconWidth = col.icons ? 30 : 0
+    const nameWidth = calculateTextWidth(col.name, 12, false)
+    const typeWidth = calculateTextWidth(col.type, 11, false)
+    const colWidth = iconWidth + nameWidth + typeWidth + 80
     maxColumnWidth = Math.max(maxColumnWidth, colWidth)
   })
 
   return Math.max(minWidth, tableNameWidth, maxColumnWidth)
+}
+
+/**
+ * 텍스트 너비 추정 (한글/영문 구분)
+ */
+function calculateTextWidth(text, fontSize, isBold = false) {
+  if (!text) return 0
+
+  // 한글, 한자, 일본어 등 넓은 문자 감지
+  const wideCharPattern = /[\u3000-\u303f\u3040-\u309f\u30a0-\u30ff\uff00-\uff9f\u4e00-\u9faf\u3400-\u4dbf\uac00-\ud7a3]/
+
+  let width = 0
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i]
+    if (wideCharPattern.test(char)) {
+      // 한글/한자 등: fontSize와 거의 같은 너비
+      width += fontSize * (isBold ? 1.1 : 1.0)
+    } else {
+      // 영문/숫자: fontSize의 약 0.6배
+      width += fontSize * (isBold ? 0.7 : 0.6)
+    }
+  }
+
+  return width
 }
 
 /**
