@@ -35,11 +35,15 @@ const props = defineProps({
       </div>
     </div>
 
-    <!-- Vue Flow Handles (연결점) -->
-    <Handle type="target" :position="Position.Left" class="handle" />
-    <Handle type="source" :position="Position.Right" class="handle" />
-    <Handle type="target" :position="Position.Top" class="handle" />
-    <Handle type="source" :position="Position.Bottom" class="handle" />
+    <!-- Vue Flow Handles (연결점) - 모든 방향에서 source/target 가능 -->
+    <Handle id="left" type="source" :position="Position.Left" class="handle" />
+    <Handle id="left-target" type="target" :position="Position.Left" class="handle handle-hidden" />
+    <Handle id="right" type="source" :position="Position.Right" class="handle" />
+    <Handle id="right-target" type="target" :position="Position.Right" class="handle handle-hidden" />
+    <Handle id="top" type="source" :position="Position.Top" class="handle" />
+    <Handle id="top-target" type="target" :position="Position.Top" class="handle handle-hidden" />
+    <Handle id="bottom" type="source" :position="Position.Bottom" class="handle" />
+    <Handle id="bottom-target" type="target" :position="Position.Bottom" class="handle handle-hidden" />
   </div>
 </template>
 
@@ -167,5 +171,10 @@ const props = defineProps({
 .dark .handle {
   background: #9ca3af;
   border-color: #1f2937;
+}
+
+.handle-hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 </style>

@@ -111,6 +111,8 @@ function createForeignKeyEdge(table, fk, index, sourceNode, targetNode) {
     id: edgeId,
     source: sourceTable,
     target: targetTable,
+    sourceHandle: sourcePosition, // handle ID 명시
+    targetHandle: `${targetPosition}-target`, // target handle ID
     sourcePosition,
     targetPosition,
     type: 'smoothstep',
@@ -360,6 +362,8 @@ export function updateEdgePositions(nodes, edges) {
 
       return {
         ...edge,
+        sourceHandle: sourcePosition,
+        targetHandle: `${targetPosition}-target`,
         sourcePosition,
         targetPosition
       }
