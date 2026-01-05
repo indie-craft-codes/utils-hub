@@ -75,6 +75,7 @@ function createTableNode(table, index, useLogicalNames) {
   return {
     id: table.name,
     type: 'custom',
+    draggable: true,
     position: {
       x: col * spacing.x + 50,
       y: row * spacing.y + 50
