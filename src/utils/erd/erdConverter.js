@@ -174,84 +174,86 @@ function calculateOptimalPositions(sourceNode, targetNode) {
     centerY: targetNode.position.y + targetHeight / 2
   }
 
-  // Step 엣지의 실제 경로 길이 계산 (handle offset 포함)
-  const handleOffset = 20 // Vue Flow step 엣지의 기본 offset
+  // Step 엣지의 실제 경로 길이 계산 - 모든 합리적인 조합 검토
+  const handleOffset = 20
 
-  const distances = {
-    // source 오른쪽 → target 왼쪽 (target이 source보다 오른쪽에 있을 때만 유효)
-    rightToLeft: {
-      distance: (() => {
-        if (target.left < source.right) return Infinity // 역방향: 무효
-        const horizontal = target.left - source.right
-        const vertical = Math.abs(target.centerY - source.centerY)
-        return handleOffset * 2 + horizontal + vertical
-      })(),
-      sourcePosition: 'right',
-      targetPosition: 'left'
-    },
-    // source 왼쪽 → target 오른쪽 (target이 source보다 왼쪽에 있을 때만 유효)
-    leftToRight: {
-      distance: (() => {
-        if (source.left < target.right) return Infinity // 역방향: 무효
-        const horizontal = source.left - target.right
-        const vertical = Math.abs(target.centerY - source.centerY)
-        return handleOffset * 2 + horizontal + vertical
-      })(),
-      sourcePosition: 'left',
-      targetPosition: 'right'
-    },
-    // source 아래 → target 위 (target이 source보다 아래에 있을 때만 유효)
-    bottomToTop: {
-      distance: (() => {
-        if (target.top < source.bottom) return Infinity // 역방향: 무효
-        const horizontal = Math.abs(target.centerX - source.centerX)
-        const vertical = target.top - source.bottom
-        return handleOffset * 2 + horizontal + vertical
-      })(),
-      sourcePosition: 'bottom',
-      targetPosition: 'top'
-    },
-    // source 위 → target 아래 (target이 source보다 위에 있을 때만 유효)
-    topToBottom: {
-      distance: (() => {
-        if (source.top < target.bottom) return Infinity // 역방향: 무효
-        const horizontal = Math.abs(target.centerX - source.centerX)
-        const vertical = source.top - target.bottom
-        return handleOffset * 2 + horizontal + vertical
-      })(),
-      sourcePosition: 'top',
-      targetPosition: 'bottom'
-    }
+  // 각 handle의 실제 위치 계산
+  const sourceHandles = {
+    right: { x: source.right, y: source.centerY },
+    left: { x: source.left, y: source.centerY },
+    bottom: { x: source.centerX, y: source.bottom },
+    top: { x: source.centerX, y: source.top }
   }
 
-  // 가장 짧은 거리를 가진 방향 선택
+  const targetHandles = {
+    left: { x: target.left, y: target.centerY },
+    right: { x: target.right, y: target.centerY },
+    top: { x: target.centerX, y: target.top },
+    bottom: { x: target.centerX, y: target.bottom }
+  }
+
+  // 16가지 조합 중 같은 방향 제외 (12가지)
+  const combinations = [
+    // source.right
+    { source: 'right', target: 'left', sourcePos: sourceHandles.right, targetPos: targetHandles.left },
+    { source: 'right', target: 'top', sourcePos: sourceHandles.right, targetPos: targetHandles.top },
+    { source: 'right', target: 'bottom', sourcePos: sourceHandles.right, targetPos: targetHandles.bottom },
+    // source.left
+    { source: 'left', target: 'right', sourcePos: sourceHandles.left, targetPos: targetHandles.right },
+    { source: 'left', target: 'top', sourcePos: sourceHandles.left, targetPos: targetHandles.top },
+    { source: 'left', target: 'bottom', sourcePos: sourceHandles.left, targetPos: targetHandles.bottom },
+    // source.bottom
+    { source: 'bottom', target: 'top', sourcePos: sourceHandles.bottom, targetPos: targetHandles.top },
+    { source: 'bottom', target: 'left', sourcePos: sourceHandles.bottom, targetPos: targetHandles.left },
+    { source: 'bottom', target: 'right', sourcePos: sourceHandles.bottom, targetPos: targetHandles.right },
+    // source.top
+    { source: 'top', target: 'bottom', sourcePos: sourceHandles.top, targetPos: targetHandles.bottom },
+    { source: 'top', target: 'left', sourcePos: sourceHandles.top, targetPos: targetHandles.left },
+    { source: 'top', target: 'right', sourcePos: sourceHandles.top, targetPos: targetHandles.right }
+  ]
+
+  const distances = combinations.map(combo => {
+    const horizontal = Math.abs(combo.targetPos.x - combo.sourcePos.x)
+    const vertical = Math.abs(combo.targetPos.y - combo.sourcePos.y)
+    const distance = handleOffset * 2 + horizontal + vertical
+
+    return {
+      sourcePosition: combo.source,
+      targetPosition: combo.target,
+      distance,
+      name: `${combo.source}→${combo.target}`
+    }
+  })
+
+  // 가장 짧은 거리를 가진 조합 선택
   let minDistance = Infinity
   let result = { sourcePosition: 'right', targetPosition: 'left' }
-  let selectedDirection = ''
+  let selectedName = ''
 
-  for (const [direction, info] of Object.entries(distances)) {
-    if (info.distance < minDistance) {
-      minDistance = info.distance
-      selectedDirection = direction
+  distances.forEach(combo => {
+    if (combo.distance < minDistance) {
+      minDistance = combo.distance
+      selectedName = combo.name
       result = {
-        sourcePosition: info.sourcePosition,
-        targetPosition: info.targetPosition
+        sourcePosition: combo.sourcePosition,
+        targetPosition: combo.targetPosition
       }
     }
-  }
+  })
 
-  console.log(`\n🔍 [${sourceNode.id} → ${targetNode.id}] 실제 Step 경로 길이 계산`)
+  // 디버그 로그
+  console.log(`\n🔍 [${sourceNode.id} → ${targetNode.id}] 12가지 조합 검토`)
   console.log(`  📐 Source: (${source.left}, ${source.top}) ~ (${source.right}, ${source.bottom})`)
   console.log(`  📐 Target: (${target.left}, ${target.top}) ~ (${target.right}, ${target.bottom})`)
-  console.log(`  📏 4방향 실제 경로 길이 (offset: ${handleOffset}px):`)
+  console.log(`  📏 모든 조합 (offset: ${handleOffset}px):`)
 
-  const formatDistance = (dist) => dist === Infinity ? '∞ (역방향)' : `${dist.toFixed(0)}px`
-
-  console.log(`     ➡️  right → left:  ${formatDistance(distances.rightToLeft.distance)}`)
-  console.log(`     ⬅️  left → right:  ${formatDistance(distances.leftToRight.distance)}`)
-  console.log(`     ⬇️  bottom → top:  ${formatDistance(distances.bottomToTop.distance)}`)
-  console.log(`     ⬆️  top → bottom:  ${formatDistance(distances.topToBottom.distance)}`)
-  console.log(`  ✅ 선택: ${selectedDirection} (${minDistance.toFixed(0)}px)\n`)
+  // 거리 순으로 정렬해서 상위 5개만 표시
+  const sorted = [...distances].sort((a, b) => a.distance - b.distance)
+  sorted.slice(0, 5).forEach((combo, i) => {
+    const marker = combo.name === selectedName ? '✅' : '  '
+    console.log(`    ${marker} ${i + 1}. ${combo.name}: ${combo.distance.toFixed(0)}px`)
+  })
+  console.log(`  ✅ 최종 선택: ${selectedName} (${minDistance.toFixed(0)}px)\n`)
 
   return result
 }
