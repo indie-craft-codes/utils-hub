@@ -173,41 +173,29 @@ function calculateOptimalPositions(sourceNode, targetNode) {
     centerY: targetNode.position.y + targetHeight / 2
   }
 
-  // 각 방향별 연결점 간 거리 계산
+  // 각 방향별 연결점 간 거리 계산 (Manhattan distance for step edges)
   const distances = {
     // source 오른쪽 → target 왼쪽
     rightToLeft: {
-      distance: Math.sqrt(
-        Math.pow(target.left - source.right, 2) +
-        Math.pow(target.centerY - source.centerY, 2)
-      ),
+      distance: Math.abs(target.left - source.right) + Math.abs(target.centerY - source.centerY),
       sourcePosition: 'right',
       targetPosition: 'left'
     },
     // source 왼쪽 → target 오른쪽
     leftToRight: {
-      distance: Math.sqrt(
-        Math.pow(source.left - target.right, 2) +
-        Math.pow(target.centerY - source.centerY, 2)
-      ),
+      distance: Math.abs(source.left - target.right) + Math.abs(target.centerY - source.centerY),
       sourcePosition: 'left',
       targetPosition: 'right'
     },
     // source 아래 → target 위
     bottomToTop: {
-      distance: Math.sqrt(
-        Math.pow(target.centerX - source.centerX, 2) +
-        Math.pow(target.top - source.bottom, 2)
-      ),
+      distance: Math.abs(target.centerX - source.centerX) + Math.abs(target.top - source.bottom),
       sourcePosition: 'bottom',
       targetPosition: 'top'
     },
     // source 위 → target 아래
     topToBottom: {
-      distance: Math.sqrt(
-        Math.pow(target.centerX - source.centerX, 2) +
-        Math.pow(source.top - target.bottom, 2)
-      ),
+      distance: Math.abs(target.centerX - source.centerX) + Math.abs(source.top - target.bottom),
       sourcePosition: 'top',
       targetPosition: 'bottom'
     }
