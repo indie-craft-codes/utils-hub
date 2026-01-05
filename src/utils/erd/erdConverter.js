@@ -433,8 +433,20 @@ export function toggleLogicalPhysical(nodes, tables, useLogicalNames) {
       }
     })
 
+    // 이전 너비와 새 너비 추정
+    const oldWidth = estimateNodeWidth(node.data.label, node.data.columns)
+    const newWidth = estimateNodeWidth(displayName, columnsHtml)
+
+    // 너비 차이만큼 중앙 유지를 위해 position.x 조정
+    const widthDiff = newWidth - oldWidth
+    const adjustedX = node.position.x - widthDiff / 2
+
     return {
       ...node,
+      position: {
+        ...node.position,
+        x: adjustedX
+      },
       data: {
         ...node.data,
         label: displayName,
@@ -442,6 +454,26 @@ export function toggleLogicalPhysical(nodes, tables, useLogicalNames) {
       }
     }
   })
+}
+
+/**
+ * 노드의 예상 너비 계산 (텍스트 길이 기반)
+ */
+function estimateNodeWidth(tableName, columns) {
+  // 최소 너비
+  const minWidth = 200
+
+  // 테이블명 기준 너비
+  const tableNameWidth = tableName.length * 8 + 40
+
+  // 컬럼명 + 타입 중 가장 긴 것 찾기
+  let maxColumnWidth = 0
+  columns.forEach(col => {
+    const colWidth = (col.name.length + col.type.length) * 7 + 60
+    maxColumnWidth = Math.max(maxColumnWidth, colWidth)
+  })
+
+  return Math.max(minWidth, tableNameWidth, maxColumnWidth)
 }
 
 /**

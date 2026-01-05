@@ -132,11 +132,21 @@ const removeDDL = (id) => {
 watch(useLogicalNames, (newValue) => {
   if (nodes.value.length > 0) {
     // 노드를 비우고 재생성 (Vue Flow 강제 갱신)
+    // 중앙 위치를 유지하면서 텍스트만 변경
     const updatedNodes = toggleLogicalPhysical(nodes.value, tables.value, newValue)
+
+    // 엣지는 유지 (재계산 안 함)
+    const currentEdges = [...edges.value]
+
     nodes.value = []
+    edges.value = []
 
     nextTick(() => {
       nodes.value = updatedNodes
+      // 엣지를 그대로 복원 (연결선 변경 없음)
+      nextTick(() => {
+        edges.value = currentEdges
+      })
     })
   }
 })
