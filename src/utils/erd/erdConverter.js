@@ -95,13 +95,13 @@ function buildHierarchy(tables) {
 
   // 위상 정렬로 계층 레벨 결정
   const depths = new Map()
-  const visited = new Set()
 
-  function calculateDepth(tableName) {
+  function calculateDepth(tableName, visiting = new Set()) {
+    // 이미 계산된 depth가 있으면 반환
     if (depths.has(tableName)) return depths.get(tableName)
-    if (visited.has(tableName)) return 0 // 순환 참조 방지
 
-    visited.add(tableName)
+    // 순환 참조 감지
+    if (visiting.has(tableName)) return 0
 
     const refs = references.get(tableName)
     if (!refs || refs.size === 0) {
@@ -109,11 +109,17 @@ function buildHierarchy(tables) {
       return 0
     }
 
+    // 현재 노드를 방문 중으로 표시
+    visiting.add(tableName)
+
     let maxDepth = 0
     refs.forEach(refTable => {
-      const refDepth = calculateDepth(refTable)
+      const refDepth = calculateDepth(refTable, visiting)
       maxDepth = Math.max(maxDepth, refDepth + 1)
     })
+
+    // 방문 완료 후 제거
+    visiting.delete(tableName)
 
     depths.set(tableName, maxDepth)
     return maxDepth
