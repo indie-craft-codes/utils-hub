@@ -131,7 +131,13 @@ const removeDDL = (id) => {
 // 논리/물리 모델 토글
 watch(useLogicalNames, (newValue) => {
   if (nodes.value.length > 0) {
-    nodes.value = toggleLogicalPhysical(nodes.value, tables.value, newValue)
+    // 노드를 비우고 재생성 (Vue Flow 강제 갱신)
+    const updatedNodes = toggleLogicalPhysical(nodes.value, tables.value, newValue)
+    nodes.value = []
+
+    nextTick(() => {
+      nodes.value = updatedNodes
+    })
   }
 })
 
