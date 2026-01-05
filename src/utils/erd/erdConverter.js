@@ -17,10 +17,16 @@ export function convertToFlowElements(tables, useLogicalNames = false) {
   // FK 관계 기반 계층 구조 분석
   const hierarchy = buildHierarchy(tables)
 
+  // 각 레벨의 최대 높이 계산 (중앙 정렬용)
+  const levelMaxHeights = hierarchy.map(level => {
+    return Math.max(...level.map(table => estimateNodeHeight(table)))
+  })
+
   // 계층별로 노드 생성
   hierarchy.forEach((level, depth) => {
+    const maxHeight = levelMaxHeights[depth]
     level.forEach((table, indexInLevel) => {
-      const node = createTableNode(table, depth, indexInLevel, level.length, useLogicalNames)
+      const node = createTableNode(table, depth, indexInLevel, level.length, maxHeight, useLogicalNames)
       nodes.push(node)
     })
   })
@@ -43,6 +49,16 @@ export function convertToFlowElements(tables, useLogicalNames = false) {
   })
 
   return { nodes, edges }
+}
+
+/**
+ * 테이블의 예상 높이 계산 (컬럼 수 기반)
+ */
+function estimateNodeHeight(table) {
+  const headerHeight = 40
+  const rowHeight = 30
+  const columnCount = table.columns.length
+  return headerHeight + columnCount * rowHeight
 }
 
 /**
@@ -124,9 +140,10 @@ function buildHierarchy(tables) {
  * @param {number} depth - 계층 깊이 (0부터 시작)
  * @param {number} indexInLevel - 같은 레벨 내 인덱스
  * @param {number} levelSize - 같은 레벨의 총 테이블 수
+ * @param {number} levelMaxHeight - 같은 레벨의 최대 노드 높이 (중앙 정렬용)
  * @param {boolean} useLogicalNames - 논리명 사용 여부
  */
-function createTableNode(table, depth, indexInLevel, levelSize, useLogicalNames) {
+function createTableNode(table, depth, indexInLevel, levelSize, levelMaxHeight, useLogicalNames) {
   const displayName = useLogicalNames && table.logicalName
     ? table.logicalName
     : table.name
@@ -153,17 +170,19 @@ function createTableNode(table, depth, indexInLevel, levelSize, useLogicalNames)
 
   // 계층형 레이아웃 위치 계산 (중앙 정렬)
   const spacing = { x: 400, y: 400 }
-  const nodeWidth = 300 // 노드 예상 너비
 
-  // 레벨 전체 너비 계산
+  // 수평 중앙 정렬: 레벨 전체 너비 계산
   const totalWidth = levelSize * spacing.x
-
-  // 중앙 정렬을 위한 시작 X 좌표
   const startX = -totalWidth / 2 + spacing.x / 2
+
+  // 수직 중앙 정렬: 이 테이블의 높이를 계산하고 레벨 최대 높이 기준으로 중앙 정렬
+  const nodeHeight = estimateNodeHeight(table)
+  const heightDiff = levelMaxHeight - nodeHeight
+  const verticalOffset = heightDiff / 2 // 위아래 여백을 동일하게
 
   // 각 노드의 위치
   const x = startX + indexInLevel * spacing.x
-  const y = depth * spacing.y + 50
+  const y = depth * spacing.y + 50 + verticalOffset
 
   return {
     id: table.name,
