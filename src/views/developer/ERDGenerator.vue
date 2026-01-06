@@ -133,21 +133,26 @@ watch(useLogicalNames, (newValue) => {
   if (nodes.value.length > 0) {
     // 실제 렌더링된 노드 크기를 DOM에서 직접 읽어오기
     const actualWidths = new Map()
+    const actualHeights = new Map()
 
     nodes.value.forEach(node => {
       // Vue Flow가 렌더링한 실제 DOM 요소 찾기
       const nodeElement = document.querySelector(`[data-id="${node.id}"]`)
       if (nodeElement) {
         const width = nodeElement.offsetWidth || node.dimensions?.width
+        const height = nodeElement.offsetHeight || node.dimensions?.height
         if (width) {
           actualWidths.set(node.id, width)
+        }
+        if (height) {
+          actualHeights.set(node.id, height)
         }
       }
     })
 
     // 노드를 비우고 재생성 (Vue Flow 강제 갱신)
     // 중앙 위치를 유지하면서 텍스트만 변경
-    const updatedNodes = toggleLogicalPhysical(nodes.value, tables.value, newValue, actualWidths)
+    const updatedNodes = toggleLogicalPhysical(nodes.value, tables.value, newValue, actualWidths, actualHeights)
 
     // 엣지는 유지 (재계산 안 함)
     const currentEdges = [...edges.value]
