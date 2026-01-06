@@ -276,26 +276,13 @@ const downloadImage = async () => {
   }
 
   try {
-    // 현재 뷰 상태 저장
-    const currentViewport = vueFlowRef.value.getViewport()
-
-    // 전체 다이어그램이 보이도록 조정
-    await vueFlowRef.value.fitView({
-      padding: 0.1,
-      duration: 0 // 애니메이션 없이 즉시 적용
-    })
-
-    // DOM 업데이트 대기
-    await nextTick()
-    await new Promise(resolve => setTimeout(resolve, 300))
-
     // html2canvas 동적 import
     const html2canvas = (await import('html2canvas')).default
 
-    // Vue Flow 전체 요소 찾기
-    const vueFlowElement = vueFlowRef.value.$el
+    // Vue Flow viewport 요소 찾기
+    const viewportElement = vueFlowRef.value.$el.querySelector('.vue-flow__viewport')
 
-    if (!vueFlowElement) {
+    if (!viewportElement) {
       error.value = 'ERD 다이어그램을 찾을 수 없습니다.'
       return
     }
@@ -304,28 +291,62 @@ const downloadImage = async () => {
     const isDark = document.documentElement.classList.contains('dark')
     const backgroundColor = isDark ? '#111827' : '#fafafa'
 
+    // 모든 노드와 엣지의 실제 위치 계산
+    const nodeElements = viewportElement.querySelectorAll('.vue-flow__node')
+    const edgeElements = viewportElement.querySelectorAll('.vue-flow__edge')
+
+    if (nodeElements.length === 0) {
+      error.value = '캡처할 노드가 없습니다.'
+      return
+    }
+
+    // 전체 바운딩 박스 계산
+    let minX = Infinity, minY = Infinity
+    let maxX = -Infinity, maxY = -Infinity
+
+    nodeElements.forEach(node => {
+      const rect = node.getBoundingClientRect()
+      const viewportRect = viewportElement.getBoundingClientRect()
+
+      const relX = rect.left - viewportRect.left
+      const relY = rect.top - viewportRect.top
+
+      minX = Math.min(minX, relX)
+      minY = Math.min(minY, relY)
+      maxX = Math.max(maxX, relX + rect.width)
+      maxY = Math.max(maxY, relY + rect.height)
+    })
+
+    const padding = 40
+    const width = maxX - minX + padding * 2
+    const height = maxY - minY + padding * 2
+
     // 폰트 로딩 대기
     if (document.fonts && document.fonts.ready) {
       await document.fonts.ready
     }
 
-    // 캔버스로 변환 (개선된 옵션)
-    const canvas = await html2canvas(vueFlowElement, {
+    console.log('캡처 영역:', { minX, minY, width, height })
+
+    // viewport를 캡처하되, transform과 위치 조정
+    const canvas = await html2canvas(viewportElement, {
       backgroundColor,
-      scale: 2, // 고해상도
-      logging: false,
+      scale: 2,
+      logging: true,
       useCORS: true,
       allowTaint: true,
-      foreignObjectRendering: true, // SVG와 HTML 모두 렌더링
-      imageTimeout: 0,
-      // 폰트 및 SVG 렌더링 개선
+      x: minX - padding,
+      y: minY - padding,
+      width: width,
+      height: height,
+      windowWidth: viewportElement.scrollWidth,
+      windowHeight: viewportElement.scrollHeight,
       onclone: (clonedDoc) => {
-        const clonedElement = clonedDoc.querySelector('.vue-flow')
-        if (clonedElement) {
-          // 텍스트 렌더링 품질 개선
-          clonedElement.style.fontSmooth = 'antialiased'
-          clonedElement.style.webkitFontSmoothing = 'antialiased'
-          clonedElement.style.textRendering = 'optimizeLegibility'
+        const clonedViewport = clonedDoc.querySelector('.vue-flow__viewport')
+        if (clonedViewport) {
+          // transform 제거하고 원래 위치 사용
+          clonedViewport.style.transform = 'none'
+          clonedViewport.style.transformOrigin = 'unset'
 
           // Controls, MiniMap 숨기기
           const controls = clonedDoc.querySelector('.vue-flow__controls')
@@ -333,45 +354,50 @@ const downloadImage = async () => {
           if (controls) controls.style.display = 'none'
           if (minimap) minimap.style.display = 'none'
 
-          // SVG edge 렌더링 강제 활성화
-          const edges = clonedDoc.querySelectorAll('.vue-flow__edge')
-          edges.forEach(edge => {
-            edge.style.display = 'block'
-            edge.style.visibility = 'visible'
-            edge.style.opacity = '1'
+          // 노드 스타일 강제 적용
+          const clonedNodes = clonedDoc.querySelectorAll('.vue-flow__node')
+          clonedNodes.forEach(node => {
+            node.style.opacity = '1'
+            node.style.visibility = 'visible'
           })
 
-          // SVG path 스타일 강제 적용
-          const paths = clonedDoc.querySelectorAll('.vue-flow__edge path')
-          paths.forEach(path => {
-            if (!path.getAttribute('stroke')) {
+          // 엣지 스타일 강제 적용
+          const clonedEdges = clonedDoc.querySelectorAll('.vue-flow__edge')
+          clonedEdges.forEach(edge => {
+            edge.style.opacity = '1'
+            edge.style.visibility = 'visible'
+
+            const paths = edge.querySelectorAll('path')
+            paths.forEach(path => {
               path.setAttribute('stroke', isDark ? '#6b7280' : '#9ca3af')
-            }
-            if (!path.getAttribute('stroke-width')) {
               path.setAttribute('stroke-width', '2')
-            }
+              path.setAttribute('fill', 'none')
+            })
           })
         }
       }
     })
 
-    // 원래 뷰 상태로 복원
-    vueFlowRef.value.setViewport(currentViewport)
+    console.log('캔버스 생성 완료:', canvas.width, 'x', canvas.height)
 
     // 이미지로 변환 및 다운로드
     canvas.toBlob((blob) => {
+      if (!blob) {
+        error.value = '이미지 생성에 실패했습니다.'
+        return
+      }
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
       link.download = `erd-${Date.now()}.png`
       link.click()
       URL.revokeObjectURL(url)
-    }, 'image/png', 1.0) // 최고 품질
+    }, 'image/png', 1.0)
 
     trackToolUsage('erd_download_image')
   } catch (err) {
     console.error('이미지 다운로드 실패:', err)
-    error.value = '이미지 다운로드 중 오류가 발생했습니다.'
+    error.value = `이미지 다운로드 중 오류가 발생했습니다: ${err.message}`
   }
 }
 </script>
