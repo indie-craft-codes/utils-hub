@@ -439,10 +439,14 @@ export function toggleLogicalPhysical(nodes, tables, useLogicalNames, actualWidt
 
     // 실제 렌더링된 노드 너비 사용 (우선순위: DOM > dimensions > 추정)
     let oldWidth = estimateNodeWidth(node.data.label, node.data.columns)
+    let widthSource = 'estimated'
+
     if (actualWidths && actualWidths.has(node.id)) {
       oldWidth = actualWidths.get(node.id)
+      widthSource = 'DOM'
     } else if (node.dimensions?.width) {
       oldWidth = node.dimensions.width
+      widthSource = 'dimensions'
     }
 
     const newWidth = estimateNodeWidth(displayName, columnsHtml)
@@ -452,6 +456,20 @@ export function toggleLogicalPhysical(nodes, tables, useLogicalNames, actualWidt
     const oldCenterX = node.position.x + oldWidth / 2
     // 2. 새 너비로 중앙점 유지하는 새 position.x 계산
     const adjustedX = oldCenterX - newWidth / 2
+    // 3. 검증: 새 중앙점
+    const newCenterX = adjustedX + newWidth / 2
+
+    // 디버깅 로그
+    console.log(`\n🔄 [${node.id}] 토글 (${useLogicalNames ? '논리명' : '물리명'})`)
+    console.log(`  테이블명: "${node.data.label}" → "${displayName}"`)
+    console.log(`  이전 너비: ${oldWidth.toFixed(1)}px (출처: ${widthSource})`)
+    console.log(`  새 너비: ${newWidth.toFixed(1)}px (추정)`)
+    console.log(`  이전 position.x: ${node.position.x.toFixed(1)}px`)
+    console.log(`  이전 중앙점: ${oldCenterX.toFixed(1)}px`)
+    console.log(`  새 position.x: ${adjustedX.toFixed(1)}px`)
+    console.log(`  새 중앙점: ${newCenterX.toFixed(1)}px`)
+    console.log(`  중앙점 차이: ${Math.abs(newCenterX - oldCenterX).toFixed(2)}px`)
+    console.log(`  Y 좌표: ${node.position.y.toFixed(1)}px (유지)`)
 
     return {
       ...node,
