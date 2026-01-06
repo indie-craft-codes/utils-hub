@@ -13,6 +13,9 @@ import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
 
+// 로컬스토리지 키
+const STORAGE_KEY = 'erd-saved-ddls'
+
 // 상태
 const ddlInput = ref('')
 const ddlList = ref([])
@@ -23,6 +26,7 @@ const error = ref('')
 const useLogicalNames = ref(false)
 const vendor = ref('mysql')
 const showMiniMap = ref(true)
+const savedDDLs = ref([]) // 로컬스토리지에 저장된 DDL 목록
 
 // VueFlow 인스턴스 ref
 const vueFlowRef = ref(null)
@@ -31,6 +35,72 @@ const vueFlowRef = ref(null)
 const nodeTypes = {
   custom: TableNode
 }
+
+// 로컬스토리지에서 저장된 DDL 불러오기
+const loadSavedDDLs = () => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY)
+    if (saved) {
+      savedDDLs.value = JSON.parse(saved)
+    }
+  } catch (e) {
+    console.error('저장된 DDL 로드 실패:', e)
+  }
+}
+
+// DDL을 로컬스토리지에 저장
+const saveDDLToStorage = (name, ddl) => {
+  try {
+    const newSave = {
+      id: Date.now(),
+      name: name || `ERD ${new Date().toLocaleString()}`,
+      ddl,
+      createdAt: new Date().toISOString()
+    }
+
+    savedDDLs.value = [newSave, ...savedDDLs.value]
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(savedDDLs.value))
+
+    return true
+  } catch (e) {
+    console.error('DDL 저장 실패:', e)
+    error.value = 'DDL 저장에 실패했습니다.'
+    return false
+  }
+}
+
+// 저장된 DDL 불러오기
+const loadDDLFromStorage = (savedDDL) => {
+  ddlInput.value = savedDDL.ddl
+  addDDL()
+}
+
+// 저장된 DDL 삭제
+const deleteSavedDDL = (id) => {
+  savedDDLs.value = savedDDLs.value.filter(d => d.id !== id)
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(savedDDLs.value))
+}
+
+// 현재 DDL 저장
+const saveCurrentDDL = () => {
+  const name = prompt('ERD 이름을 입력하세요:', `ERD ${new Date().toLocaleString()}`)
+  if (!name) return
+
+  // 모든 DDL을 합쳐서 저장
+  const allDDL = ddlList.value.map(d => d.ddl).join('\n\n')
+
+  if (!allDDL) {
+    error.value = '저장할 DDL이 없습니다.'
+    return
+  }
+
+  if (saveDDLToStorage(name, allDDL)) {
+    alert('ERD가 저장되었습니다.')
+  }
+}
+
+// 컴포넌트 마운트 시 저장된 DDL 불러오기
+loadSavedDDLs()
 
 // DDL 추가
 const addDDL = () => {
@@ -546,6 +616,9 @@ const downloadImage = async () => {
           <input type="file" accept=".sql,.txt" @change="handleFileUpload" class="hidden" />
           {{ t('tools.erd.uploadFile') }}
         </label>
+        <button @click="saveCurrentDDL" :disabled="ddlList.length === 0" class="btn btn-secondary disabled:opacity-50">
+          💾 ERD 저장
+        </button>
         <button @click="clearAll" class="btn btn-secondary">
           {{ t('common.clear') }}
         </button>
@@ -559,6 +632,45 @@ const downloadImage = async () => {
         <p class="text-red-600 dark:text-red-400 text-sm whitespace-pre-line">
           {{ error }}
         </p>
+      </div>
+
+      <!-- 저장된 ERD -->
+      <div v-if="savedDDLs.length > 0" class="mt-4">
+        <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          📚 저장된 ERD
+        </h3>
+        <div class="space-y-2 max-h-60 overflow-y-auto">
+          <div
+            v-for="saved in savedDDLs"
+            :key="saved.id"
+            class="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800"
+          >
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                {{ saved.name }}
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {{ new Date(saved.createdAt).toLocaleString() }}
+              </p>
+            </div>
+            <div class="flex gap-2 ml-3">
+              <button
+                @click="loadDDLFromStorage(saved)"
+                class="px-3 py-1 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded"
+                title="불러오기"
+              >
+                불러오기
+              </button>
+              <button
+                @click="deleteSavedDDL(saved.id)"
+                class="px-3 py-1 text-sm bg-red-600 hover:bg-red-700 text-white rounded"
+                title="삭제"
+              >
+                삭제
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- DDL 목록 -->
