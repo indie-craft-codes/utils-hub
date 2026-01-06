@@ -405,7 +405,7 @@ const downloadImage = async () => {
       scale: 2,
       logging: false,
       useCORS: true,
-      allowTaint: true,
+      allowTaint: false, // CORS 문제 추적을 위해 false로 변경
       x: offsetX,
       y: offsetY,
       width: width,
