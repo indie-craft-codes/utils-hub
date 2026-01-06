@@ -442,12 +442,25 @@ const downloadImage = async () => {
     ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height)
 
     // 3단계: 먼저 노드 캔버스를 그리기
+    console.log('📍 Step 1: 노드 캔버스 그리기')
     ctx.drawImage(nodeCanvas, 0, 0)
+    console.log('✅ 노드 캔버스 그리기 완료')
+
+    // 중간 디버깅: 노드만 있는 상태 확인
+    const tempCanvas1 = document.createElement('canvas')
+    tempCanvas1.width = finalCanvas.width
+    tempCanvas1.height = finalCanvas.height
+    const tempCtx1 = tempCanvas1.getContext('2d')
+    tempCtx1.drawImage(finalCanvas, 0, 0)
+    console.log('🖼️ 중간 이미지 (노드만):', tempCanvas1.toDataURL().substring(0, 100))
 
     // 4단계: edges 데이터를 사용해서 getSmoothStepPath로 연결선을 노드 위에 그리기
-    console.log('연결선 그리기:', edges.value.length, '개')
+    console.log('\n📍 Step 2: 연결선 그리기 시작:', edges.value.length, '개')
+    console.log('offsetX:', offsetX, ', offsetY:', offsetY)
+    console.log('finalCanvas 크기:', finalCanvas.width, 'x', finalCanvas.height)
 
     edges.value.forEach((edge, index) => {
+      console.log(`\n--- Edge ${index} ---`)
       const sourceNode = nodes.value.find(n => n.id === edge.source)
       const targetNode = nodes.value.find(n => n.id === edge.target)
 
@@ -464,6 +477,9 @@ const downloadImage = async () => {
       const sourceHeight = sourceEl?.offsetHeight || 100
       const targetWidth = targetEl?.offsetWidth || 200
       const targetHeight = targetEl?.offsetHeight || 100
+
+      console.log(`Source: ${edge.source} at (${sourceNode.position.x}, ${sourceNode.position.y}) size: ${sourceWidth}x${sourceHeight}`)
+      console.log(`Target: ${edge.target} at (${targetNode.position.x}, ${targetNode.position.y}) size: ${targetWidth}x${targetHeight}`)
 
       // Handle 위치 계산
       const getHandlePosition = (node, width, height, handleId) => {
@@ -491,6 +507,9 @@ const downloadImage = async () => {
       const sourceHandle = getHandlePosition(sourceNode, sourceWidth, sourceHeight, edge.sourceHandle)
       const targetHandle = getHandlePosition(targetNode, targetWidth, targetHeight, edge.targetHandle)
 
+      console.log(`Source handle (${edge.sourceHandle}): (${sourceHandle.x}, ${sourceHandle.y})`)
+      console.log(`Target handle (${edge.targetHandle}): (${targetHandle.x}, ${targetHandle.y})`)
+
       // getSmoothStepPath로 경로 계산
       const [pathData] = getSmoothStepPath({
         sourceX: sourceHandle.x,
@@ -501,20 +520,42 @@ const downloadImage = async () => {
         targetPosition: targetHandle.position
       })
 
+      console.log(`Path data: ${pathData.substring(0, 150)}...`)
+
+      // 변환된 좌표 계산
+      const transformedSrcX = (sourceHandle.x - offsetX) * 2
+      const transformedSrcY = (sourceHandle.y - offsetY) * 2
+      const transformedTgtX = (targetHandle.x - offsetX) * 2
+      const transformedTgtY = (targetHandle.y - offsetY) * 2
+
+      console.log(`변환된 source 좌표: (${transformedSrcX.toFixed(1)}, ${transformedSrcY.toFixed(1)})`)
+      console.log(`변환된 target 좌표: (${transformedTgtX.toFixed(1)}, ${transformedTgtY.toFixed(1)})`)
+      console.log(`캔버스 범위 내? source: ${transformedSrcX >= 0 && transformedSrcX <= finalCanvas.width && transformedSrcY >= 0 && transformedSrcY <= finalCanvas.height}`)
+      console.log(`캔버스 범위 내? target: ${transformedTgtX >= 0 && transformedTgtX <= finalCanvas.width && transformedTgtY >= 0 && transformedTgtY <= finalCanvas.height}`)
+
       // Canvas에 그리기
       const path2d = new Path2D(pathData)
 
       ctx.save()
+      console.log('Canvas transform 적용 전')
       ctx.translate(-offsetX, -offsetY)
+      console.log(`translate(${-offsetX}, ${-offsetY})`)
       ctx.scale(2, 2)
+      console.log('scale(2, 2)')
 
       ctx.strokeStyle = isDark ? '#6b7280' : '#9ca3af'
       ctx.lineWidth = 2
+      console.log(`strokeStyle: ${ctx.strokeStyle}, lineWidth: ${ctx.lineWidth}`)
+
+      // 실제 stroke 실행
       ctx.stroke(path2d)
+      console.log('✅ stroke 실행 완료')
 
       ctx.restore()
+      console.log('Canvas transform 복원 완료')
     })
 
+    console.log('\n✅ 모든 연결선 그리기 완료')
     console.log('캔버스 생성 완료:', finalCanvas.width, 'x', finalCanvas.height)
 
     // 이미지로 변환 및 다운로드
