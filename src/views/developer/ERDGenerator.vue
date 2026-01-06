@@ -291,16 +291,14 @@ const downloadImage = async () => {
     const isDark = document.documentElement.classList.contains('dark')
     const backgroundColor = isDark ? '#111827' : '#fafafa'
 
-    // 모든 노드와 엣지의 실제 위치 계산
+    // 모든 노드의 바운딩 박스 계산
     const nodeElements = viewportElement.querySelectorAll('.vue-flow__node')
-    const edgeElements = viewportElement.querySelectorAll('.vue-flow__edge')
 
     if (nodeElements.length === 0) {
       error.value = '캡처할 노드가 없습니다.'
       return
     }
 
-    // 전체 바운딩 박스 계산
     let minX = Infinity, minY = Infinity
     let maxX = -Infinity, maxY = -Infinity
 
@@ -320,6 +318,8 @@ const downloadImage = async () => {
     const padding = 40
     const width = maxX - minX + padding * 2
     const height = maxY - minY + padding * 2
+    const offsetX = minX - padding
+    const offsetY = minY - padding
 
     // 폰트 로딩 대기
     if (document.fonts && document.fonts.ready) {
@@ -328,60 +328,102 @@ const downloadImage = async () => {
 
     console.log('캡처 영역:', { minX, minY, width, height })
 
-    // viewport를 캡처하되, transform과 위치 조정
-    const canvas = await html2canvas(viewportElement, {
-      backgroundColor,
+    // SVG edge들을 이미지로 변환하는 함수
+    const svgToImage = (svgElement) => {
+      return new Promise((resolve, reject) => {
+        const svgData = new XMLSerializer().serializeToString(svgElement)
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' })
+        const url = URL.createObjectURL(svgBlob)
+        const img = new Image()
+        img.onload = () => {
+          URL.revokeObjectURL(url)
+          resolve(img)
+        }
+        img.onerror = reject
+        img.src = url
+      })
+    }
+
+    // 1단계: 노드들을 html2canvas로 캡처
+    const nodeCanvas = await html2canvas(viewportElement, {
+      backgroundColor: 'transparent',
       scale: 2,
-      logging: true,
+      logging: false,
       useCORS: true,
       allowTaint: true,
-      x: minX - padding,
-      y: minY - padding,
+      x: offsetX,
+      y: offsetY,
       width: width,
       height: height,
-      windowWidth: viewportElement.scrollWidth,
-      windowHeight: viewportElement.scrollHeight,
       onclone: (clonedDoc) => {
         const clonedViewport = clonedDoc.querySelector('.vue-flow__viewport')
         if (clonedViewport) {
-          // transform 제거하고 원래 위치 사용
           clonedViewport.style.transform = 'none'
           clonedViewport.style.transformOrigin = 'unset'
+
+          // SVG edge들 임시로 숨기기 (따로 처리)
+          const clonedEdges = clonedDoc.querySelectorAll('.vue-flow__edge')
+          clonedEdges.forEach(edge => {
+            edge.style.display = 'none'
+          })
 
           // Controls, MiniMap 숨기기
           const controls = clonedDoc.querySelector('.vue-flow__controls')
           const minimap = clonedDoc.querySelector('.vue-flow__minimap')
           if (controls) controls.style.display = 'none'
           if (minimap) minimap.style.display = 'none'
-
-          // 노드 스타일 강제 적용
-          const clonedNodes = clonedDoc.querySelectorAll('.vue-flow__node')
-          clonedNodes.forEach(node => {
-            node.style.opacity = '1'
-            node.style.visibility = 'visible'
-          })
-
-          // 엣지 스타일 강제 적용
-          const clonedEdges = clonedDoc.querySelectorAll('.vue-flow__edge')
-          clonedEdges.forEach(edge => {
-            edge.style.opacity = '1'
-            edge.style.visibility = 'visible'
-
-            const paths = edge.querySelectorAll('path')
-            paths.forEach(path => {
-              path.setAttribute('stroke', isDark ? '#6b7280' : '#9ca3af')
-              path.setAttribute('stroke-width', '2')
-              path.setAttribute('fill', 'none')
-            })
-          })
         }
       }
     })
 
-    console.log('캔버스 생성 완료:', canvas.width, 'x', canvas.height)
+    // 2단계: 최종 캔버스 생성 및 배경 그리기
+    const finalCanvas = document.createElement('canvas')
+    finalCanvas.width = width * 2  // scale: 2
+    finalCanvas.height = height * 2
+    const ctx = finalCanvas.getContext('2d')
+
+    // 배경색 채우기
+    ctx.fillStyle = backgroundColor
+    ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height)
+
+    // 3단계: SVG edge들을 Canvas에 그리기
+    const edgeElements = viewportElement.querySelectorAll('.vue-flow__edge')
+    const viewportRect = viewportElement.getBoundingClientRect()
+
+    for (const edge of edgeElements) {
+      const paths = edge.querySelectorAll('path')
+      const edgeRect = edge.getBoundingClientRect()
+
+      // edge의 상대 위치 계산
+      const edgeX = (edgeRect.left - viewportRect.left - offsetX) * 2
+      const edgeY = (edgeRect.top - viewportRect.top - offsetY) * 2
+
+      for (const path of paths) {
+        const d = path.getAttribute('d')
+        if (!d) continue
+
+        // SVG를 Canvas에 그리기 위해 Path2D 사용
+        const path2d = new Path2D(d)
+
+        ctx.save()
+        ctx.translate(edgeX, edgeY)
+        ctx.scale(2, 2) // scale 적용
+
+        ctx.strokeStyle = isDark ? '#6b7280' : '#9ca3af'
+        ctx.lineWidth = 2
+        ctx.stroke(path2d)
+
+        ctx.restore()
+      }
+    }
+
+    // 4단계: 노드 캔버스를 최종 캔버스에 합성
+    ctx.drawImage(nodeCanvas, 0, 0)
+
+    console.log('캔버스 생성 완료:', finalCanvas.width, 'x', finalCanvas.height)
 
     // 이미지로 변환 및 다운로드
-    canvas.toBlob((blob) => {
+    finalCanvas.toBlob((blob) => {
       if (!blob) {
         error.value = '이미지 생성에 실패했습니다.'
         return
