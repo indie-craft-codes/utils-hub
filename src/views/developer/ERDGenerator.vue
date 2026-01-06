@@ -279,8 +279,8 @@ const downloadImage = async () => {
     // html2canvas 동적 import
     const html2canvas = (await import('html2canvas')).default
 
-    // Vue Flow 캔버스 요소 찾기
-    const vueFlowElement = vueFlowRef.value.$el.querySelector('.vue-flow__viewport')
+    // Vue Flow 전체 요소 찾기 (viewport 대신 전체 컨테이너)
+    const vueFlowElement = vueFlowRef.value.$el
 
     if (!vueFlowElement) {
       error.value = 'ERD 다이어그램을 찾을 수 없습니다.'
@@ -300,20 +300,25 @@ const downloadImage = async () => {
     const canvas = await html2canvas(vueFlowElement, {
       backgroundColor,
       scale: 2, // 고해상도
-      logging: false,
+      logging: true, // 디버깅을 위해 로깅 활성화
       useCORS: true,
       allowTaint: true,
-      foreignObjectRendering: true, // 더 나은 텍스트 렌더링
+      foreignObjectRendering: false, // SVG 렌더링 개선
       imageTimeout: 0,
-      removeContainer: true,
       // 폰트 렌더링 개선
       onclone: (clonedDoc) => {
-        const clonedElement = clonedDoc.querySelector('.vue-flow__viewport')
+        const clonedElement = clonedDoc.querySelector('.vue-flow')
         if (clonedElement) {
           // 텍스트 렌더링 품질 개선
           clonedElement.style.fontSmooth = 'antialiased'
           clonedElement.style.webkitFontSmoothing = 'antialiased'
           clonedElement.style.textRendering = 'optimizeLegibility'
+
+          // Controls, MiniMap 숨기기 (이미지에 포함 안 됨)
+          const controls = clonedDoc.querySelector('.vue-flow__controls')
+          const minimap = clonedDoc.querySelector('.vue-flow__minimap')
+          if (controls) controls.style.display = 'none'
+          if (minimap) minimap.style.display = 'none'
         }
       }
     })
