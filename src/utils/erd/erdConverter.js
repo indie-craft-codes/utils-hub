@@ -408,8 +408,9 @@ function calculateOptimalPositions(sourceNode, targetNode) {
  * @param {Array} tables - 테이블 정보
  * @param {boolean} useLogicalNames - 논리명 사용 여부
  * @param {Map} actualWidths - DOM에서 읽은 실제 노드 너비 (선택)
+ * @param {Map} actualHeights - DOM에서 읽은 실제 노드 높이 (선택)
  */
-export function toggleLogicalPhysical(nodes, tables, useLogicalNames, actualWidths = null) {
+export function toggleLogicalPhysical(nodes, tables, useLogicalNames, actualWidths = null, actualHeights = null) {
   return nodes.map(node => {
     const table = tables.find(t => t.name === node.id)
     if (!table) return node
@@ -439,25 +440,60 @@ export function toggleLogicalPhysical(nodes, tables, useLogicalNames, actualWidt
 
     // 실제 렌더링된 노드 너비 사용 (우선순위: DOM > dimensions > 추정)
     let oldWidth = estimateNodeWidth(node.data.label, node.data.columns)
+    let widthSource = 'estimated'
+
     if (actualWidths && actualWidths.has(node.id)) {
       oldWidth = actualWidths.get(node.id)
+      widthSource = 'DOM'
     } else if (node.dimensions?.width) {
       oldWidth = node.dimensions.width
+      widthSource = 'dimensions'
     }
 
     const newWidth = estimateNodeWidth(displayName, columnsHtml)
 
-    // 중앙점 기준으로 위치 조정
-    // 1. 기존 중앙점 계산
+    // 실제 렌더링된 노드 높이 사용 (우선순위: DOM > dimensions > 추정)
+    let oldHeight = estimateNodeHeight(table)
+    let heightSource = 'estimated'
+
+    if (actualHeights && actualHeights.has(node.id)) {
+      oldHeight = actualHeights.get(node.id)
+      heightSource = 'DOM'
+    } else if (node.dimensions?.height) {
+      oldHeight = node.dimensions.height
+      heightSource = 'dimensions'
+    }
+
+    const newHeight = estimateNodeHeight(table)
+
+    // X 좌표: 중앙점 기준으로 위치 조정
     const oldCenterX = node.position.x + oldWidth / 2
-    // 2. 새 너비로 중앙점 유지하는 새 position.x 계산
     const adjustedX = oldCenterX - newWidth / 2
+    const newCenterX = adjustedX + newWidth / 2
+
+    // Y 좌표: 중앙점 기준으로 위치 조정
+    const oldCenterY = node.position.y + oldHeight / 2
+    const adjustedY = oldCenterY - newHeight / 2
+    const newCenterY = adjustedY + newHeight / 2
+
+    // 디버깅 로그
+    console.log(`\n🔄 [${node.id}] 토글 (${useLogicalNames ? '논리명' : '물리명'})`)
+    console.log(`  테이블명: "${node.data.label}" → "${displayName}"`)
+    console.log(`  이전 너비: ${oldWidth.toFixed(1)}px (출처: ${widthSource})`)
+    console.log(`  새 너비: ${newWidth.toFixed(1)}px (추정)`)
+    console.log(`  이전 높이: ${oldHeight.toFixed(1)}px (출처: ${heightSource})`)
+    console.log(`  새 높이: ${newHeight.toFixed(1)}px (추정)`)
+    console.log(`  이전 position: (${node.position.x.toFixed(1)}, ${node.position.y.toFixed(1)})`)
+    console.log(`  이전 중앙점: (${oldCenterX.toFixed(1)}, ${oldCenterY.toFixed(1)})`)
+    console.log(`  새 position: (${adjustedX.toFixed(1)}, ${adjustedY.toFixed(1)})`)
+    console.log(`  새 중앙점: (${newCenterX.toFixed(1)}, ${newCenterY.toFixed(1)})`)
+    console.log(`  중앙점 차이: (${Math.abs(newCenterX - oldCenterX).toFixed(2)}, ${Math.abs(newCenterY - oldCenterY).toFixed(2)})px`)
 
     return {
       ...node,
       position: {
-        ...node.position,
-        x: adjustedX
+        x: adjustedX,
+        y: adjustedY
       },
       data: {
         ...node.data,
