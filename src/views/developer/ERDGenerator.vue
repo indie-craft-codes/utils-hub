@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { VueFlow } from '@vue-flow/core'
+import { VueFlow, getSmoothStepPath, Position } from '@vue-flow/core'
 import { Background } from '@vue-flow/background'
 import { Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
@@ -299,20 +299,21 @@ const downloadImage = async () => {
       return
     }
 
+    // 노드 데이터로 바운딩 박스 계산 (DOM 읽기)
     let minX = Infinity, minY = Infinity
     let maxX = -Infinity, maxY = -Infinity
 
-    nodeElements.forEach(node => {
-      const rect = node.getBoundingClientRect()
-      const viewportRect = viewportElement.getBoundingClientRect()
+    nodes.value.forEach(node => {
+      const nodeEl = document.querySelector(`[data-id="${node.id}"]`)
+      if (nodeEl) {
+        const width = nodeEl.offsetWidth || 200
+        const height = nodeEl.offsetHeight || 100
 
-      const relX = rect.left - viewportRect.left
-      const relY = rect.top - viewportRect.top
-
-      minX = Math.min(minX, relX)
-      minY = Math.min(minY, relY)
-      maxX = Math.max(maxX, relX + rect.width)
-      maxY = Math.max(maxY, relY + rect.height)
+        minX = Math.min(minX, node.position.x)
+        minY = Math.min(minY, node.position.y)
+        maxX = Math.max(maxX, node.position.x + width)
+        maxY = Math.max(maxY, node.position.y + height)
+      }
     })
 
     const padding = 40
@@ -326,23 +327,7 @@ const downloadImage = async () => {
       await document.fonts.ready
     }
 
-    console.log('캡처 영역:', { minX, minY, width, height })
-
-    // SVG edge들을 이미지로 변환하는 함수
-    const svgToImage = (svgElement) => {
-      return new Promise((resolve, reject) => {
-        const svgData = new XMLSerializer().serializeToString(svgElement)
-        const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' })
-        const url = URL.createObjectURL(svgBlob)
-        const img = new Image()
-        img.onload = () => {
-          URL.revokeObjectURL(url)
-          resolve(img)
-        }
-        img.onerror = reject
-        img.src = url
-      })
-    }
+    console.log('캡처 영역:', { minX, minY, maxX, maxY, width, height })
 
     // 1단계: 노드들을 html2canvas로 캡처
     const nodeCanvas = await html2canvas(viewportElement, {
@@ -386,38 +371,91 @@ const downloadImage = async () => {
     ctx.fillStyle = backgroundColor
     ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height)
 
-    // 3단계: SVG edge들을 Canvas에 그리기
-    const edgeElements = viewportElement.querySelectorAll('.vue-flow__edge')
-    const viewportRect = viewportElement.getBoundingClientRect()
+    // 3단계: edges 데이터를 사용해서 getSmoothStepPath로 연결선 직접 그리기
+    console.log('연결선 그리기:', edges.value.length, '개')
 
-    for (const edge of edgeElements) {
-      const paths = edge.querySelectorAll('path')
-      const edgeRect = edge.getBoundingClientRect()
+    edges.value.forEach((edge, index) => {
+      const sourceNode = nodes.value.find(n => n.id === edge.source)
+      const targetNode = nodes.value.find(n => n.id === edge.target)
 
-      // edge의 상대 위치 계산
-      const edgeX = (edgeRect.left - viewportRect.left - offsetX) * 2
-      const edgeY = (edgeRect.top - viewportRect.top - offsetY) * 2
-
-      for (const path of paths) {
-        const d = path.getAttribute('d')
-        if (!d) continue
-
-        // SVG를 Canvas에 그리기 위해 Path2D 사용
-        const path2d = new Path2D(d)
-
-        ctx.save()
-        ctx.translate(edgeX, edgeY)
-        ctx.scale(2, 2) // scale 적용
-
-        ctx.strokeStyle = isDark ? '#6b7280' : '#9ca3af'
-        ctx.lineWidth = 2
-        ctx.stroke(path2d)
-
-        ctx.restore()
+      if (!sourceNode || !targetNode) {
+        console.warn(`Edge ${index}: 노드를 찾을 수 없음`, edge)
+        return
       }
-    }
 
-    // 4단계: 노드 캔버스를 최종 캔버스에 합성
+      // 노드의 실제 크기 가져오기
+      const sourceEl = document.querySelector(`[data-id="${sourceNode.id}"]`)
+      const targetEl = document.querySelector(`[data-id="${targetNode.id}"]`)
+
+      const sourceWidth = sourceEl?.offsetWidth || 200
+      const sourceHeight = sourceEl?.offsetHeight || 100
+      const targetWidth = targetEl?.offsetWidth || 200
+      const targetHeight = targetEl?.offsetHeight || 100
+
+      // Handle 위치 계산
+      const getHandlePosition = (node, width, height, handleId) => {
+        const x = node.position.x
+        const y = node.position.y
+
+        switch (handleId) {
+          case 'left':
+          case 'left-target':
+            return { x, y: y + height / 2, position: Position.Left }
+          case 'right':
+          case 'right-target':
+            return { x: x + width, y: y + height / 2, position: Position.Right }
+          case 'top':
+          case 'top-target':
+            return { x: x + width / 2, y, position: Position.Top }
+          case 'bottom':
+          case 'bottom-target':
+            return { x: x + width / 2, y: y + height, position: Position.Bottom }
+          default:
+            return { x: x + width, y: y + height / 2, position: Position.Right }
+        }
+      }
+
+      const sourceHandle = getHandlePosition(sourceNode, sourceWidth, sourceHeight, edge.sourceHandle)
+      const targetHandle = getHandlePosition(targetNode, targetWidth, targetHeight, edge.targetHandle)
+
+      console.log(`Edge ${index}:`, {
+        source: edge.source,
+        target: edge.target,
+        sourceHandle: edge.sourceHandle,
+        targetHandle: edge.targetHandle,
+        sourcePos: sourceHandle,
+        targetPos: targetHandle,
+        offsetX,
+        offsetY
+      })
+
+      // getSmoothStepPath로 경로 계산
+      const [pathData] = getSmoothStepPath({
+        sourceX: sourceHandle.x,
+        sourceY: sourceHandle.y,
+        sourcePosition: sourceHandle.position,
+        targetX: targetHandle.x,
+        targetY: targetHandle.y,
+        targetPosition: targetHandle.position
+      })
+
+      console.log(`Path ${index}:`, pathData.substring(0, 100))
+
+      // Canvas에 그리기
+      const path2d = new Path2D(pathData)
+
+      ctx.save()
+      ctx.translate(-offsetX * 2, -offsetY * 2)
+      ctx.scale(2, 2)
+
+      ctx.strokeStyle = isDark ? '#6b7280' : '#9ca3af'
+      ctx.lineWidth = 2
+      ctx.stroke(path2d)
+
+      ctx.restore()
+    })
+
+    // 4단계: 노드 캔버스를 최종 캔버스에 합성 (노드가 연결선 위로)
     ctx.drawImage(nodeCanvas, 0, 0)
 
     console.log('캔버스 생성 완료:', finalCanvas.width, 'x', finalCanvas.height)
