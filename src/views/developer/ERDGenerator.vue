@@ -162,9 +162,61 @@ watch(useLogicalNames, (newValue) => {
 
     nextTick(() => {
       nodes.value = updatedNodes
-      // 엣지를 그대로 복원 (연결선 변경 없음)
+
+      // 2-pass: 실제 렌더링된 후 다시 크기를 읽어서 정확한 중앙 정렬
       nextTick(() => {
-        edges.value = currentEdges
+        setTimeout(() => {
+          const newActualWidths = new Map()
+          const newActualHeights = new Map()
+
+          nodes.value.forEach(node => {
+            const nodeElement = document.querySelector(`[data-id="${node.id}"]`)
+            if (nodeElement) {
+              const width = nodeElement.offsetWidth
+              const height = nodeElement.offsetHeight
+              if (width) newActualWidths.set(node.id, width)
+              if (height) newActualHeights.set(node.id, height)
+            }
+          })
+
+          // 실제 렌더링된 크기와 비교하여 재조정
+          const recenteredNodes = nodes.value.map(node => {
+            const oldWidth = actualWidths.get(node.id)
+            const oldHeight = actualHeights.get(node.id)
+            const newWidth = newActualWidths.get(node.id)
+            const newHeight = newActualHeights.get(node.id)
+
+            if (!oldWidth || !oldHeight || !newWidth || !newHeight) {
+              return node
+            }
+
+            // 기존 중앙점 (토글 전)
+            const oldCenterX = node.position.x + oldWidth / 2
+            const oldCenterY = node.position.y + oldHeight / 2
+
+            // 새 position (실제 렌더링된 크기 기준)
+            const recenteredX = oldCenterX - newWidth / 2
+            const recenteredY = oldCenterY - newHeight / 2
+
+            console.log(`\n🔧 [${node.id}] 2차 조정`)
+            console.log(`  실제 새 너비: ${newWidth}px (DOM 재측정)`)
+            console.log(`  실제 새 높이: ${newHeight}px (DOM 재측정)`)
+            console.log(`  최종 position: (${recenteredX.toFixed(1)}, ${recenteredY.toFixed(1)})`)
+
+            return {
+              ...node,
+              position: {
+                x: recenteredX,
+                y: recenteredY
+              }
+            }
+          })
+
+          nodes.value = recenteredNodes
+
+          // 엣지를 그대로 복원 (연결선 변경 없음)
+          edges.value = currentEdges
+        }, 50)
       })
     })
   }
