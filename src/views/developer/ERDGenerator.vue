@@ -535,9 +535,18 @@ const downloadImage = async () => {
       ctx.lineWidth = 2
       console.log(`strokeStyle: ${ctx.strokeStyle}, lineWidth: ${ctx.lineWidth}`)
 
-      // 실제 stroke 실행
+      // Path2D로 stroke 실행
       ctx.stroke(path2d)
-      console.log('✅ stroke 실행 완료')
+      console.log('✅ Path2D stroke 실행 완료')
+
+      // 테스트: 같은 위치에 직접 선 그리기
+      ctx.beginPath()
+      ctx.moveTo(sourceHandle.x, sourceHandle.y)
+      ctx.lineTo(targetHandle.x, targetHandle.y)
+      ctx.strokeStyle = '#ff0000' // 빨간색으로 테스트
+      ctx.lineWidth = 4
+      ctx.stroke()
+      console.log('✅ 테스트 직선 그리기 완료 (빨간색)')
 
       ctx.restore()
       console.log('Canvas transform 복원 완료')
