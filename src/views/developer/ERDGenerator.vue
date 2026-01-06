@@ -131,9 +131,23 @@ const removeDDL = (id) => {
 // 논리/물리 모델 토글
 watch(useLogicalNames, (newValue) => {
   if (nodes.value.length > 0) {
+    // 실제 렌더링된 노드 크기를 DOM에서 직접 읽어오기
+    const actualWidths = new Map()
+
+    nodes.value.forEach(node => {
+      // Vue Flow가 렌더링한 실제 DOM 요소 찾기
+      const nodeElement = document.querySelector(`[data-id="${node.id}"]`)
+      if (nodeElement) {
+        const width = nodeElement.offsetWidth || node.dimensions?.width
+        if (width) {
+          actualWidths.set(node.id, width)
+        }
+      }
+    })
+
     // 노드를 비우고 재생성 (Vue Flow 강제 갱신)
     // 중앙 위치를 유지하면서 텍스트만 변경
-    const updatedNodes = toggleLogicalPhysical(nodes.value, tables.value, newValue)
+    const updatedNodes = toggleLogicalPhysical(nodes.value, tables.value, newValue, actualWidths)
 
     // 엣지는 유지 (재계산 안 함)
     const currentEdges = [...edges.value]
@@ -212,12 +226,31 @@ const downloadImage = async () => {
     const isDark = document.documentElement.classList.contains('dark')
     const backgroundColor = isDark ? '#111827' : '#fafafa'
 
-    // 캔버스로 변환
+    // 폰트 로딩 대기
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready
+    }
+
+    // 캔버스로 변환 (개선된 옵션)
     const canvas = await html2canvas(vueFlowElement, {
       backgroundColor,
       scale: 2, // 고해상도
       logging: false,
-      useCORS: true
+      useCORS: true,
+      allowTaint: true,
+      foreignObjectRendering: true, // 더 나은 텍스트 렌더링
+      imageTimeout: 0,
+      removeContainer: true,
+      // 폰트 렌더링 개선
+      onclone: (clonedDoc) => {
+        const clonedElement = clonedDoc.querySelector('.vue-flow__viewport')
+        if (clonedElement) {
+          // 텍스트 렌더링 품질 개선
+          clonedElement.style.fontSmooth = 'antialiased'
+          clonedElement.style.webkitFontSmoothing = 'antialiased'
+          clonedElement.style.textRendering = 'optimizeLegibility'
+        }
+      }
     })
 
     // 이미지로 변환 및 다운로드
@@ -228,7 +261,7 @@ const downloadImage = async () => {
       link.download = `erd-${Date.now()}.png`
       link.click()
       URL.revokeObjectURL(url)
-    })
+    }, 'image/png', 1.0) // 최고 품질
 
     trackToolUsage('erd_download_image')
   } catch (err) {
