@@ -276,10 +276,23 @@ const downloadImage = async () => {
   }
 
   try {
+    // 현재 뷰 상태 저장
+    const currentViewport = vueFlowRef.value.getViewport()
+
+    // 전체 다이어그램이 보이도록 조정
+    await vueFlowRef.value.fitView({
+      padding: 0.1,
+      duration: 0 // 애니메이션 없이 즉시 적용
+    })
+
+    // DOM 업데이트 대기
+    await nextTick()
+    await new Promise(resolve => setTimeout(resolve, 300))
+
     // html2canvas 동적 import
     const html2canvas = (await import('html2canvas')).default
 
-    // Vue Flow 전체 요소 찾기 (viewport 대신 전체 컨테이너)
+    // Vue Flow 전체 요소 찾기
     const vueFlowElement = vueFlowRef.value.$el
 
     if (!vueFlowElement) {
@@ -300,12 +313,12 @@ const downloadImage = async () => {
     const canvas = await html2canvas(vueFlowElement, {
       backgroundColor,
       scale: 2, // 고해상도
-      logging: true, // 디버깅을 위해 로깅 활성화
+      logging: false,
       useCORS: true,
       allowTaint: true,
-      foreignObjectRendering: false, // SVG 렌더링 개선
+      foreignObjectRendering: true, // SVG와 HTML 모두 렌더링
       imageTimeout: 0,
-      // 폰트 렌더링 개선
+      // 폰트 및 SVG 렌더링 개선
       onclone: (clonedDoc) => {
         const clonedElement = clonedDoc.querySelector('.vue-flow')
         if (clonedElement) {
@@ -314,14 +327,36 @@ const downloadImage = async () => {
           clonedElement.style.webkitFontSmoothing = 'antialiased'
           clonedElement.style.textRendering = 'optimizeLegibility'
 
-          // Controls, MiniMap 숨기기 (이미지에 포함 안 됨)
+          // Controls, MiniMap 숨기기
           const controls = clonedDoc.querySelector('.vue-flow__controls')
           const minimap = clonedDoc.querySelector('.vue-flow__minimap')
           if (controls) controls.style.display = 'none'
           if (minimap) minimap.style.display = 'none'
+
+          // SVG edge 렌더링 강제 활성화
+          const edges = clonedDoc.querySelectorAll('.vue-flow__edge')
+          edges.forEach(edge => {
+            edge.style.display = 'block'
+            edge.style.visibility = 'visible'
+            edge.style.opacity = '1'
+          })
+
+          // SVG path 스타일 강제 적용
+          const paths = clonedDoc.querySelectorAll('.vue-flow__edge path')
+          paths.forEach(path => {
+            if (!path.getAttribute('stroke')) {
+              path.setAttribute('stroke', isDark ? '#6b7280' : '#9ca3af')
+            }
+            if (!path.getAttribute('stroke-width')) {
+              path.setAttribute('stroke-width', '2')
+            }
+          })
         }
       }
     })
+
+    // 원래 뷰 상태로 복원
+    vueFlowRef.value.setViewport(currentViewport)
 
     // 이미지로 변환 및 다운로드
     canvas.toBlob((blob) => {
