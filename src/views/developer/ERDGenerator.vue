@@ -421,17 +421,6 @@ const downloadImage = async () => {
       const sourceHandle = getHandlePosition(sourceNode, sourceWidth, sourceHeight, edge.sourceHandle)
       const targetHandle = getHandlePosition(targetNode, targetWidth, targetHeight, edge.targetHandle)
 
-      console.log(`Edge ${index}:`, {
-        source: edge.source,
-        target: edge.target,
-        sourceHandle: edge.sourceHandle,
-        targetHandle: edge.targetHandle,
-        sourcePos: sourceHandle,
-        targetPos: targetHandle,
-        offsetX,
-        offsetY
-      })
-
       // getSmoothStepPath로 경로 계산
       const [pathData] = getSmoothStepPath({
         sourceX: sourceHandle.x,
@@ -442,13 +431,11 @@ const downloadImage = async () => {
         targetPosition: targetHandle.position
       })
 
-      console.log(`Path ${index}:`, pathData.substring(0, 100))
-
       // Canvas에 그리기
       const path2d = new Path2D(pathData)
 
       ctx.save()
-      ctx.translate(-offsetX * 2, -offsetY * 2)
+      ctx.translate(-offsetX, -offsetY)
       ctx.scale(2, 2)
 
       ctx.strokeStyle = isDark ? '#6b7280' : '#9ca3af'
