@@ -440,22 +440,10 @@ const downloadImage = async () => {
     // 배경색 채우기
     ctx.fillStyle = backgroundColor
     ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height)
+    console.log('✅ 배경색 채우기 완료')
 
-    // 3단계: 먼저 노드 캔버스를 그리기
-    console.log('📍 Step 1: 노드 캔버스 그리기')
-    ctx.drawImage(nodeCanvas, 0, 0)
-    console.log('✅ 노드 캔버스 그리기 완료')
-
-    // 중간 디버깅: 노드만 있는 상태 확인
-    const tempCanvas1 = document.createElement('canvas')
-    tempCanvas1.width = finalCanvas.width
-    tempCanvas1.height = finalCanvas.height
-    const tempCtx1 = tempCanvas1.getContext('2d')
-    tempCtx1.drawImage(finalCanvas, 0, 0)
-    console.log('🖼️ 중간 이미지 (노드만):', tempCanvas1.toDataURL().substring(0, 100))
-
-    // 4단계: edges 데이터를 사용해서 getSmoothStepPath로 연결선을 노드 위에 그리기
-    console.log('\n📍 Step 2: 연결선 그리기 시작:', edges.value.length, '개')
+    // 3단계: 먼저 연결선 그리기
+    console.log('\n📍 Step 1: 연결선 그리기 시작:', edges.value.length, '개')
     console.log('offsetX:', offsetX, ', offsetY:', offsetY)
     console.log('finalCanvas 크기:', finalCanvas.width, 'x', finalCanvas.height)
 
@@ -556,7 +544,21 @@ const downloadImage = async () => {
     })
 
     console.log('\n✅ 모든 연결선 그리기 완료')
-    console.log('캔버스 생성 완료:', finalCanvas.width, 'x', finalCanvas.height)
+
+    // 중간 확인: 연결선만 있는 상태
+    const tempCanvas2 = document.createElement('canvas')
+    tempCanvas2.width = finalCanvas.width
+    tempCanvas2.height = finalCanvas.height
+    const tempCtx2 = tempCanvas2.getContext('2d')
+    tempCtx2.drawImage(finalCanvas, 0, 0)
+    console.log('🖼️ 중간 이미지 (연결선만):', tempCanvas2.toDataURL().substring(0, 100))
+
+    // 4단계: 노드 캔버스를 연결선 위에 그리기
+    console.log('\n📍 Step 2: 노드 캔버스 그리기')
+    ctx.drawImage(nodeCanvas, 0, 0)
+    console.log('✅ 노드 캔버스 그리기 완료')
+
+    console.log('\n캔버스 생성 완료:', finalCanvas.width, 'x', finalCanvas.height)
 
     // 이미지로 변환 및 다운로드
     finalCanvas.toBlob((blob) => {
