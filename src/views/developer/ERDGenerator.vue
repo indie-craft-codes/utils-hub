@@ -371,7 +371,10 @@ const downloadImage = async () => {
     ctx.fillStyle = backgroundColor
     ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height)
 
-    // 3단계: edges 데이터를 사용해서 getSmoothStepPath로 연결선 직접 그리기
+    // 3단계: 먼저 노드 캔버스를 그리기
+    ctx.drawImage(nodeCanvas, 0, 0)
+
+    // 4단계: edges 데이터를 사용해서 getSmoothStepPath로 연결선을 노드 위에 그리기
     console.log('연결선 그리기:', edges.value.length, '개')
 
     edges.value.forEach((edge, index) => {
@@ -454,9 +457,6 @@ const downloadImage = async () => {
 
       ctx.restore()
     })
-
-    // 4단계: 노드 캔버스를 최종 캔버스에 합성 (노드가 연결선 위로)
-    ctx.drawImage(nodeCanvas, 0, 0)
 
     console.log('캔버스 생성 완료:', finalCanvas.width, 'x', finalCanvas.height)
 
