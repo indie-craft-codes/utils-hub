@@ -447,8 +447,15 @@ const downloadImage = async () => {
     console.log('offsetX:', offsetX, ', offsetY:', offsetY)
     console.log('finalCanvas 크기:', finalCanvas.width, 'x', finalCanvas.height)
 
+    // Transform을 한 번만 설정
+    ctx.save()
+    ctx.setTransform(2, 0, 0, 2, -offsetX * 2, -offsetY * 2)
+    ctx.strokeStyle = isDark ? '#6b7280' : '#9ca3af'
+    ctx.lineWidth = 1  // scale(2) 상태에서 1이 실제로는 2px
+    console.log('✅ setTransform(2, 0, 0, 2, ', -offsetX * 2, ',', -offsetY * 2, ')')
+    console.log('✅ strokeStyle:', ctx.strokeStyle, ', lineWidth:', ctx.lineWidth)
+
     edges.value.forEach((edge, index) => {
-      console.log(`\n--- Edge ${index} ---`)
       const sourceNode = nodes.value.find(n => n.id === edge.source)
       const targetNode = nodes.value.find(n => n.id === edge.target)
 
@@ -465,9 +472,6 @@ const downloadImage = async () => {
       const sourceHeight = sourceEl?.offsetHeight || 100
       const targetWidth = targetEl?.offsetWidth || 200
       const targetHeight = targetEl?.offsetHeight || 100
-
-      console.log(`Source: ${edge.source} at (${sourceNode.position.x}, ${sourceNode.position.y}) size: ${sourceWidth}x${sourceHeight}`)
-      console.log(`Target: ${edge.target} at (${targetNode.position.x}, ${targetNode.position.y}) size: ${targetWidth}x${targetHeight}`)
 
       // Handle 위치 계산
       const getHandlePosition = (node, width, height, handleId) => {
@@ -495,9 +499,6 @@ const downloadImage = async () => {
       const sourceHandle = getHandlePosition(sourceNode, sourceWidth, sourceHeight, edge.sourceHandle)
       const targetHandle = getHandlePosition(targetNode, targetWidth, targetHeight, edge.targetHandle)
 
-      console.log(`Source handle (${edge.sourceHandle}): (${sourceHandle.x}, ${sourceHandle.y})`)
-      console.log(`Target handle (${edge.targetHandle}): (${targetHandle.x}, ${targetHandle.y})`)
-
       // getSmoothStepPath로 경로 계산
       const [pathData] = getSmoothStepPath({
         sourceX: sourceHandle.x,
@@ -508,51 +509,12 @@ const downloadImage = async () => {
         targetPosition: targetHandle.position
       })
 
-      console.log(`Path data: ${pathData.substring(0, 150)}...`)
-
-      // 변환된 좌표 계산
-      const transformedSrcX = (sourceHandle.x - offsetX) * 2
-      const transformedSrcY = (sourceHandle.y - offsetY) * 2
-      const transformedTgtX = (targetHandle.x - offsetX) * 2
-      const transformedTgtY = (targetHandle.y - offsetY) * 2
-
-      console.log(`변환된 source 좌표: (${transformedSrcX.toFixed(1)}, ${transformedSrcY.toFixed(1)})`)
-      console.log(`변환된 target 좌표: (${transformedTgtX.toFixed(1)}, ${transformedTgtY.toFixed(1)})`)
-      console.log(`캔버스 범위 내? source: ${transformedSrcX >= 0 && transformedSrcX <= finalCanvas.width && transformedSrcY >= 0 && transformedSrcY <= finalCanvas.height}`)
-      console.log(`캔버스 범위 내? target: ${transformedTgtX >= 0 && transformedTgtX <= finalCanvas.width && transformedTgtY >= 0 && transformedTgtY <= finalCanvas.height}`)
-
-      // Canvas에 그리기
-      const path2d = new Path2D(pathData)
-
-      ctx.save()
-      console.log('Canvas transform 적용 전')
-      ctx.translate(-offsetX, -offsetY)
-      console.log(`translate(${-offsetX}, ${-offsetY})`)
-      ctx.scale(2, 2)
-      console.log('scale(2, 2)')
-
-      ctx.strokeStyle = isDark ? '#6b7280' : '#9ca3af'
-      ctx.lineWidth = 2
-      console.log(`strokeStyle: ${ctx.strokeStyle}, lineWidth: ${ctx.lineWidth}`)
-
       // Path2D로 stroke 실행
-      ctx.stroke(path2d)
-      console.log('✅ Path2D stroke 실행 완료')
-
-      // 테스트: 같은 위치에 직접 선 그리기
-      ctx.beginPath()
-      ctx.moveTo(sourceHandle.x, sourceHandle.y)
-      ctx.lineTo(targetHandle.x, targetHandle.y)
-      ctx.strokeStyle = '#ff0000' // 빨간색으로 테스트
-      ctx.lineWidth = 4
-      ctx.stroke()
-      console.log('✅ 테스트 직선 그리기 완료 (빨간색)')
-
-      ctx.restore()
-      console.log('Canvas transform 복원 완료')
+      ctx.stroke(new Path2D(pathData))
     })
 
-    console.log('\n✅ 모든 연결선 그리기 완료')
+    ctx.restore()
+    console.log('✅ 모든 연결선 그리기 완료')
 
     // 중간 확인: 연결선만 있는 상태
     const tempCanvas2 = document.createElement('canvas')
