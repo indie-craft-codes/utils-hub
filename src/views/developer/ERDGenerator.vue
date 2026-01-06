@@ -134,8 +134,12 @@ watch(useLogicalNames, (newValue) => {
     // 실제 렌더링된 노드 크기를 DOM에서 직접 읽어오기
     const actualWidths = new Map()
     const actualHeights = new Map()
+    const originalPositions = new Map() // 원래 위치 저장
 
     nodes.value.forEach(node => {
+      // 원래 위치 저장 (토글 전)
+      originalPositions.set(node.id, { x: node.position.x, y: node.position.y })
+
       // Vue Flow가 렌더링한 실제 DOM 요소 찾기
       const nodeElement = document.querySelector(`[data-id="${node.id}"]`)
       if (nodeElement) {
@@ -185,23 +189,27 @@ watch(useLogicalNames, (newValue) => {
             const oldHeight = actualHeights.get(node.id)
             const newWidth = newActualWidths.get(node.id)
             const newHeight = newActualHeights.get(node.id)
+            const originalPos = originalPositions.get(node.id)
 
-            if (!oldWidth || !oldHeight || !newWidth || !newHeight) {
+            if (!oldWidth || !oldHeight || !newWidth || !newHeight || !originalPos) {
               return node
             }
 
-            // 기존 중앙점 (토글 전)
-            const oldCenterX = node.position.x + oldWidth / 2
-            const oldCenterY = node.position.y + oldHeight / 2
+            // 기존 중앙점 (토글 전 - 원래 위치 사용)
+            const oldCenterX = originalPos.x + oldWidth / 2
+            const oldCenterY = originalPos.y + oldHeight / 2
 
             // 새 position (실제 렌더링된 크기 기준)
             const recenteredX = oldCenterX - newWidth / 2
             const recenteredY = oldCenterY - newHeight / 2
 
             console.log(`\n🔧 [${node.id}] 2차 조정`)
-            console.log(`  실제 새 너비: ${newWidth}px (DOM 재측정)`)
-            console.log(`  실제 새 높이: ${newHeight}px (DOM 재측정)`)
+            console.log(`  원래 position: (${originalPos.x.toFixed(1)}, ${originalPos.y.toFixed(1)})`)
+            console.log(`  원래 크기: ${oldWidth}px × ${oldHeight}px`)
+            console.log(`  원래 중앙점: (${oldCenterX.toFixed(1)}, ${oldCenterY.toFixed(1)})`)
+            console.log(`  실제 새 크기: ${newWidth}px × ${newHeight}px (DOM 재측정)`)
             console.log(`  최종 position: (${recenteredX.toFixed(1)}, ${recenteredY.toFixed(1)})`)
+            console.log(`  최종 중앙점: (${(recenteredX + newWidth / 2).toFixed(1)}, ${(recenteredY + newHeight / 2).toFixed(1)})`)
 
             return {
               ...node,
