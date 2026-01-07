@@ -85,16 +85,19 @@ export function parseMySQLDDL(ddl) {
 
     // 테이블 코멘트 추출 (논리명으로 사용)
     let logicalName = tableName
+    let comment = ''
     if (ast.table_options) {
       const commentOption = ast.table_options.find(opt => opt.keyword === 'comment')
       if (commentOption) {
-        logicalName = commentOption.symbol || tableName
+        comment = commentOption.symbol || ''
+        logicalName = comment || tableName
       }
     }
 
     return {
       name: tableName,
       logicalName,
+      comment,
       columns,
       foreignKeys,
       indexes,

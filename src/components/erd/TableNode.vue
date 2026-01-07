@@ -1,6 +1,6 @@
 <script setup>
 import { Handle, Position } from '@vue-flow/core'
-import { inject } from 'vue'
+import { inject, ref } from 'vue'
 
 const props = defineProps({
   data: {
@@ -10,7 +10,7 @@ const props = defineProps({
 })
 
 // ERDGenerator에서 제공하는 설정
-const showColumnDetails = inject('showColumnDetails', { value: true })
+const showColumnDetails = inject('showColumnDetails', ref(true))
 </script>
 
 <template>
