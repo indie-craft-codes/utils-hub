@@ -552,10 +552,10 @@ const downloadImage = async () => {
           el.style.overflow = 'hidden'
           el.style.textOverflow = 'ellipsis'
 
-          // 🔑 column-icons처럼 inline-flex로 (flex 중첩 환경에서 안정적)
-          el.style.display = 'inline-flex'
-          el.style.alignItems = 'center'
-          el.style.height = '100%'
+          // 🔑 column-type처럼 block + auto height + translateY (flexbox 계산 우회)
+          el.style.display = 'block'
+          el.style.height = 'auto'
+          el.style.transform = 'translateY(-2px)'
         })
 
         // 타입
