@@ -154,6 +154,14 @@ function createTableNode(table, depth, indexInLevel, levelSize, levelMaxHeight, 
     ? table.comment
     : table.name
 
+  // FK 컬럼 목록 추출
+  const fkColumnNames = new Set()
+  if (table.foreignKeys && table.foreignKeys.length > 0) {
+    table.foreignKeys.forEach(fk => {
+      fk.columns.forEach(colName => fkColumnNames.add(colName))
+    })
+  }
+
   // 컬럼 정보를 HTML로 포맷
   const columnsHtml = table.columns.map(col => {
     const displayColName = useLogicalNames && col.logicalName
@@ -161,7 +169,10 @@ function createTableNode(table, depth, indexInLevel, levelSize, levelMaxHeight, 
       : col.name
 
     const icons = []
+    const isForeignKey = fkColumnNames.has(col.name)
+
     if (col.isPrimaryKey) icons.push('PK')
+    if (isForeignKey && !col.isPrimaryKey) icons.push('FK')
     if (col.isUnique && !col.isPrimaryKey) icons.push('U')
     if (!col.isNullable && !col.isPrimaryKey) icons.push('NN')
 
@@ -170,8 +181,18 @@ function createTableNode(table, depth, indexInLevel, levelSize, levelMaxHeight, 
       type: col.type,
       icons: icons.join(' '),
       isPrimaryKey: col.isPrimaryKey,
+      isForeignKey,
       comment: col.comment
     }
+  })
+
+  // 컬럼 정렬: PK 먼저, FK 다음, 나머지
+  columnsHtml.sort((a, b) => {
+    if (a.isPrimaryKey && !b.isPrimaryKey) return -1
+    if (!a.isPrimaryKey && b.isPrimaryKey) return 1
+    if (a.isForeignKey && !b.isForeignKey) return -1
+    if (!a.isForeignKey && b.isForeignKey) return 1
+    return 0
   })
 
   // 계층형 레이아웃 위치 계산 (중앙 정렬)
@@ -429,13 +450,24 @@ export function toggleLogicalPhysical(nodes, tables, useLogicalNames, actualWidt
       ? table.comment
       : table.name
 
+    // FK 컬럼 목록 추출
+    const fkColumnNames = new Set()
+    if (table.foreignKeys && table.foreignKeys.length > 0) {
+      table.foreignKeys.forEach(fk => {
+        fk.columns.forEach(colName => fkColumnNames.add(colName))
+      })
+    }
+
     const columnsHtml = table.columns.map(col => {
       const displayColName = useLogicalNames && col.logicalName
         ? col.logicalName
         : col.name
 
       const icons = []
+      const isForeignKey = fkColumnNames.has(col.name)
+
       if (col.isPrimaryKey) icons.push('PK')
+      if (isForeignKey && !col.isPrimaryKey) icons.push('FK')
       if (col.isUnique && !col.isPrimaryKey) icons.push('U')
       if (!col.isNullable && !col.isPrimaryKey) icons.push('NN')
 
@@ -444,8 +476,18 @@ export function toggleLogicalPhysical(nodes, tables, useLogicalNames, actualWidt
         type: col.type,
         icons: icons.join(' '),
         isPrimaryKey: col.isPrimaryKey,
+        isForeignKey,
         comment: col.comment
       }
+    })
+
+    // 컬럼 정렬: PK 먼저, FK 다음, 나머지
+    columnsHtml.sort((a, b) => {
+      if (a.isPrimaryKey && !b.isPrimaryKey) return -1
+      if (!a.isPrimaryKey && b.isPrimaryKey) return 1
+      if (a.isForeignKey && !b.isForeignKey) return -1
+      if (!a.isForeignKey && b.isForeignKey) return 1
+      return 0
     })
 
     // 실제 렌더링된 노드 너비 사용 (우선순위: DOM > dimensions > 추정)

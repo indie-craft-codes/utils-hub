@@ -29,7 +29,10 @@ const showColumnDetails = inject('showColumnDetails', ref(true))
         v-for="(column, index) in data.columns"
         :key="index"
         class="column-row"
-        :class="{ 'primary-key': column.isPrimaryKey }"
+        :class="{
+          'primary-key': column.isPrimaryKey,
+          'separator-top': index > 0 && (data.columns[index - 1].isPrimaryKey || data.columns[index - 1].isForeignKey) && !column.isPrimaryKey && !column.isForeignKey
+        }"
       >
         <div class="column-info">
           <span v-if="showColumnDetails.value" class="column-icons">{{ column.icons }}</span>
@@ -128,6 +131,14 @@ const showColumnDetails = inject('showColumnDetails', ref(true))
 
 .dark .column-row.primary-key {
   background-color: #374151;
+}
+
+.column-row.separator-top {
+  border-top: 2px solid #4b5563 !important;
+}
+
+.dark .column-row.separator-top {
+  border-top-color: #6b7280 !important;
 }
 
 .column-info {
