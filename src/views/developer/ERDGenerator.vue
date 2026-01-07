@@ -552,12 +552,10 @@ const downloadImage = async () => {
           el.style.overflow = 'hidden'
           el.style.textOverflow = 'ellipsis'
 
-          // 🔑 방법 2: 높이를 auto로, display를 block으로 (flexbox height 계산 우회)
-          el.style.display = 'block'
-          el.style.height = 'auto'
-
-          // 🔑 html2canvas 보정 (방법 2 적용으로 -2px로 조정)
-          el.style.transform = 'translateY(-2px)'
+          // 🔑 column-icons처럼 inline-flex로 (flex 중첩 환경에서 안정적)
+          el.style.display = 'inline-flex'
+          el.style.alignItems = 'center'
+          el.style.height = '100%'
         })
 
         // 타입
