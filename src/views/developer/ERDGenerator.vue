@@ -808,6 +808,8 @@ const downloadImage = async () => {
         :nodes-connectable="false"
         :edges-updatable="false"
         :connect-on-click="false"
+        :min-zoom="0.1"
+        :max-zoom="2"
       >
         <Background pattern-color="#aaa" :gap="16" />
         <Controls />
