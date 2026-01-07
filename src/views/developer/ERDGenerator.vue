@@ -415,9 +415,9 @@ const downloadImage = async () => {
 
     const SCALE = 2
 
-    // ✅ 1) 노드만 html2canvas로 캡처 (edge는 숨김)
-    const nodeCanvas = await html2canvas(viewportElement, {
-      backgroundColor: 'transparent',
+    // ✅ 캡처 (화면에 보이는 그대로 - 엣지, 노드 모두 포함)
+    const canvas = await html2canvas(viewportElement, {
+      backgroundColor,
       scale: SCALE,
       logging: false,
       useCORS: true,
@@ -430,90 +430,16 @@ const downloadImage = async () => {
       height: capH,
 
       onclone: (clonedDoc) => {
-        // edge 숨김 (우리가 직접 그림)
-        clonedDoc.querySelectorAll('.vue-flow__edge').forEach(e => (e.style.display = 'none'))
-
-        // Controls / MiniMap 숨김
+        // Controls / MiniMap만 숨김
         const controls = clonedDoc.querySelector('.vue-flow__controls')
         const minimap = clonedDoc.querySelector('.vue-flow__minimap')
         if (controls) controls.style.display = 'none'
         if (minimap) minimap.style.display = 'none'
-
-        // ⚠️ viewport transform은 건드리지 마세요. (좌표계 꼬임 방지)
       }
     })
 
-    // ✅ 2) 최종 캔버스 만들고 배경 채우기
-    const finalCanvas = document.createElement('canvas')
-    finalCanvas.width = capW * SCALE
-    finalCanvas.height = capH * SCALE
-    const ctx = finalCanvas.getContext('2d')
-
-    ctx.fillStyle = backgroundColor
-    ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height)
-
-    // ✅ 3) 엣지를 DOM 픽셀 기준으로 직접 그리기
-    // 노드 DOM 위치를 기반으로 handle 좌표 계산
-    const getHandleXY = (nodeId, handleId) => {
-      const el = viewportElement.querySelector(`[data-id="${nodeId}"]`)
-      if (!el) return null
-
-      const r = el.getBoundingClientRect()
-
-      const left = r.left - vpRect.left
-      const top = r.top - vpRect.top
-      const right = r.right - vpRect.left
-      const bottom = r.bottom - vpRect.top
-      const cx = (left + right) / 2
-      const cy = (top + bottom) / 2
-
-      switch (handleId) {
-        case 'left':
-        case 'left-target':
-          return { x: left, y: cy, pos: Position.Left }
-        case 'right':
-        case 'right-target':
-          return { x: right, y: cy, pos: Position.Right }
-        case 'top':
-        case 'top-target':
-          return { x: cx, y: top, pos: Position.Top }
-        case 'bottom':
-        case 'bottom-target':
-          return { x: cx, y: bottom, pos: Position.Bottom }
-        default:
-          return { x: right, y: cy, pos: Position.Right }
-      }
-    }
-
-    ctx.save()
-    ctx.strokeStyle = isDark ? '#6b7280' : '#9ca3af'
-    ctx.lineWidth = 2
-
-    edges.value.forEach((edge) => {
-      const s = getHandleXY(edge.source, edge.sourceHandle)
-      const t = getHandleXY(edge.target, edge.targetHandle)
-      if (!s || !t) return
-
-      // 캡처 영역(capX/capY) 기준으로 이동 + scale 적용
-      const [pathData] = getSmoothStepPath({
-        sourceX: (s.x - capX) * SCALE,
-        sourceY: (s.y - capY) * SCALE,
-        sourcePosition: s.pos,
-        targetX: (t.x - capX) * SCALE,
-        targetY: (t.y - capY) * SCALE,
-        targetPosition: t.pos
-      })
-
-      ctx.stroke(new Path2D(pathData))
-    })
-
-    ctx.restore()
-
-    // ✅ 4) 노드 캔버스를 엣지 위에 올리기
-    ctx.drawImage(nodeCanvas, 0, 0)
-
-    // ✅ 5) 다운로드
-    finalCanvas.toBlob((blob) => {
+    // ✅ 다운로드
+    canvas.toBlob((blob) => {
       if (!blob) {
         error.value = '이미지 생성에 실패했습니다. (CORS/taint 가능)'
         return
