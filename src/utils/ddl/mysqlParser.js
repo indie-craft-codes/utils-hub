@@ -26,7 +26,11 @@ export function parseMySQLDDL(ddl) {
     if (ast.create_definitions) {
       for (const def of ast.create_definitions) {
         if (def.resource === 'column') {
-          const comment = def.comment?.value?.value || ''
+          let comment = def.comment?.value?.value || ''
+          // 따옴표 제거 (홑따옴표, 쌍따옴표)
+          if (typeof comment === 'string') {
+            comment = comment.replace(/^['"]|['"]$/g, '')
+          }
           const column = {
             name: def.column.column,
             type: formatColumnType(def.definition),
@@ -91,6 +95,10 @@ export function parseMySQLDDL(ddl) {
       if (commentOption) {
         // 여러 형식 시도: value.value, symbol, value
         comment = commentOption.value?.value || commentOption.symbol || commentOption.value || ''
+        // 따옴표 제거 (홑따옴표, 쌍따옴표)
+        if (typeof comment === 'string') {
+          comment = comment.replace(/^['"]|['"]$/g, '')
+        }
         logicalName = comment || tableName
       }
     }
