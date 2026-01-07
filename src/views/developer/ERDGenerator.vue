@@ -340,6 +340,20 @@ const clearAll = () => {
   error.value = ''
 }
 
+// 전체 보기 (모든 노드를 화면에 맞춤)
+const fitToView = () => {
+  if (vueFlowRef.value) {
+    vueFlowRef.value.fitView({ padding: 0.1, duration: 300 })
+  }
+}
+
+// 줌 아웃 (50%로 축소)
+const zoomOut = () => {
+  if (vueFlowRef.value) {
+    vueFlowRef.value.zoomTo(0.5, { duration: 300 })
+  }
+}
+
 // 유틸 함수
 const wait = (ms) => new Promise((r) => setTimeout(r, ms))
 const raf = () => new Promise((r) => requestAnimationFrame(r))
@@ -685,6 +699,13 @@ const downloadImage = async () => {
         </button>
         <button @click="clearAll" class="btn btn-secondary">
           {{ t('common.clear') }}
+        </button>
+        <div class="border-l border-gray-300 dark:border-gray-600 h-8"></div>
+        <button @click="fitToView" :disabled="nodes.length === 0" class="btn btn-secondary disabled:opacity-50">
+          🔍 전체 보기
+        </button>
+        <button @click="zoomOut" :disabled="nodes.length === 0" class="btn btn-secondary disabled:opacity-50">
+          🔎 축소 (50%)
         </button>
         <button @click="downloadImage" :disabled="nodes.length === 0 || isDownloading" class="btn btn-secondary disabled:opacity-50">
           {{ isDownloading ? '다운로드 중...' : t('tools.erd.downloadImage') }}
