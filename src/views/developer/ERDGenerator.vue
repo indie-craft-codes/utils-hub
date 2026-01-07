@@ -348,9 +348,16 @@ const fitToView = () => {
 }
 
 // 줌 아웃 (50%로 축소)
-const zoomOut = () => {
+const zoomOut50 = () => {
   if (vueFlowRef.value) {
     vueFlowRef.value.zoomTo(0.5, { duration: 300 })
+  }
+}
+
+// 줌 아웃 (25%로 축소)
+const zoomOut25 = () => {
+  if (vueFlowRef.value) {
+    vueFlowRef.value.zoomTo(0.25, { duration: 300 })
   }
 }
 
@@ -704,8 +711,11 @@ const downloadImage = async () => {
         <button @click="fitToView" :disabled="nodes.length === 0" class="btn btn-secondary disabled:opacity-50">
           🔍 전체 보기
         </button>
-        <button @click="zoomOut" :disabled="nodes.length === 0" class="btn btn-secondary disabled:opacity-50">
-          🔎 축소 (50%)
+        <button @click="zoomOut50" :disabled="nodes.length === 0" class="btn btn-secondary disabled:opacity-50">
+          🔎 50%
+        </button>
+        <button @click="zoomOut25" :disabled="nodes.length === 0" class="btn btn-secondary disabled:opacity-50">
+          🔎 25%
         </button>
         <button @click="downloadImage" :disabled="nodes.length === 0 || isDownloading" class="btn btn-secondary disabled:opacity-50">
           {{ isDownloading ? '다운로드 중...' : t('tools.erd.downloadImage') }}
