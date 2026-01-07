@@ -27,6 +27,7 @@ const useLogicalNames = ref(false)
 const vendor = ref('mysql')
 const showMiniMap = ref(true)
 const savedDDLs = ref([]) // 로컬스토리지에 저장된 DDL 목록
+const isDownloading = ref(false) // 이미지 다운로드 중 여부
 
 // VueFlow 인스턴스 ref
 const vueFlowRef = ref(null)
@@ -344,7 +345,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms))
 const raf = () => new Promise((r) => requestAnimationFrame(r))
 
 // DOM/폰트/레이아웃이 안정될 때까지 기다리기
-const waitForRenderStable = async (extraDelayMs = 250) => {
+const waitForRenderStable = async (extraDelayMs = 500) => {
   await nextTick()
   await raf()
   await raf()          // 2프레임 정도 더 기다리기
@@ -356,7 +357,9 @@ const waitForRenderStable = async (extraDelayMs = 250) => {
 
 // ERD 이미지로 다운로드 (DOM 픽셀 좌표계 기반 - pan/zoom 안정)
 const downloadImage = async () => {
-  if (!vueFlowRef.value || nodes.value.length === 0) return
+  if (!vueFlowRef.value || nodes.value.length === 0 || isDownloading.value) return
+
+  isDownloading.value = true
 
   try {
     const html2canvas = (await import('html2canvas')).default
@@ -457,6 +460,8 @@ const downloadImage = async () => {
   } catch (err) {
     console.error('이미지 다운로드 실패:', err)
     error.value = `이미지 다운로드 중 오류가 발생했습니다: ${err.message}`
+  } finally {
+    isDownloading.value = false
   }
 }
 </script>
@@ -544,8 +549,8 @@ const downloadImage = async () => {
         <button @click="clearAll" class="btn btn-secondary">
           {{ t('common.clear') }}
         </button>
-        <button @click="downloadImage" :disabled="nodes.length === 0" class="btn btn-secondary disabled:opacity-50">
-          {{ t('tools.erd.downloadImage') }}
+        <button @click="downloadImage" :disabled="nodes.length === 0 || isDownloading" class="btn btn-secondary disabled:opacity-50">
+          {{ isDownloading ? '다운로드 중...' : t('tools.erd.downloadImage') }}
         </button>
       </div>
 
