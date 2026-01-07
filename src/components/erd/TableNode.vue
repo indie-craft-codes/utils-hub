@@ -35,10 +35,10 @@ const showColumnDetails = inject('showColumnDetails', ref(true))
         }"
       >
         <div class="column-info">
-          <span v-if="showColumnDetails.value" class="column-icons">{{ column.icons }}</span>
+          <span v-if="column.icons" class="column-icons">{{ column.icons }}</span>
           <span class="column-name">{{ column.name }}</span>
         </div>
-        <div v-if="showColumnDetails.value" class="column-type">{{ column.type }}</div>
+        <div v-if="column.type" class="column-type">{{ column.type }}</div>
       </div>
     </div>
 
@@ -134,7 +134,7 @@ const showColumnDetails = inject('showColumnDetails', ref(true))
 }
 
 .column-row.separator-top {
-  border-top: 2px solid #4b5563 !important;
+  border-top: 1px solid #4b5563 !important;
 }
 
 .dark .column-row.separator-top {
