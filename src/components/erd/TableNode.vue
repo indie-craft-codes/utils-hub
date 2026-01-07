@@ -1,6 +1,6 @@
 <script setup>
 import { Handle, Position } from '@vue-flow/core'
-import { inject, ref } from 'vue'
+import { inject, ref, computed } from 'vue'
 
 const props = defineProps({
   data: {
@@ -12,6 +12,10 @@ const props = defineProps({
 // ERDGenerator에서 제공하는 설정
 const showColumnDetails = inject('showColumnDetails', ref(true))
 const useLogicalNames = inject('useLogicalNames', ref(false))
+
+// computed로 reactivity 확보
+const shouldShowDetails = computed(() => showColumnDetails.value)
+const isLogicalMode = computed(() => useLogicalNames.value)
 </script>
 
 <template>
@@ -19,7 +23,7 @@ const useLogicalNames = inject('useLogicalNames', ref(false))
     <!-- 테이블 헤더 -->
     <div class="table-header">
       <div class="table-name">{{ data.label }}</div>
-      <div v-if="data.physicalName !== data.label && !useLogicalNames.value" class="physical-name">
+      <div v-if="data.physicalName !== data.label && !isLogicalMode" class="physical-name">
         {{ data.physicalName }}
       </div>
     </div>
@@ -36,10 +40,10 @@ const useLogicalNames = inject('useLogicalNames', ref(false))
         }"
       >
         <div class="column-info">
-          <span v-if="showColumnDetails.value && column.icons" class="column-icons">{{ column.icons }}</span>
+          <span v-if="shouldShowDetails && column.icons" class="column-icons">{{ column.icons }}</span>
           <span class="column-name">{{ column.name }}</span>
         </div>
-        <div v-if="showColumnDetails.value && column.type" class="column-type">{{ column.type }}</div>
+        <div v-if="shouldShowDetails && column.type" class="column-type">{{ column.type }}</div>
       </div>
     </div>
 
