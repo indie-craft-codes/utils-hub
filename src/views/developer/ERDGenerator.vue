@@ -348,9 +348,16 @@ const fitToView = () => {
 }
 
 // 줌 아웃 (50%로 축소)
-const zoomOut = () => {
+const zoomOut50 = () => {
   if (vueFlowRef.value) {
     vueFlowRef.value.zoomTo(0.5, { duration: 300 })
+  }
+}
+
+// 줌 아웃 (25%로 축소)
+const zoomOut25 = () => {
+  if (vueFlowRef.value) {
+    vueFlowRef.value.zoomTo(0.25, { duration: 300 })
   }
 }
 
@@ -637,42 +644,6 @@ const downloadImage = async () => {
 
     <!-- 컨트롤 패널 -->
     <div class="card mb-6">
-      <div class="flex flex-wrap gap-4 mb-4">
-        <!-- DB 벤더 선택 -->
-        <div class="flex items-center gap-2">
-          <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
-            {{ t('tools.erd.vendor') }}
-          </label>
-          <select v-model="vendor" class="input text-sm">
-            <option value="mysql">MySQL</option>
-            <option value="postgres" disabled>PostgreSQL (추후 지원)</option>
-            <option value="oracle" disabled>Oracle (추후 지원)</option>
-          </select>
-        </div>
-
-        <!-- 논리/물리 모델 토글 -->
-        <div class="flex items-center gap-2">
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" v-model="useLogicalNames" class="sr-only peer">
-            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
-            <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-              {{ useLogicalNames ? t('tools.erd.logicalModel') : t('tools.erd.physicalModel') }}
-            </span>
-          </label>
-        </div>
-
-        <!-- 미니맵 토글 -->
-        <div class="flex items-center gap-2">
-          <label class="relative inline-flex items-center cursor-pointer">
-            <input type="checkbox" v-model="showMiniMap" class="sr-only peer">
-            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
-            <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-              {{ t('tools.erd.showMiniMap') }}
-            </span>
-          </label>
-        </div>
-      </div>
-
       <!-- DDL 입력 -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -686,7 +657,7 @@ const downloadImage = async () => {
       </div>
 
       <!-- 액션 버튼 -->
-      <div class="flex flex-wrap gap-3">
+      <div class="flex flex-wrap gap-3 items-center">
         <button @click="addDDL" class="btn btn-primary">
           {{ t('tools.erd.addDDL') }}
         </button>
@@ -701,11 +672,34 @@ const downloadImage = async () => {
           {{ t('common.clear') }}
         </button>
         <div class="border-l border-gray-300 dark:border-gray-600 h-8"></div>
+
+        <!-- 논리/물리 모델 토글 -->
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" v-model="useLogicalNames" class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+          <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+            {{ useLogicalNames ? t('tools.erd.logicalModel') : t('tools.erd.physicalModel') }}
+          </span>
+        </label>
+
+        <!-- 미니맵 토글 -->
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" v-model="showMiniMap" class="sr-only peer">
+          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+          <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
+            {{ t('tools.erd.showMiniMap') }}
+          </span>
+        </label>
+
+        <div class="border-l border-gray-300 dark:border-gray-600 h-8"></div>
         <button @click="fitToView" :disabled="nodes.length === 0" class="btn btn-secondary disabled:opacity-50">
           🔍 전체 보기
         </button>
-        <button @click="zoomOut" :disabled="nodes.length === 0" class="btn btn-secondary disabled:opacity-50">
-          🔎 축소 (50%)
+        <button @click="zoomOut50" :disabled="nodes.length === 0" class="btn btn-secondary disabled:opacity-50">
+          🔎 50%
+        </button>
+        <button @click="zoomOut25" :disabled="nodes.length === 0" class="btn btn-secondary disabled:opacity-50">
+          🔎 25%
         </button>
         <button @click="downloadImage" :disabled="nodes.length === 0 || isDownloading" class="btn btn-secondary disabled:opacity-50">
           {{ isDownloading ? '다운로드 중...' : t('tools.erd.downloadImage') }}
@@ -798,6 +792,8 @@ const downloadImage = async () => {
         :nodes-connectable="false"
         :edges-updatable="false"
         :connect-on-click="false"
+        :min-zoom="0.1"
+        :max-zoom="2"
       >
         <Background pattern-color="#aaa" :gap="16" />
         <Controls />
