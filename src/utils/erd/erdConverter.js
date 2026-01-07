@@ -168,18 +168,20 @@ function createTableNode(table, depth, indexInLevel, levelSize, levelMaxHeight, 
       ? col.logicalName
       : col.name
 
-    const icons = []
+    const pkfkIcons = []
+    const otherIcons = []
     const isForeignKey = fkColumnNames.has(col.name)
 
-    if (col.isPrimaryKey) icons.push('PK')
-    if (isForeignKey && !col.isPrimaryKey) icons.push('FK')
-    if (col.isUnique && !col.isPrimaryKey) icons.push('U')
-    if (!col.isNullable && !col.isPrimaryKey) icons.push('NN')
+    if (col.isPrimaryKey) pkfkIcons.push('PK')
+    if (isForeignKey && !col.isPrimaryKey) pkfkIcons.push('FK')
+    if (col.isUnique && !col.isPrimaryKey) otherIcons.push('U')
+    if (!col.isNullable && !col.isPrimaryKey) otherIcons.push('NN')
 
     return {
       name: displayColName,
       type: col.type,
-      icons: icons.join(' '),
+      pkfkIcons: pkfkIcons.join(' '),
+      otherIcons: otherIcons.join(' '),
       isPrimaryKey: col.isPrimaryKey,
       isForeignKey,
       comment: col.comment
@@ -463,18 +465,20 @@ export function toggleLogicalPhysical(nodes, tables, useLogicalNames, actualWidt
         ? col.logicalName
         : col.name
 
-      const icons = []
+      const pkfkIcons = []
+      const otherIcons = []
       const isForeignKey = fkColumnNames.has(col.name)
 
-      if (col.isPrimaryKey) icons.push('PK')
-      if (isForeignKey && !col.isPrimaryKey) icons.push('FK')
-      if (col.isUnique && !col.isPrimaryKey) icons.push('U')
-      if (!col.isNullable && !col.isPrimaryKey) icons.push('NN')
+      if (col.isPrimaryKey) pkfkIcons.push('PK')
+      if (isForeignKey && !col.isPrimaryKey) pkfkIcons.push('FK')
+      if (col.isUnique && !col.isPrimaryKey) otherIcons.push('U')
+      if (!col.isNullable && !col.isPrimaryKey) otherIcons.push('NN')
 
       return {
         name: displayColName,
         type: col.type,
-        icons: icons.join(' '),
+        pkfkIcons: pkfkIcons.join(' '),
+        otherIcons: otherIcons.join(' '),
         isPrimaryKey: col.isPrimaryKey,
         isForeignKey,
         comment: col.comment
