@@ -557,8 +557,8 @@ const downloadImage = async () => {
           el.style.alignItems = 'center'
           el.style.height = '100%'
 
-          // 🔑 html2canvas 보정
-          el.style.transform = 'translateY(-1px)'
+          // 🔑 html2canvas 보정 (-1px → -3px 증가)
+          el.style.transform = 'translateY(-3px)'
         })
 
         // 타입
@@ -574,7 +574,7 @@ const downloadImage = async () => {
           el.style.alignItems = 'center'
           el.style.height = '100%'
 
-          el.style.transform = 'translateY(-1px)'
+          el.style.transform = 'translateY(-3px)'
         })
       }
     })
