@@ -502,10 +502,13 @@ const downloadImage = async () => {
           el.style.display = 'flex'
           el.style.justifyContent = 'space-between'
           el.style.alignItems = 'center'
-          el.style.padding = '6px 12px'
+          el.style.paddingTop = '8px'
+          el.style.paddingBottom = '8px'
+          el.style.paddingLeft = '12px'
+          el.style.paddingRight = '12px'
           el.style.boxSizing = 'border-box'
-          el.style.minHeight = '28px'
-          el.style.lineHeight = '1.5'
+          el.style.height = 'auto'
+          el.style.lineHeight = '1'
         })
 
         clonedDoc.querySelectorAll('.column-info').forEach(el => {
@@ -514,37 +517,49 @@ const downloadImage = async () => {
           el.style.gap = '6px'
           el.style.flex = '1'
           el.style.minWidth = '0'
-          el.style.lineHeight = '1.5'
+          el.style.lineHeight = '1'
         })
 
         clonedDoc.querySelectorAll('.column-icons').forEach(el => {
           el.style.fontSize = '11px'
           el.style.minWidth = '20px'
           el.style.flexShrink = '0'
-          el.style.lineHeight = '1.5'
-          el.style.display = 'inline-block'
+          el.style.lineHeight = '1'
+          el.style.height = '11px'
+          el.style.display = 'inline-flex'
+          el.style.alignItems = 'center'
           el.style.verticalAlign = 'middle'
+          el.style.margin = '0'
+          el.style.padding = '0'
         })
 
         clonedDoc.querySelectorAll('.column-name').forEach(el => {
           el.style.fontSize = '12px'
           el.style.flex = '1'
-          el.style.lineHeight = '1.5'
-          el.style.display = 'inline-block'
+          el.style.lineHeight = '1'
+          el.style.height = '12px'
+          el.style.display = 'inline-flex'
+          el.style.alignItems = 'center'
           el.style.verticalAlign = 'middle'
           el.style.whiteSpace = 'nowrap'
           el.style.overflow = 'hidden'
           el.style.textOverflow = 'ellipsis'
+          el.style.margin = '0'
+          el.style.padding = '0'
         })
 
         clonedDoc.querySelectorAll('.column-type').forEach(el => {
           el.style.fontSize = '11px'
           el.style.marginLeft = '8px'
           el.style.flexShrink = '0'
-          el.style.lineHeight = '1.5'
-          el.style.display = 'inline-block'
+          el.style.lineHeight = '1'
+          el.style.height = '11px'
+          el.style.display = 'inline-flex'
+          el.style.alignItems = 'center'
           el.style.verticalAlign = 'middle'
           el.style.whiteSpace = 'nowrap'
+          el.style.margin = '0 0 0 8px'
+          el.style.padding = '0'
         })
       }
     })
