@@ -548,14 +548,18 @@ const downloadImage = async () => {
           el.style.fontFamily = ROOT_FONT
           el.style.fontSize = '12px'
           el.style.lineHeight = '1'
-          el.style.whiteSpace = 'nowrap'
-          el.style.overflow = 'hidden'
-          el.style.textOverflow = 'ellipsis'
 
-          // 🔑 column-type처럼 block + auto height + translateY (flexbox 계산 우회)
+          // ✅ [수정 1] 잘림 방지: 캡처 중에는 넘친 글자를 숨기지 않고 다 보여줍니다.
+          el.style.overflow = 'visible'
+          el.style.whiteSpace = 'nowrap'
+          // textOverflow: ellipsis는 html2canvas 버그 유발 가능성 있어 제거
+
+          // ✅ [수정 2] Flex 높이 버그 회피: 높이를 꽉 채우지 말고 내용물만큼만 잡게 합니다.
           el.style.display = 'block'
           el.style.height = 'auto'
-          el.style.transform = 'translateY(-2px)'
+
+          // ✅ [수정 3] 강력한 위치 보정
+          el.style.transform = 'translateY(-3.5px)'
         })
 
         // 타입
