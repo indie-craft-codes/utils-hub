@@ -508,6 +508,22 @@ const downloadImage = async () => {
           el.style.margin = '0'
           el.style.padding = '0'
           el.style.display = 'block'
+
+          // ✅ 테이블 제목 위치 상향 조정
+          el.style.transform = 'translateY(-4px)'
+        })
+
+        // 물리명/코멘트
+        clonedDoc.querySelectorAll('.physical-name').forEach(el => {
+          el.style.fontFamily = ROOT_FONT
+          el.style.fontSize = '11px'
+          el.style.lineHeight = '1.3'
+          el.style.margin = '0'
+          el.style.padding = '0'
+          el.style.display = 'block'
+
+          // ✅ 테이블명과 동일하게 위치 조정
+          el.style.transform = 'translateY(-4px)'
         })
 
         // 컬럼 행(가장 중요)
@@ -538,9 +554,14 @@ const downloadImage = async () => {
           el.style.minWidth = '20px'
           el.style.flexShrink = '0'
           el.style.lineHeight = '1'
+
+          // ✅ Flex 정렬 의존성 제거
+          el.style.height = 'auto'
           el.style.display = 'inline-flex'
           el.style.alignItems = 'center'
-          el.style.height = '100%'
+
+          // ✅ 컬럼명과 동일한 높이 보정 적용
+          el.style.transform = 'translateY(-5.5px)'
         })
 
         // 컬럼명
