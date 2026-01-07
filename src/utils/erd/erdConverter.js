@@ -232,6 +232,25 @@ function createTableNode(table, depth, indexInLevel, levelSize, levelMaxHeight, 
 }
 
 /**
+ * 카디널리티 판단 (1:1, N:1, 1:N, N:M)
+ */
+function determineCardinality(table, fk) {
+  // FK 컬럼들이 모두 UNIQUE 제약을 가지는지 확인
+  const allFkColumnsUnique = fk.columns.every(colName => {
+    const column = table.columns.find(c => c.name === colName)
+    return column && (column.isUnique || column.isPrimaryKey)
+  })
+
+  // 1:1 관계 - FK 컬럼이 UNIQUE 제약을 가짐
+  if (allFkColumnsUnique) {
+    return { source: '1', target: '1' }
+  }
+
+  // N:1 관계 (기본값)
+  return { source: 'N', target: '1' }
+}
+
+/**
  * FK를 Vue Flow 엣지로 변환
  */
 function createForeignKeyEdge(table, fk, index, sourceNode, targetNode, useLogicalNames = false) {
@@ -246,15 +265,21 @@ function createForeignKeyEdge(table, fk, index, sourceNode, targetNode, useLogic
     targetNode
   )
 
+  // 카디널리티 판단
+  const cardinality = determineCardinality(table, fk)
+
   // FK 레이블: 논리명 또는 물리명
-  let label = fk.columns.join(', ')
+  let columnLabel = fk.columns.join(', ')
   if (useLogicalNames) {
     const logicalNames = fk.columns.map(colName => {
       const column = table.columns.find(c => c.name === colName)
       return column?.logicalName || colName
     })
-    label = logicalNames.join(', ')
+    columnLabel = logicalNames.join(', ')
   }
+
+  // 카디널리티 레이블 추가
+  const label = `${cardinality.source}:${cardinality.target} (${columnLabel})`
 
   return {
     id: edgeId,
