@@ -8,7 +8,7 @@ import { MiniMap } from '@vue-flow/minimap'
 import TableNode from '../../components/erd/TableNode.vue'
 import AdBanner from '../../components/AdBanner.vue'
 import { parseMultipleDDL } from '../../utils/ddl/mysqlParser'
-import { convertToFlowElements, toggleLogicalPhysical, saveNodePositions, restoreNodePositions, updateEdgePositions } from '../../utils/erd/erdConverter'
+import { convertToFlowElements, toggleLogicalPhysical, saveNodePositions, restoreNodePositions, updateEdgePositions, updateEdgeLabels } from '../../utils/erd/erdConverter'
 import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
@@ -229,8 +229,8 @@ watch(useLogicalNames, (newValue) => {
     // 중앙 위치를 유지하면서 텍스트만 변경
     const updatedNodes = toggleLogicalPhysical(nodes.value, tables.value, newValue, actualWidths, actualHeights)
 
-    // 엣지는 유지 (재계산 안 함)
-    const currentEdges = [...edges.value]
+    // 엣지 레이블 업데이트 (논리명/물리명)
+    const updatedEdges = updateEdgeLabels(edges.value, tables.value, newValue)
 
     nodes.value = []
     edges.value = []
@@ -293,8 +293,8 @@ watch(useLogicalNames, (newValue) => {
 
           nodes.value = recenteredNodes
 
-          // 엣지를 그대로 복원 (연결선 변경 없음)
-          edges.value = currentEdges
+          // 엣지 레이블 업데이트하여 복원
+          edges.value = updatedEdges
         }, 50)
       })
     })
