@@ -40,7 +40,9 @@ const isLogicalMode = computed(() => useLogicalNames.value)
         }"
       >
         <div class="column-info">
-          <span v-if="shouldShowDetails && column.icons" class="column-icons">{{ column.icons }}</span>
+          <span v-if="column.pkfkIcons || (shouldShowDetails && column.otherIcons)" class="column-icons">
+            {{ column.pkfkIcons }}{{ column.pkfkIcons && shouldShowDetails && column.otherIcons ? ' ' : '' }}{{ shouldShowDetails ? column.otherIcons : '' }}
+          </span>
           <span class="column-name">{{ column.name }}</span>
         </div>
         <div v-if="shouldShowDetails && column.type" class="column-type">{{ column.type }}</div>
