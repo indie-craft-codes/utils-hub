@@ -1,5 +1,6 @@
 <script setup>
 import { Handle, Position } from '@vue-flow/core'
+import { inject } from 'vue'
 
 const props = defineProps({
   data: {
@@ -7,6 +8,9 @@ const props = defineProps({
     required: true
   }
 })
+
+// ERDGenerator에서 제공하는 설정
+const showColumnDetails = inject('showColumnDetails', { value: true })
 </script>
 
 <template>
@@ -28,10 +32,10 @@ const props = defineProps({
         :class="{ 'primary-key': column.isPrimaryKey }"
       >
         <div class="column-info">
-          <span class="column-icons">{{ column.icons }}</span>
+          <span v-if="showColumnDetails.value" class="column-icons">{{ column.icons }}</span>
           <span class="column-name">{{ column.name }}</span>
         </div>
-        <div class="column-type">{{ column.type }}</div>
+        <div v-if="showColumnDetails.value" class="column-type">{{ column.type }}</div>
       </div>
     </div>
 
