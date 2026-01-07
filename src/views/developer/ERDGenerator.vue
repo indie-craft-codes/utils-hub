@@ -494,7 +494,7 @@ const downloadImage = async () => {
       const t = getHandleXY(edge.target, edge.targetHandle)
       if (!s || !t) return
 
-      const [pathData] = getSmoothStepPath({
+      const [pathData, labelX, labelY] = getSmoothStepPath({
         sourceX: (s.x - capX) * SCALE,
         sourceY: (s.y - capY) * SCALE,
         sourcePosition: s.pos,
@@ -503,7 +503,67 @@ const downloadImage = async () => {
         targetPosition: t.pos
       })
 
+      // 선 그리기
       ctx.stroke(new Path2D(pathData))
+
+      // 화살표 그리기 (target 쪽)
+      const arrowSize = 10
+      const tx = (t.x - capX) * SCALE
+      const ty = (t.y - capY) * SCALE
+
+      ctx.fillStyle = ctx.strokeStyle
+      ctx.beginPath()
+
+      // target position에 따라 화살표 방향 결정
+      switch (t.pos) {
+        case Position.Left:
+          ctx.moveTo(tx, ty)
+          ctx.lineTo(tx + arrowSize, ty - arrowSize / 2)
+          ctx.lineTo(tx + arrowSize, ty + arrowSize / 2)
+          break
+        case Position.Right:
+          ctx.moveTo(tx, ty)
+          ctx.lineTo(tx - arrowSize, ty - arrowSize / 2)
+          ctx.lineTo(tx - arrowSize, ty + arrowSize / 2)
+          break
+        case Position.Top:
+          ctx.moveTo(tx, ty)
+          ctx.lineTo(tx - arrowSize / 2, ty + arrowSize)
+          ctx.lineTo(tx + arrowSize / 2, ty + arrowSize)
+          break
+        case Position.Bottom:
+          ctx.moveTo(tx, ty)
+          ctx.lineTo(tx - arrowSize / 2, ty - arrowSize)
+          ctx.lineTo(tx + arrowSize / 2, ty - arrowSize)
+          break
+      }
+      ctx.closePath()
+      ctx.fill()
+
+      // FK 레이블 그리기 (엣지 중간)
+      if (edge.label) {
+        ctx.font = '12px sans-serif'
+        ctx.fillStyle = isDark ? '#9ca3af' : '#6b7280'
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+
+        // 배경 박스
+        const text = edge.label
+        const metrics = ctx.measureText(text)
+        const padding = 4
+
+        ctx.fillStyle = backgroundColor
+        ctx.fillRect(
+          labelX - metrics.width / 2 - padding,
+          labelY - 8,
+          metrics.width + padding * 2,
+          16
+        )
+
+        // 텍스트
+        ctx.fillStyle = isDark ? '#9ca3af' : '#6b7280'
+        ctx.fillText(text, labelX, labelY)
+      }
     })
 
     ctx.restore()
