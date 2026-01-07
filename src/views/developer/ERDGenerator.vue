@@ -6,6 +6,7 @@ import { Background } from '@vue-flow/background'
 import { Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
 import TableNode from '../../components/erd/TableNode.vue'
+import CardinalityEdge from '../../components/erd/CardinalityEdge.vue'
 import AdBanner from '../../components/AdBanner.vue'
 import { parseMultipleDDL } from '../../utils/ddl/mysqlParser'
 import { convertToFlowElements, toggleLogicalPhysical, saveNodePositions, restoreNodePositions, updateEdgePositions, updateEdgeLabels } from '../../utils/erd/erdConverter'
@@ -37,9 +38,13 @@ const vueFlowRef = ref(null)
 provide('showColumnDetails', showColumnDetails)
 provide('useLogicalNames', useLogicalNames)
 
-// 커스텀 노드 타입
+// 커스텀 노드/엣지 타입
 const nodeTypes = {
   custom: TableNode
+}
+
+const edgeTypes = {
+  custom: CardinalityEdge
 }
 
 // 로컬스토리지에서 저장된 DDL 불러오기
@@ -923,6 +928,7 @@ const downloadImage = async () => {
         v-model:nodes="nodes"
         v-model:edges="edges"
         :node-types="nodeTypes"
+        :edge-types="edgeTypes"
         @node-drag-stop="handleNodeDragStop"
         class="erd-canvas"
         :default-edge-options="{ type: 'smoothstep' }"

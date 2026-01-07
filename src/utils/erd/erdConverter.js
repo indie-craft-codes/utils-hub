@@ -268,18 +268,15 @@ function createForeignKeyEdge(table, fk, index, sourceNode, targetNode, useLogic
   // 카디널리티 판단
   const cardinality = determineCardinality(table, fk)
 
-  // FK 레이블: 논리명 또는 물리명
-  let columnLabel = fk.columns.join(', ')
+  // FK 레이블: 논리명 또는 물리명 (카디널리티는 화살표로 표시)
+  let label = fk.columns.join(', ')
   if (useLogicalNames) {
     const logicalNames = fk.columns.map(colName => {
       const column = table.columns.find(c => c.name === colName)
       return column?.logicalName || colName
     })
-    columnLabel = logicalNames.join(', ')
+    label = logicalNames.join(', ')
   }
-
-  // 카디널리티 레이블 추가
-  const label = `${cardinality.source}:${cardinality.target} (${columnLabel})`
 
   return {
     id: edgeId,
@@ -289,7 +286,7 @@ function createForeignKeyEdge(table, fk, index, sourceNode, targetNode, useLogic
     targetHandle: `${targetPosition}-target`, // target handle ID
     sourcePosition,
     targetPosition,
-    type: 'smoothstep',
+    type: 'custom',  // 커스텀 엣지로 변경
     animated: false,
     style: {
       stroke: '#6b7280',
@@ -318,7 +315,8 @@ function createForeignKeyEdge(table, fk, index, sourceNode, targetNode, useLogic
       sourceColumns: fk.columns,
       targetColumns: fk.references.columns,
       onDelete: fk.onDelete,
-      onUpdate: fk.onUpdate
+      onUpdate: fk.onUpdate,
+      cardinality  // 카디널리티 정보 추가
     }
   }
 }
