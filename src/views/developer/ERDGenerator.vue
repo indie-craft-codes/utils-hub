@@ -420,7 +420,13 @@ const downloadImage = async () => {
       return
     }
 
-    const SCALE = 2
+    // ✅ 크기에 따라 SCALE 자동 조정 (최대 4000px 기준)
+    const maxDimension = Math.max(capW, capH)
+    let SCALE = 2
+    if (maxDimension > 2000) {
+      SCALE = Math.min(2, 4000 / maxDimension)
+    }
+    console.log(`📏 캡처 영역: ${capW.toFixed(0)}x${capH.toFixed(0)}, SCALE: ${SCALE.toFixed(2)}`)
 
     // ✅ 1) 노드만 html2canvas로 캡처 (엣지는 숨김)
     const nodeCanvas = await html2canvas(viewportElement, {
