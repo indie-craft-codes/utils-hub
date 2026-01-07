@@ -341,19 +341,28 @@ const clearAll = () => {
 
 // ERD 이미지로 다운로드
 const downloadImage = async () => {
+  console.log('🎬 downloadImage 함수 시작')
+  console.log('vueFlowRef:', vueFlowRef.value)
+  console.log('nodes.length:', nodes.value.length)
+
   if (!vueFlowRef.value || nodes.value.length === 0) {
+    console.warn('⚠️ downloadImage 중단: vueFlowRef 또는 nodes가 없음')
     return
   }
 
   try {
     // html2canvas 동적 import
+    console.log('📦 html2canvas import 시작...')
     const html2canvas = (await import('html2canvas')).default
+    console.log('✅ html2canvas import 완료')
 
     // Vue Flow viewport 요소 찾기
     const viewportElement = vueFlowRef.value.$el.querySelector('.vue-flow__viewport')
+    console.log('viewportElement:', viewportElement)
 
     if (!viewportElement) {
       error.value = 'ERD 다이어그램을 찾을 수 없습니다.'
+      console.error('❌ viewportElement를 찾을 수 없음')
       return
     }
 
@@ -400,6 +409,7 @@ const downloadImage = async () => {
     console.log('캡처 영역:', { minX, minY, maxX, maxY, width, height })
 
     // 1단계: 노드들을 html2canvas로 캡처
+    console.log('🎨 html2canvas 호출 시작...')
     const nodeCanvas = await html2canvas(viewportElement, {
       backgroundColor: 'transparent',
       scale: 2,
@@ -430,6 +440,8 @@ const downloadImage = async () => {
         }
       }
     })
+    console.log('✅ html2canvas 완료, nodeCanvas:', nodeCanvas)
+    console.log('nodeCanvas 크기:', nodeCanvas.width, 'x', nodeCanvas.height)
 
     // 2단계: 최종 캔버스 생성 및 배경 그리기
     const finalCanvas = document.createElement('canvas')
@@ -532,22 +544,48 @@ const downloadImage = async () => {
     console.log('\n캔버스 생성 완료:', finalCanvas.width, 'x', finalCanvas.height)
 
     // 이미지로 변환 및 다운로드
-    finalCanvas.toBlob((blob) => {
-      if (!blob) {
-        error.value = '이미지 생성에 실패했습니다.'
-        return
-      }
-      const url = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `erd-${Date.now()}.png`
-      link.click()
-      URL.revokeObjectURL(url)
-    }, 'image/png', 1.0)
+    console.log('💾 toBlob 호출 시작...')
+
+    // toBlob을 Promise로 래핑
+    await new Promise((resolve, reject) => {
+      finalCanvas.toBlob((blob) => {
+        console.log('toBlob 콜백 실행, blob:', blob)
+
+        if (!blob) {
+          const errorMsg = '이미지 생성에 실패했습니다. (blob이 null) - CORS 또는 캔버스 taint 문제일 수 있습니다.'
+          console.error('❌', errorMsg)
+          error.value = errorMsg
+          reject(new Error(errorMsg))
+          return
+        }
+
+        console.log('✅ blob 생성 성공, 크기:', blob.size, 'bytes')
+
+        try {
+          const url = URL.createObjectURL(blob)
+          console.log('✅ ObjectURL 생성:', url)
+
+          const link = document.createElement('a')
+          link.href = url
+          link.download = `erd-${Date.now()}.png`
+          console.log('🔗 다운로드 링크 클릭:', link.download)
+
+          link.click()
+          URL.revokeObjectURL(url)
+
+          console.log('✅ 이미지 다운로드 완료!')
+          resolve()
+        } catch (downloadErr) {
+          console.error('❌ 다운로드 중 에러:', downloadErr)
+          reject(downloadErr)
+        }
+      }, 'image/png', 1.0)
+    })
 
     trackToolUsage('erd_download_image')
   } catch (err) {
-    console.error('이미지 다운로드 실패:', err)
+    console.error('❌ 이미지 다운로드 실패:', err)
+    console.error('에러 스택:', err.stack)
     error.value = `이미지 다운로드 중 오류가 발생했습니다: ${err.message}`
   }
 }
