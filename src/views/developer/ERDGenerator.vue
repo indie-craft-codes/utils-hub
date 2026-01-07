@@ -558,8 +558,8 @@ const downloadImage = async () => {
           el.style.display = 'block'
           el.style.height = 'auto'
 
-          // ✅ [수정 3] 강력한 위치 보정
-          el.style.transform = 'translateY(-3.5px)'
+          // ✅ [수정 3] 강력한 위치 보정 (수직 중앙 정렬)
+          el.style.transform = 'translateY(-5.5px)'
         })
 
         // 타입
@@ -571,11 +571,12 @@ const downloadImage = async () => {
           el.style.whiteSpace = 'nowrap'
           el.style.lineHeight = '1'
 
-          // 🔑 방법 2: 높이를 auto로, display를 block으로 (flexbox height 계산 우회)
+          // ✅ 높이를 auto로, display를 block으로 (flexbox height 계산 우회)
           el.style.display = 'block'
           el.style.height = 'auto'
 
-          el.style.transform = 'translateY(-2px)'
+          // ✅ 컬럼명과 동일하게 위치 보정 (수직 중앙 정렬)
+          el.style.transform = 'translateY(-5.5px)'
         })
       }
     })
