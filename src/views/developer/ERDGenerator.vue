@@ -429,7 +429,7 @@ const downloadImage = async () => {
     })
 
     // 엣지 바운딩 박스도 포함
-    edgeElsAfter.forEach((el) => {
+    edgeElsAfter.forEach((el, idx) => {
       const r = el.getBoundingClientRect()
 
       const x1 = r.left - vpRect.left
@@ -437,14 +437,17 @@ const downloadImage = async () => {
       const x2 = r.right - vpRect.left
       const y2 = r.bottom - vpRect.top
 
+      console.log(`  엣지 ${idx}: (${x1.toFixed(0)}, ${y1.toFixed(0)}) ~ (${x2.toFixed(0)}, ${y2.toFixed(0)}) [${r.width.toFixed(0)}x${r.height.toFixed(0)}]`)
+
       minX = Math.min(minX, x1)
       minY = Math.min(minY, y1)
       maxX = Math.max(maxX, x2)
       maxY = Math.max(maxY, y2)
     })
     console.log(`📐 엣지 포함 바운딩 박스 계산 완료`)
+    console.log(`📐 최종 범위: (${minX.toFixed(0)}, ${minY.toFixed(0)}) ~ (${maxX.toFixed(0)}, ${maxY.toFixed(0)})`)
 
-    const padding = 40
+    const padding = 80
     const capX = minX - padding
     const capY = minY - padding
     const capW = (maxX - minX) + padding * 2
