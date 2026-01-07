@@ -346,23 +346,34 @@ const raf = () => new Promise((r) => requestAnimationFrame(r))
 
 // DOM/폰트/레이아웃이 안정될 때까지 기다리기
 const waitForRenderStable = async (extraDelayMs = 500) => {
+  console.log('🕐 렌더링 안정화 시작...')
+
   await nextTick()
+  console.log('✅ nextTick 완료')
+
   await raf()
   await raf()          // 2프레임 정도 더 기다리기
+  console.log('✅ 2프레임 렌더링 완료')
+
   if (document.fonts?.ready) {
     await document.fonts.ready
+    console.log('✅ 폰트 로딩 완료')
   }
+
   await wait(extraDelayMs) // 마지막으로 짧게 딜레이
+  console.log(`✅ 추가 ${extraDelayMs}ms 대기 완료`)
 }
 
 // ERD 이미지로 다운로드 (DOM 픽셀 좌표계 기반 - pan/zoom 안정)
 const downloadImage = async () => {
   if (!vueFlowRef.value || nodes.value.length === 0 || isDownloading.value) return
 
+  console.log('🎬 다운로드 시작')
   isDownloading.value = true
 
   try {
     const html2canvas = (await import('html2canvas')).default
+    console.log('✅ html2canvas 로드 완료')
 
     // Vue Flow viewport 요소
     const viewportElement = vueFlowRef.value.$el.querySelector('.vue-flow__viewport')
@@ -370,13 +381,23 @@ const downloadImage = async () => {
       error.value = 'ERD 다이어그램을 찾을 수 없습니다.'
       return
     }
+    console.log('✅ viewport 요소 찾음')
 
     // 다크모드 배경
     const isDark = document.documentElement.classList.contains('dark')
     const backgroundColor = isDark ? '#111827' : '#fafafa'
+    console.log(`✅ 배경색: ${backgroundColor}`)
+
+    // 엣지 렌더링 상태 확인
+    const edgeEls = viewportElement.querySelectorAll('.vue-flow__edge')
+    console.log(`📊 현재 렌더링된 엣지 수: ${edgeEls.length} / ${edges.value.length}`)
 
     // DOM/폰트/레이아웃이 안정될 때까지 기다리기
     await waitForRenderStable()
+
+    // 렌더링 안정화 후 엣지 재확인
+    const edgeElsAfter = viewportElement.querySelectorAll('.vue-flow__edge')
+    console.log(`📊 안정화 후 렌더링된 엣지 수: ${edgeElsAfter.length} / ${edges.value.length}`)
 
     // ✅ 캡처 범위(bounding box)를 DOM 픽셀 기준으로 계산
     const vpRect = viewportElement.getBoundingClientRect()
@@ -386,6 +407,7 @@ const downloadImage = async () => {
       error.value = '캡처할 노드가 없습니다.'
       return
     }
+    console.log(`📊 노드 수: ${nodeEls.length} / ${nodes.value.length}`)
 
     let minX = Infinity, minY = Infinity
     let maxX = -Infinity, maxY = -Infinity
@@ -415,9 +437,11 @@ const downloadImage = async () => {
       error.value = '캡처 영역 계산에 실패했습니다.'
       return
     }
+    console.log(`📐 캡처 영역: ${capW.toFixed(0)}x${capH.toFixed(0)} (x:${capX.toFixed(0)}, y:${capY.toFixed(0)})`)
 
     const SCALE = 2
 
+    console.log('📸 html2canvas 캡처 시작...')
     // ✅ 캡처 (화면에 보이는 그대로 - 엣지, 노드 모두 포함)
     const canvas = await html2canvas(viewportElement, {
       backgroundColor,
@@ -440,11 +464,13 @@ const downloadImage = async () => {
         if (minimap) minimap.style.display = 'none'
       }
     })
+    console.log('✅ html2canvas 캡처 완료')
 
     // ✅ 다운로드
     canvas.toBlob((blob) => {
       if (!blob) {
         error.value = '이미지 생성에 실패했습니다. (CORS/taint 가능)'
+        console.error('❌ Blob 생성 실패')
         return
       }
 
@@ -454,6 +480,7 @@ const downloadImage = async () => {
       link.download = `erd-${Date.now()}.png`
       link.click()
       URL.revokeObjectURL(url)
+      console.log('✅ 다운로드 완료')
     }, 'image/png', 1.0)
 
     trackToolUsage('erd_download_image')
