@@ -150,8 +150,8 @@ function buildHierarchy(tables) {
  * @param {boolean} useLogicalNames - 논리명 사용 여부
  */
 function createTableNode(table, depth, indexInLevel, levelSize, levelMaxHeight, useLogicalNames) {
-  const displayName = useLogicalNames && table.logicalName
-    ? table.logicalName
+  const displayName = useLogicalNames && table.comment
+    ? table.comment
     : table.name
 
   // 컬럼 정보를 HTML로 포맷
@@ -425,8 +425,8 @@ export function toggleLogicalPhysical(nodes, tables, useLogicalNames, actualWidt
     const table = tables.find(t => t.name === node.id)
     if (!table) return node
 
-    const displayName = useLogicalNames && table.logicalName
-      ? table.logicalName
+    const displayName = useLogicalNames && table.comment
+      ? table.comment
       : table.name
 
     const columnsHtml = table.columns.map(col => {
