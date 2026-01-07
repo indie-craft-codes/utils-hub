@@ -39,7 +39,7 @@ export function convertToFlowElements(tables, useLogicalNames = false) {
         const targetNode = nodes.find(n => n.id === fk.references.table)
 
         if (sourceNode && targetNode) {
-          const edge = createForeignKeyEdge(table, fk, fkIndex, sourceNode, targetNode)
+          const edge = createForeignKeyEdge(table, fk, fkIndex, sourceNode, targetNode, useLogicalNames)
           if (edge) {
             edges.push(edge)
           }
@@ -211,7 +211,7 @@ function createTableNode(table, depth, indexInLevel, levelSize, levelMaxHeight, 
 /**
  * FK를 Vue Flow 엣지로 변환
  */
-function createForeignKeyEdge(table, fk, index, sourceNode, targetNode) {
+function createForeignKeyEdge(table, fk, index, sourceNode, targetNode, useLogicalNames = false) {
   const sourceTable = table.name
   const targetTable = fk.references.table
 
@@ -222,6 +222,16 @@ function createForeignKeyEdge(table, fk, index, sourceNode, targetNode) {
     sourceNode,
     targetNode
   )
+
+  // FK 레이블: 논리명 또는 물리명
+  let label = fk.columns.join(', ')
+  if (useLogicalNames) {
+    const logicalNames = fk.columns.map(colName => {
+      const column = table.columns.find(c => c.name === colName)
+      return column?.logicalName || colName
+    })
+    label = logicalNames.join(', ')
+  }
 
   return {
     id: edgeId,
@@ -243,7 +253,7 @@ function createForeignKeyEdge(table, fk, index, sourceNode, targetNode) {
       width: 18,
       height: 18
     },
-    label: fk.columns.join(', '),
+    label,
     labelStyle: {
       fill: '#374151',
       fontWeight: 500,
@@ -577,6 +587,31 @@ export function updateEdgePositions(nodes, edges) {
     }
 
     return edge
+  })
+}
+
+/**
+ * 엣지 레이블을 논리명/물리명으로 업데이트
+ */
+export function updateEdgeLabels(edges, tables, useLogicalNames) {
+  return edges.map(edge => {
+    const sourceTable = tables.find(t => t.name === edge.source)
+    if (!sourceTable || !edge.data?.sourceColumns) return edge
+
+    // FK 레이블: 논리명 또는 물리명
+    let label = edge.data.sourceColumns.join(', ')
+    if (useLogicalNames) {
+      const logicalNames = edge.data.sourceColumns.map(colName => {
+        const column = sourceTable.columns.find(c => c.name === colName)
+        return column?.logicalName || colName
+      })
+      label = logicalNames.join(', ')
+    }
+
+    return {
+      ...edge,
+      label
+    }
   })
 }
 

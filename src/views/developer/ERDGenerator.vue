@@ -8,7 +8,7 @@ import { MiniMap } from '@vue-flow/minimap'
 import TableNode from '../../components/erd/TableNode.vue'
 import AdBanner from '../../components/AdBanner.vue'
 import { parseMultipleDDL } from '../../utils/ddl/mysqlParser'
-import { convertToFlowElements, toggleLogicalPhysical, saveNodePositions, restoreNodePositions, updateEdgePositions } from '../../utils/erd/erdConverter'
+import { convertToFlowElements, toggleLogicalPhysical, saveNodePositions, restoreNodePositions, updateEdgePositions, updateEdgeLabels } from '../../utils/erd/erdConverter'
 import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
@@ -229,8 +229,8 @@ watch(useLogicalNames, (newValue) => {
     // 중앙 위치를 유지하면서 텍스트만 변경
     const updatedNodes = toggleLogicalPhysical(nodes.value, tables.value, newValue, actualWidths, actualHeights)
 
-    // 엣지는 유지 (재계산 안 함)
-    const currentEdges = [...edges.value]
+    // 엣지 레이블 업데이트 (논리명/물리명)
+    const updatedEdges = updateEdgeLabels(edges.value, tables.value, newValue)
 
     nodes.value = []
     edges.value = []
@@ -293,8 +293,8 @@ watch(useLogicalNames, (newValue) => {
 
           nodes.value = recenteredNodes
 
-          // 엣지를 그대로 복원 (연결선 변경 없음)
-          edges.value = currentEdges
+          // 엣지 레이블 업데이트하여 복원
+          edges.value = updatedEdges
         }, 50)
       })
     })
@@ -409,7 +409,7 @@ const downloadImage = async () => {
       maxY = Math.max(maxY, y2)
     })
 
-    const padding = 80
+    const padding = 150  // 패딩 증가 (80 → 150)
     const capX = minX - padding
     const capY = minY - padding
     const capW = (maxX - minX) + padding * 2
@@ -420,11 +420,13 @@ const downloadImage = async () => {
       return
     }
 
-    // ✅ 크기에 따라 SCALE 자동 조정 (최대 4000px 기준)
+    // ✅ 크기에 따라 SCALE 자동 조정 (더 넓은 범위를 작은 스케일로)
     const maxDimension = Math.max(capW, capH)
-    let SCALE = 2
-    if (maxDimension > 2000) {
-      SCALE = Math.min(2, 4000 / maxDimension)
+    let SCALE = 1.5  // 기본 스케일 감소 (2 → 1.5)
+
+    // 큰 다이어그램은 더 작은 스케일 사용
+    if (maxDimension > 1500) {
+      SCALE = Math.min(1.5, 6000 / maxDimension)  // 최대 출력 크기 증가 (4000 → 6000)
     }
     console.log(`📏 캡처 영역: ${capW.toFixed(0)}x${capH.toFixed(0)}, SCALE: ${SCALE.toFixed(2)}`)
 
