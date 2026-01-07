@@ -514,11 +514,11 @@ const downloadImage = async () => {
         clonedDoc.querySelectorAll('.column-row').forEach(el => {
           el.style.display = 'flex'
           el.style.justifyContent = 'space-between'
-          el.style.alignItems = 'center'       // ✅ baseline 말고 center
-          el.style.padding = '5px 12px'        // 6px -> 5px (조금 여유)
+          el.style.alignItems = 'center'
+          el.style.padding = '5px 12px'
           el.style.boxSizing = 'border-box'
-          el.style.height = '30px'             // 28px -> 30px (클리핑 방지)
-          el.style.lineHeight = '1.15'         // 1.3 -> 1.15 (텍스트 박스 축소)
+          el.style.height = '32px'      // 🔑 30 → 32 (가장 중요)
+          el.style.lineHeight = '1.1'
         })
 
         // 컬럼 왼쪽(아이콘+이름)
@@ -528,7 +528,7 @@ const downloadImage = async () => {
           el.style.gap = '6px'
           el.style.flex = '1'
           el.style.minWidth = '0'
-          el.style.lineHeight = '1.15'
+          el.style.lineHeight = '1.1'
         })
 
         // 아이콘/PK/FK 표시
@@ -537,8 +537,8 @@ const downloadImage = async () => {
           el.style.fontSize = '11px'
           el.style.minWidth = '20px'
           el.style.flexShrink = '0'
-          el.style.lineHeight = '1.15'
-          el.style.display = 'inline-flex'     // ✅ inline-block 대신
+          el.style.lineHeight = '1'
+          el.style.display = 'inline-flex'
           el.style.alignItems = 'center'
           el.style.height = '100%'
         })
@@ -547,18 +547,18 @@ const downloadImage = async () => {
         clonedDoc.querySelectorAll('.column-name').forEach(el => {
           el.style.fontFamily = ROOT_FONT
           el.style.fontSize = '12px'
-          el.style.lineHeight = '1.15'
+          el.style.lineHeight = '1'
           el.style.whiteSpace = 'nowrap'
           el.style.overflow = 'hidden'
           el.style.textOverflow = 'ellipsis'
 
-          // 🔥 핵심: baseline 버리고 중앙정렬
-          el.style.display = 'inline-flex'
+          // baseline 제거
+          el.style.display = 'flex'
           el.style.alignItems = 'center'
           el.style.height = '100%'
 
-          // 아주 미세하게 위로 (폰트에 따라 필요)
-          el.style.transform = 'translateY(-0.5px)'
+          // 🔑 html2canvas 보정
+          el.style.transform = 'translateY(-1px)'
         })
 
         // 타입
@@ -568,15 +568,13 @@ const downloadImage = async () => {
           el.style.marginLeft = '8px'
           el.style.flexShrink = '0'
           el.style.whiteSpace = 'nowrap'
-          el.style.lineHeight = '1.15'
+          el.style.lineHeight = '1'
 
-          // 🔥 핵심: 중앙정렬
-          el.style.display = 'inline-flex'
+          el.style.display = 'flex'
           el.style.alignItems = 'center'
           el.style.height = '100%'
 
-          // 미세 조정
-          el.style.transform = 'translateY(-0.5px)'
+          el.style.transform = 'translateY(-1px)'
         })
       }
     })
