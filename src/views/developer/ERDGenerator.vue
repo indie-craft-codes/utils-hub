@@ -6,6 +6,7 @@ import { Background } from '@vue-flow/background'
 import { Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
 import TableNode from '../../components/erd/TableNode.vue'
+import CardinalityEdge from '../../components/erd/CardinalityEdge.vue'
 import AdBanner from '../../components/AdBanner.vue'
 import { parseMultipleDDL } from '../../utils/ddl/mysqlParser'
 import { convertToFlowElements, toggleLogicalPhysical, saveNodePositions, restoreNodePositions, updateEdgePositions, updateEdgeLabels } from '../../utils/erd/erdConverter'
@@ -37,9 +38,13 @@ const vueFlowRef = ref(null)
 provide('showColumnDetails', showColumnDetails)
 provide('useLogicalNames', useLogicalNames)
 
-// 커스텀 노드 타입
+// 커스텀 노드/엣지 타입
 const nodeTypes = {
   custom: TableNode
+}
+
+const edgeTypes = {
+  custom: CardinalityEdge
 }
 
 // 로컬스토리지에서 저장된 DDL 불러오기
@@ -476,6 +481,11 @@ const downloadImage = async () => {
         const minimap = clonedDoc.querySelector('.vue-flow__minimap')
         if (controls) controls.style.display = 'none'
         if (minimap) minimap.style.display = 'none'
+
+        // ✅ 카디널리티 배지 숨김 (화면에만 표시, 이미지에는 제외)
+        clonedDoc.querySelectorAll('.cardinality-badge').forEach(badge => {
+          badge.style.display = 'none'
+        })
 
         // ✅ 캡처 전용: 폰트/라인하이트를 "고정"해서 html2canvas 폰트메트릭 흔들림 제거
         const ROOT_FONT = `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif`
@@ -923,6 +933,7 @@ const downloadImage = async () => {
         v-model:nodes="nodes"
         v-model:edges="edges"
         :node-types="nodeTypes"
+        :edge-types="edgeTypes"
         @node-drag-stop="handleNodeDragStop"
         class="erd-canvas"
         :default-edge-options="{ type: 'smoothstep' }"
