@@ -409,7 +409,7 @@ const downloadImage = async () => {
       maxY = Math.max(maxY, y2)
     })
 
-    const padding = 80
+    const padding = 150  // 패딩 증가 (80 → 150)
     const capX = minX - padding
     const capY = minY - padding
     const capW = (maxX - minX) + padding * 2
@@ -420,11 +420,13 @@ const downloadImage = async () => {
       return
     }
 
-    // ✅ 크기에 따라 SCALE 자동 조정 (최대 4000px 기준)
+    // ✅ 크기에 따라 SCALE 자동 조정 (더 넓은 범위를 작은 스케일로)
     const maxDimension = Math.max(capW, capH)
-    let SCALE = 2
-    if (maxDimension > 2000) {
-      SCALE = Math.min(2, 4000 / maxDimension)
+    let SCALE = 1.5  // 기본 스케일 감소 (2 → 1.5)
+
+    // 큰 다이어그램은 더 작은 스케일 사용
+    if (maxDimension > 1500) {
+      SCALE = Math.min(1.5, 6000 / maxDimension)  // 최대 출력 크기 증가 (4000 → 6000)
     }
     console.log(`📏 캡처 영역: ${capW.toFixed(0)}x${capH.toFixed(0)}, SCALE: ${SCALE.toFixed(2)}`)
 
