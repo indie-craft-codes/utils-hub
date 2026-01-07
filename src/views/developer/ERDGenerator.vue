@@ -338,8 +338,6 @@ const clearAll = () => {
   edges.value = []
   error.value = ''
 }
-
-
 </script>
 
 <template>
