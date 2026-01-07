@@ -11,6 +11,7 @@ const props = defineProps({
 
 // ERDGenerator에서 제공하는 설정
 const showColumnDetails = inject('showColumnDetails', ref(true))
+const useLogicalNames = inject('useLogicalNames', ref(false))
 </script>
 
 <template>
@@ -18,7 +19,7 @@ const showColumnDetails = inject('showColumnDetails', ref(true))
     <!-- 테이블 헤더 -->
     <div class="table-header">
       <div class="table-name">{{ data.label }}</div>
-      <div v-if="data.physicalName !== data.label" class="physical-name">
+      <div v-if="data.physicalName !== data.label && !useLogicalNames.value" class="physical-name">
         {{ data.physicalName }}
       </div>
     </div>
@@ -35,10 +36,10 @@ const showColumnDetails = inject('showColumnDetails', ref(true))
         }"
       >
         <div class="column-info">
-          <span v-if="column.icons" class="column-icons">{{ column.icons }}</span>
+          <span v-if="showColumnDetails.value && column.icons" class="column-icons">{{ column.icons }}</span>
           <span class="column-name">{{ column.name }}</span>
         </div>
-        <div v-if="column.type" class="column-type">{{ column.type }}</div>
+        <div v-if="showColumnDetails.value && column.type" class="column-type">{{ column.type }}</div>
       </div>
     </div>
 

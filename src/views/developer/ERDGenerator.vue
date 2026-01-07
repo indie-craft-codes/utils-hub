@@ -35,6 +35,7 @@ const vueFlowRef = ref(null)
 
 // TableNode에 설정 제공
 provide('showColumnDetails', showColumnDetails)
+provide('useLogicalNames', useLogicalNames)
 
 // 커스텀 노드 타입
 const nodeTypes = {
