@@ -338,6 +338,188 @@ const clearAll = () => {
   edges.value = []
   error.value = ''
 }
+
+// ERD 이미지로 다운로드 (DOM 픽셀 좌표계 기반 - pan/zoom 안정)
+const downloadImage = async () => {
+  if (!vueFlowRef.value || nodes.value.length === 0) return
+
+  try {
+    const html2canvas = (await import('html2canvas')).default
+
+    // Vue Flow viewport 요소
+    const viewportElement = vueFlowRef.value.$el.querySelector('.vue-flow__viewport')
+    if (!viewportElement) {
+      error.value = 'ERD 다이어그램을 찾을 수 없습니다.'
+      return
+    }
+
+    // 다크모드 배경
+    const isDark = document.documentElement.classList.contains('dark')
+    const backgroundColor = isDark ? '#111827' : '#fafafa'
+
+    // 폰트 로딩 대기
+    if (document.fonts?.ready) {
+      await document.fonts.ready
+    }
+
+    // ✅ 캡처 범위(bounding box)를 DOM 픽셀 기준으로 계산
+    const vpRect = viewportElement.getBoundingClientRect()
+    const nodeEls = viewportElement.querySelectorAll('.vue-flow__node')
+
+    if (!nodeEls.length) {
+      error.value = '캡처할 노드가 없습니다.'
+      return
+    }
+
+    let minX = Infinity, minY = Infinity
+    let maxX = -Infinity, maxY = -Infinity
+
+    nodeEls.forEach((el) => {
+      const r = el.getBoundingClientRect()
+
+      // viewport 내부 로컬 좌표 (DOM 픽셀)
+      const x1 = r.left - vpRect.left
+      const y1 = r.top - vpRect.top
+      const x2 = r.right - vpRect.left
+      const y2 = r.bottom - vpRect.top
+
+      minX = Math.min(minX, x1)
+      minY = Math.min(minY, y1)
+      maxX = Math.max(maxX, x2)
+      maxY = Math.max(maxY, y2)
+    })
+
+    const padding = 40
+    const capX = minX - padding
+    const capY = minY - padding
+    const capW = (maxX - minX) + padding * 2
+    const capH = (maxY - minY) + padding * 2
+
+    if (capW <= 0 || capH <= 0) {
+      error.value = '캡처 영역 계산에 실패했습니다.'
+      return
+    }
+
+    const SCALE = 2
+
+    // ✅ 1) 노드만 html2canvas로 캡처 (edge는 숨김)
+    const nodeCanvas = await html2canvas(viewportElement, {
+      backgroundColor: 'transparent',
+      scale: SCALE,
+      logging: false,
+      useCORS: true,
+      allowTaint: false,
+
+      // DOM 픽셀 기준으로 정확히 자르기
+      x: capX,
+      y: capY,
+      width: capW,
+      height: capH,
+
+      onclone: (clonedDoc) => {
+        // edge 숨김 (우리가 직접 그림)
+        clonedDoc.querySelectorAll('.vue-flow__edge').forEach(e => (e.style.display = 'none'))
+
+        // Controls / MiniMap 숨김
+        const controls = clonedDoc.querySelector('.vue-flow__controls')
+        const minimap = clonedDoc.querySelector('.vue-flow__minimap')
+        if (controls) controls.style.display = 'none'
+        if (minimap) minimap.style.display = 'none'
+
+        // ⚠️ viewport transform은 건드리지 마세요. (좌표계 꼬임 방지)
+      }
+    })
+
+    // ✅ 2) 최종 캔버스 만들고 배경 채우기
+    const finalCanvas = document.createElement('canvas')
+    finalCanvas.width = capW * SCALE
+    finalCanvas.height = capH * SCALE
+    const ctx = finalCanvas.getContext('2d')
+
+    ctx.fillStyle = backgroundColor
+    ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height)
+
+    // ✅ 3) 엣지를 DOM 픽셀 기준으로 직접 그리기
+    // 노드 DOM 위치를 기반으로 handle 좌표 계산
+    const getHandleXY = (nodeId, handleId) => {
+      const el = viewportElement.querySelector(`[data-id="${nodeId}"]`)
+      if (!el) return null
+
+      const r = el.getBoundingClientRect()
+
+      const left = r.left - vpRect.left
+      const top = r.top - vpRect.top
+      const right = r.right - vpRect.left
+      const bottom = r.bottom - vpRect.top
+      const cx = (left + right) / 2
+      const cy = (top + bottom) / 2
+
+      switch (handleId) {
+        case 'left':
+        case 'left-target':
+          return { x: left, y: cy, pos: Position.Left }
+        case 'right':
+        case 'right-target':
+          return { x: right, y: cy, pos: Position.Right }
+        case 'top':
+        case 'top-target':
+          return { x: cx, y: top, pos: Position.Top }
+        case 'bottom':
+        case 'bottom-target':
+          return { x: cx, y: bottom, pos: Position.Bottom }
+        default:
+          return { x: right, y: cy, pos: Position.Right }
+      }
+    }
+
+    ctx.save()
+    ctx.strokeStyle = isDark ? '#6b7280' : '#9ca3af'
+    ctx.lineWidth = 2
+
+    edges.value.forEach((edge) => {
+      const s = getHandleXY(edge.source, edge.sourceHandle)
+      const t = getHandleXY(edge.target, edge.targetHandle)
+      if (!s || !t) return
+
+      // 캡처 영역(capX/capY) 기준으로 이동 + scale 적용
+      const [pathData] = getSmoothStepPath({
+        sourceX: (s.x - capX) * SCALE,
+        sourceY: (s.y - capY) * SCALE,
+        sourcePosition: s.pos,
+        targetX: (t.x - capX) * SCALE,
+        targetY: (t.y - capY) * SCALE,
+        targetPosition: t.pos
+      })
+
+      ctx.stroke(new Path2D(pathData))
+    })
+
+    ctx.restore()
+
+    // ✅ 4) 노드 캔버스를 엣지 위에 올리기
+    ctx.drawImage(nodeCanvas, 0, 0)
+
+    // ✅ 5) 다운로드
+    finalCanvas.toBlob((blob) => {
+      if (!blob) {
+        error.value = '이미지 생성에 실패했습니다. (CORS/taint 가능)'
+        return
+      }
+
+      const url = URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `erd-${Date.now()}.png`
+      link.click()
+      URL.revokeObjectURL(url)
+    }, 'image/png', 1.0)
+
+    trackToolUsage('erd_download_image')
+  } catch (err) {
+    console.error('이미지 다운로드 실패:', err)
+    error.value = `이미지 다운로드 중 오류가 발생했습니다: ${err.message}`
+  }
+}
 </script>
 
 <template>
