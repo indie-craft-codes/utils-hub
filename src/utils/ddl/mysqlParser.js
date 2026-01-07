@@ -89,7 +89,8 @@ export function parseMySQLDDL(ddl) {
     if (ast.table_options) {
       const commentOption = ast.table_options.find(opt => opt.keyword === 'comment')
       if (commentOption) {
-        comment = commentOption.symbol || ''
+        // 여러 형식 시도: value.value, symbol, value
+        comment = commentOption.value?.value || commentOption.symbol || commentOption.value || ''
         logicalName = comment || tableName
       }
     }
