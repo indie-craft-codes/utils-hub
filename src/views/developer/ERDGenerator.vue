@@ -339,6 +339,21 @@ const clearAll = () => {
   error.value = ''
 }
 
+// 유틸 함수
+const wait = (ms) => new Promise((r) => setTimeout(r, ms))
+const raf = () => new Promise((r) => requestAnimationFrame(r))
+
+// DOM/폰트/레이아웃이 안정될 때까지 기다리기
+const waitForRenderStable = async (extraDelayMs = 250) => {
+  await nextTick()
+  await raf()
+  await raf()          // 2프레임 정도 더 기다리기
+  if (document.fonts?.ready) {
+    await document.fonts.ready
+  }
+  await wait(extraDelayMs) // 마지막으로 짧게 딜레이
+}
+
 // ERD 이미지로 다운로드 (DOM 픽셀 좌표계 기반 - pan/zoom 안정)
 const downloadImage = async () => {
   if (!vueFlowRef.value || nodes.value.length === 0) return
@@ -357,10 +372,8 @@ const downloadImage = async () => {
     const isDark = document.documentElement.classList.contains('dark')
     const backgroundColor = isDark ? '#111827' : '#fafafa'
 
-    // 폰트 로딩 대기
-    if (document.fonts?.ready) {
-      await document.fonts.ready
-    }
+    // DOM/폰트/레이아웃이 안정될 때까지 기다리기
+    await waitForRenderStable()
 
     // ✅ 캡처 범위(bounding box)를 DOM 픽셀 기준으로 계산
     const vpRect = viewportElement.getBoundingClientRect()
