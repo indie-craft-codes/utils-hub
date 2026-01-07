@@ -368,55 +368,36 @@ const waitForRenderStable = async (extraDelayMs = 500) => {
 const downloadImage = async () => {
   if (!vueFlowRef.value || nodes.value.length === 0 || isDownloading.value) return
 
-  console.log('🎬 다운로드 시작')
   isDownloading.value = true
 
   try {
     const html2canvas = (await import('html2canvas')).default
-    console.log('✅ html2canvas 로드 완료')
 
-    // Vue Flow viewport 요소
     const viewportElement = vueFlowRef.value.$el.querySelector('.vue-flow__viewport')
     if (!viewportElement) {
       error.value = 'ERD 다이어그램을 찾을 수 없습니다.'
       return
     }
-    console.log('✅ viewport 요소 찾음')
 
-    // 다크모드 배경
     const isDark = document.documentElement.classList.contains('dark')
     const backgroundColor = isDark ? '#111827' : '#fafafa'
-    console.log(`✅ 배경색: ${backgroundColor}`)
 
-    // 엣지 렌더링 상태 확인
-    const edgeEls = viewportElement.querySelectorAll('.vue-flow__edge')
-    console.log(`📊 현재 렌더링된 엣지 수: ${edgeEls.length} / ${edges.value.length}`)
+    // ✅ 렌더 안정화 대기
+    await waitForRenderStable(500)
 
-    // DOM/폰트/레이아웃이 안정될 때까지 기다리기
-    await waitForRenderStable()
-
-    // 렌더링 안정화 후 엣지 재확인
-    const edgeElsAfter = viewportElement.querySelectorAll('.vue-flow__edge')
-    console.log(`📊 안정화 후 렌더링된 엣지 수: ${edgeElsAfter.length} / ${edges.value.length}`)
-
-    // ✅ 캡처 범위(bounding box)를 DOM 픽셀 기준으로 계산
     const vpRect = viewportElement.getBoundingClientRect()
     const nodeEls = viewportElement.querySelectorAll('.vue-flow__node')
-
     if (!nodeEls.length) {
       error.value = '캡처할 노드가 없습니다.'
       return
     }
-    console.log(`📊 노드 수: ${nodeEls.length} / ${nodes.value.length}`)
 
+    // ✅ DOM 픽셀 기준 bounds (노드 기준)
     let minX = Infinity, minY = Infinity
     let maxX = -Infinity, maxY = -Infinity
 
-    // 노드 바운딩 박스 계산
     nodeEls.forEach((el) => {
       const r = el.getBoundingClientRect()
-
-      // viewport 내부 로컬 좌표 (DOM 픽셀)
       const x1 = r.left - vpRect.left
       const y1 = r.top - vpRect.top
       const x2 = r.right - vpRect.left
@@ -427,25 +408,6 @@ const downloadImage = async () => {
       maxX = Math.max(maxX, x2)
       maxY = Math.max(maxY, y2)
     })
-
-    // 엣지 바운딩 박스도 포함
-    edgeElsAfter.forEach((el, idx) => {
-      const r = el.getBoundingClientRect()
-
-      const x1 = r.left - vpRect.left
-      const y1 = r.top - vpRect.top
-      const x2 = r.right - vpRect.left
-      const y2 = r.bottom - vpRect.top
-
-      console.log(`  엣지 ${idx}: (${x1.toFixed(0)}, ${y1.toFixed(0)}) ~ (${x2.toFixed(0)}, ${y2.toFixed(0)}) [${r.width.toFixed(0)}x${r.height.toFixed(0)}]`)
-
-      minX = Math.min(minX, x1)
-      minY = Math.min(minY, y1)
-      maxX = Math.max(maxX, x2)
-      maxY = Math.max(maxY, y2)
-    })
-    console.log(`📐 엣지 포함 바운딩 박스 계산 완료`)
-    console.log(`📐 최종 범위: (${minX.toFixed(0)}, ${minY.toFixed(0)}) ~ (${maxX.toFixed(0)}, ${maxY.toFixed(0)})`)
 
     const padding = 80
     const capX = minX - padding
@@ -457,59 +419,110 @@ const downloadImage = async () => {
       error.value = '캡처 영역 계산에 실패했습니다.'
       return
     }
-    console.log(`📐 캡처 영역: ${capW.toFixed(0)}x${capH.toFixed(0)} (x:${capX.toFixed(0)}, y:${capY.toFixed(0)})`)
 
     const SCALE = 2
 
-    console.log('📸 html2canvas 캡처 시작...')
-    // ✅ 캡처 (화면에 보이는 그대로 - 엣지, 노드 모두 포함)
-    const canvas = await html2canvas(viewportElement, {
-      backgroundColor,
+    // ✅ 1) 노드만 html2canvas로 캡처 (엣지는 숨김)
+    const nodeCanvas = await html2canvas(viewportElement, {
+      backgroundColor: 'transparent',
       scale: SCALE,
-      logging: true, // 디버깅을 위해 로깅 활성화
+      logging: false,
       useCORS: true,
       allowTaint: false,
-
-      // DOM 픽셀 기준으로 정확히 자르기
       x: capX,
       y: capY,
       width: capW,
       height: capH,
-
       onclone: (clonedDoc) => {
-        // 복제된 엣지 확인
-        const clonedEdges = clonedDoc.querySelectorAll('.vue-flow__edge')
-        console.log(`🔍 복제된 엣지 수: ${clonedEdges.length}`)
+        // ✅ edge 숨김 (우리가 직접 그림)
+        clonedDoc.querySelectorAll('.vue-flow__edge').forEach(e => (e.style.display = 'none'))
 
-        clonedEdges.forEach((edge, idx) => {
-          const style = window.getComputedStyle(edge)
-          console.log(`  복제 엣지 ${idx}: display=${style.display}, visibility=${style.visibility}`)
-        })
-
-        // Controls / MiniMap만 숨김
+        // Controls / MiniMap 숨김
         const controls = clonedDoc.querySelector('.vue-flow__controls')
         const minimap = clonedDoc.querySelector('.vue-flow__minimap')
         if (controls) controls.style.display = 'none'
         if (minimap) minimap.style.display = 'none'
       }
     })
-    console.log('✅ html2canvas 캡처 완료')
 
-    // ✅ 다운로드
-    canvas.toBlob((blob) => {
+    // ✅ 2) 최종 캔버스 생성 + 배경
+    const finalCanvas = document.createElement('canvas')
+    finalCanvas.width = capW * SCALE
+    finalCanvas.height = capH * SCALE
+    const ctx = finalCanvas.getContext('2d')
+
+    ctx.fillStyle = backgroundColor
+    ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height)
+
+    // ✅ 3) edge를 DOM 기반으로 "직접" 그리기 (끊김 방지)
+    const getHandleXY = (nodeId, handleId) => {
+      const el = viewportElement.querySelector(`[data-id="${nodeId}"]`)
+      if (!el) return null
+
+      const r = el.getBoundingClientRect()
+      const left = r.left - vpRect.left
+      const top = r.top - vpRect.top
+      const right = r.right - vpRect.left
+      const bottom = r.bottom - vpRect.top
+      const cx = (left + right) / 2
+      const cy = (top + bottom) / 2
+
+      switch (handleId) {
+        case 'left':
+        case 'left-target':
+          return { x: left, y: cy, pos: Position.Left }
+        case 'right':
+        case 'right-target':
+          return { x: right, y: cy, pos: Position.Right }
+        case 'top':
+        case 'top-target':
+          return { x: cx, y: top, pos: Position.Top }
+        case 'bottom':
+        case 'bottom-target':
+          return { x: cx, y: bottom, pos: Position.Bottom }
+        default:
+          return { x: right, y: cy, pos: Position.Right }
+      }
+    }
+
+    ctx.save()
+    ctx.strokeStyle = isDark ? '#6b7280' : '#9ca3af'
+    ctx.lineWidth = 2
+
+    edges.value.forEach((edge) => {
+      const s = getHandleXY(edge.source, edge.sourceHandle)
+      const t = getHandleXY(edge.target, edge.targetHandle)
+      if (!s || !t) return
+
+      const [pathData] = getSmoothStepPath({
+        sourceX: (s.x - capX) * SCALE,
+        sourceY: (s.y - capY) * SCALE,
+        sourcePosition: s.pos,
+        targetX: (t.x - capX) * SCALE,
+        targetY: (t.y - capY) * SCALE,
+        targetPosition: t.pos
+      })
+
+      ctx.stroke(new Path2D(pathData))
+    })
+
+    ctx.restore()
+
+    // ✅ 4) 노드를 edge 위에 합성
+    ctx.drawImage(nodeCanvas, 0, 0)
+
+    // ✅ 5) 다운로드
+    finalCanvas.toBlob((blob) => {
       if (!blob) {
         error.value = '이미지 생성에 실패했습니다. (CORS/taint 가능)'
-        console.error('❌ Blob 생성 실패')
         return
       }
-
       const url = URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = url
       link.download = `erd-${Date.now()}.png`
       link.click()
       URL.revokeObjectURL(url)
-      console.log('✅ 다운로드 완료')
     }, 'image/png', 1.0)
 
     trackToolUsage('erd_download_image')
