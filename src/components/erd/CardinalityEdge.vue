@@ -79,7 +79,7 @@ const labelPos = computed(() => {
         borderRadius: '3px',
         border: '1px solid #e5e7eb'
       }"
-      class="nodrag nopan"
+      class="nodrag nopan cardinality-badge"
     >
       {{ data.cardinality.source }}
     </div>
@@ -99,7 +99,7 @@ const labelPos = computed(() => {
         borderRadius: '3px',
         border: '1px solid #e5e7eb'
       }"
-      class="nodrag nopan"
+      class="nodrag nopan cardinality-badge"
     >
       {{ data.cardinality.target }}
     </div>
