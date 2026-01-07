@@ -466,7 +466,7 @@ const downloadImage = async () => {
     const canvas = await html2canvas(viewportElement, {
       backgroundColor,
       scale: SCALE,
-      logging: false,
+      logging: true, // 디버깅을 위해 로깅 활성화
       useCORS: true,
       allowTaint: false,
 
@@ -477,6 +477,15 @@ const downloadImage = async () => {
       height: capH,
 
       onclone: (clonedDoc) => {
+        // 복제된 엣지 확인
+        const clonedEdges = clonedDoc.querySelectorAll('.vue-flow__edge')
+        console.log(`🔍 복제된 엣지 수: ${clonedEdges.length}`)
+
+        clonedEdges.forEach((edge, idx) => {
+          const style = window.getComputedStyle(edge)
+          console.log(`  복제 엣지 ${idx}: display=${style.display}, visibility=${style.visibility}`)
+        })
+
         // Controls / MiniMap만 숨김
         const controls = clonedDoc.querySelector('.vue-flow__controls')
         const minimap = clonedDoc.querySelector('.vue-flow__minimap')
