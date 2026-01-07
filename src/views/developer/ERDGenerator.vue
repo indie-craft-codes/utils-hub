@@ -476,6 +476,55 @@ const downloadImage = async () => {
         const minimap = clonedDoc.querySelector('.vue-flow__minimap')
         if (controls) controls.style.display = 'none'
         if (minimap) minimap.style.display = 'none'
+
+        // ✅ flexbox 레이아웃 문제 해결
+        clonedDoc.querySelectorAll('.table-node').forEach(el => {
+          el.style.boxSizing = 'border-box'
+          el.style.fontSize = '12px'
+        })
+
+        clonedDoc.querySelectorAll('.table-header').forEach(el => {
+          el.style.padding = '8px 12px'
+          el.style.boxSizing = 'border-box'
+        })
+
+        clonedDoc.querySelectorAll('.table-name').forEach(el => {
+          el.style.fontSize = '14px'
+          el.style.fontWeight = '700'
+        })
+
+        clonedDoc.querySelectorAll('.column-row').forEach(el => {
+          el.style.display = 'flex'
+          el.style.justifyContent = 'space-between'
+          el.style.alignItems = 'center'
+          el.style.padding = '6px 12px'
+          el.style.boxSizing = 'border-box'
+        })
+
+        clonedDoc.querySelectorAll('.column-info').forEach(el => {
+          el.style.display = 'flex'
+          el.style.alignItems = 'center'
+          el.style.gap = '6px'
+          el.style.flex = '1'
+          el.style.minWidth = '0'
+        })
+
+        clonedDoc.querySelectorAll('.column-icons').forEach(el => {
+          el.style.fontSize = '11px'
+          el.style.minWidth = '20px'
+          el.style.flexShrink = '0'
+        })
+
+        clonedDoc.querySelectorAll('.column-name').forEach(el => {
+          el.style.fontSize = '12px'
+          el.style.flex = '1'
+        })
+
+        clonedDoc.querySelectorAll('.column-type').forEach(el => {
+          el.style.fontSize = '11px'
+          el.style.marginLeft = '8px'
+          el.style.flexShrink = '0'
+        })
       }
     })
 
