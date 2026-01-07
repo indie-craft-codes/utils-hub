@@ -345,7 +345,7 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms))
 const raf = () => new Promise((r) => requestAnimationFrame(r))
 
 // DOM/폰트/레이아웃이 안정될 때까지 기다리기
-const waitForRenderStable = async (extraDelayMs = 250) => {
+const waitForRenderStable = async (extraDelayMs = 500) => {
   await nextTick()
   await raf()
   await raf()          // 2프레임 정도 더 기다리기
