@@ -1,7 +1,4 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js'
-import { getAnalytics, logEvent } from 'https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js'
-
-// Firebase 설정
+// Firebase 설정 (클라이언트에서만 초기화)
 const firebaseConfig = {
   apiKey: "AIzaSyBAUlUusX5g2HEIlReXplvmoUkNprMmcek",
   authDomain: "utils-hub.firebaseapp.com",
@@ -12,32 +9,46 @@ const firebaseConfig = {
   measurementId: "G-P9R4JCL6WD"
 }
 
-// Firebase 앱 초기화
-let app
-let analytics
+let analytics = null
+let isInitialized = false
 
-try {
-  app = initializeApp(firebaseConfig)
-  analytics = getAnalytics(app)
-} catch (error) {
-  console.error('Firebase Analytics 초기화 실패:', error)
+// Firebase 초기화 (클라이언트에서만 실행)
+async function initFirebase() {
+  if (isInitialized || typeof window === 'undefined') return
+
+  try {
+    const { initializeApp } = await import('firebase/app')
+    const { getAnalytics } = await import('firebase/analytics')
+
+    const app = initializeApp(firebaseConfig)
+    analytics = getAnalytics(app)
+    isInitialized = true
+  } catch (error) {
+    console.error('Firebase Analytics 초기화 실패:', error)
+  }
 }
+
+// 모듈 로드 시 자동 초기화
+initFirebase()
 
 /**
  * 페이지 뷰 이벤트 추적
  * @param {string} pagePath - 페이지 경로
  * @param {string} pageTitle - 페이지 제목
  */
-export function trackPageView(pagePath, pageTitle) {
-  if (!analytics) return
+export async function trackPageView(pagePath, pageTitle) {
+  if (typeof window === 'undefined') return
 
   try {
+    if (!analytics) await initFirebase()
+    if (!analytics) return
+
+    const { logEvent } = await import('firebase/analytics')
     logEvent(analytics, 'page_view', {
       page_path: pagePath,
       page_title: pageTitle,
       page_location: window.location.href
     })
-    console.log('📊 Page View:', pagePath, pageTitle)
   } catch (error) {
     console.error('페이지 뷰 추적 실패:', error)
   }
@@ -48,15 +59,18 @@ export function trackPageView(pagePath, pageTitle) {
  * @param {string} toolName - 도구 이름
  * @param {Object} params - 추가 매개변수
  */
-export function trackToolUsage(toolName, params = {}) {
-  if (!analytics) return
+export async function trackToolUsage(toolName, params = {}) {
+  if (typeof window === 'undefined') return
 
   try {
+    if (!analytics) await initFirebase()
+    if (!analytics) return
+
+    const { logEvent } = await import('firebase/analytics')
     logEvent(analytics, 'tool_usage', {
       tool_name: toolName,
       ...params
     })
-    console.log('🔧 Tool Usage:', toolName, params)
   } catch (error) {
     console.error('도구 사용 추적 실패:', error)
   }
@@ -67,12 +81,15 @@ export function trackToolUsage(toolName, params = {}) {
  * @param {string} eventName - 이벤트 이름
  * @param {Object} params - 이벤트 매개변수
  */
-export function trackEvent(eventName, params = {}) {
-  if (!analytics) return
+export async function trackEvent(eventName, params = {}) {
+  if (typeof window === 'undefined') return
 
   try {
+    if (!analytics) await initFirebase()
+    if (!analytics) return
+
+    const { logEvent } = await import('firebase/analytics')
     logEvent(analytics, eventName, params)
-    console.log('📈 Event:', eventName, params)
   } catch (error) {
     console.error('이벤트 추적 실패:', error)
   }
@@ -83,15 +100,18 @@ export function trackEvent(eventName, params = {}) {
  * @param {string} buttonName - 버튼 이름
  * @param {Object} params - 추가 매개변수
  */
-export function trackButtonClick(buttonName, params = {}) {
-  if (!analytics) return
+export async function trackButtonClick(buttonName, params = {}) {
+  if (typeof window === 'undefined') return
 
   try {
+    if (!analytics) await initFirebase()
+    if (!analytics) return
+
+    const { logEvent } = await import('firebase/analytics')
     logEvent(analytics, 'button_click', {
       button_name: buttonName,
       ...params
     })
-    console.log('🖱️ Button Click:', buttonName, params)
   } catch (error) {
     console.error('버튼 클릭 추적 실패:', error)
   }
@@ -102,15 +122,18 @@ export function trackButtonClick(buttonName, params = {}) {
  * @param {string} conversionType - 변환 유형 (예: 'image_to_webp', 'json_parse')
  * @param {Object} params - 추가 매개변수
  */
-export function trackConversion(conversionType, params = {}) {
-  if (!analytics) return
+export async function trackConversion(conversionType, params = {}) {
+  if (typeof window === 'undefined') return
 
   try {
+    if (!analytics) await initFirebase()
+    if (!analytics) return
+
+    const { logEvent } = await import('firebase/analytics')
     logEvent(analytics, 'conversion_complete', {
       conversion_type: conversionType,
       ...params
     })
-    console.log('🔄 Conversion:', conversionType, params)
   } catch (error) {
     console.error('변환 추적 실패:', error)
   }
@@ -121,15 +144,18 @@ export function trackConversion(conversionType, params = {}) {
  * @param {string} errorType - 에러 유형
  * @param {string} errorMessage - 에러 메시지
  */
-export function trackError(errorType, errorMessage) {
-  if (!analytics) return
+export async function trackError(errorType, errorMessage) {
+  if (typeof window === 'undefined') return
 
   try {
+    if (!analytics) await initFirebase()
+    if (!analytics) return
+
+    const { logEvent } = await import('firebase/analytics')
     logEvent(analytics, 'error_occurred', {
       error_type: errorType,
       error_message: errorMessage
     })
-    console.log('❌ Error:', errorType, errorMessage)
   } catch (error) {
     console.error('에러 추적 실패:', error)
   }
