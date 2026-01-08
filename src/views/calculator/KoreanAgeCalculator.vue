@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import AdBanner from '../../components/AdBanner.vue'
 
 const { t } = useI18n()
 
@@ -343,7 +342,5 @@ ${result.value.birthdayPassed ? t('tools.koreanAge.result.birthdayPassed') : t('
       </div>
     </div>
 
-    <!-- Ad Banner -->
-    <AdBanner adSlot="6789012345" adFormat="horizontal" :fullWidth="true" />
   </div>
 </template>

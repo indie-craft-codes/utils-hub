@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import AdBanner from '../../components/AdBanner.vue'
 import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
@@ -258,7 +257,5 @@ const getDdayDisplay = (dateStr) => {
       </p>
     </div>
 
-    <!-- Ad Banner -->
-    <AdBanner adSlot="6789012345" adFormat="horizontal" :fullWidth="true" />
   </div>
 </template>

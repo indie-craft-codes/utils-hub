@@ -53,34 +53,8 @@ https://www.gstatic.com/firebasejs/12.7.0/firebase-analytics.js
 
 ## 2. Google AdSense
 
-> **상태:** 활성화
-> **용도:** 광고 수익화
-
-### 설정 정보
-
-| 항목 | 값 |
-|------|-----|
-| Publisher ID | `ca-pub-**************` (index.html 참조) |
-| ads.txt | `public/ads.txt`에 설정됨 |
-
-### 관련 파일
-
-| 파일 | 역할 |
-|------|------|
-| `index.html` (53줄) | AdSense 스크립트 로드 |
-| `src/components/AdBanner.vue` | 광고 배너 컴포넌트 |
-| `src/router/index.js` | 페이지 전환 시 광고 새로고침 |
-| `public/ads.txt` | AdSense 인증 파일 |
-
-### ads.txt 내용
-
-```
-google.com, pub-**************, DIRECT, ****************
-```
-
-### 관리 콘솔
-
-- [Google AdSense](https://www.google.com/adsense/)
+> **상태:** 비활성화 (제거됨)
+> **용도:** 광고 수익화 (현재 사용하지 않음)
 
 ---
 

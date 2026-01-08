@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import AdBanner from '../../components/AdBanner.vue'
 
 const { t, te } = useI18n()
 
@@ -1060,7 +1059,5 @@ const mbtiConnections = {
       </div>
     </div>
 
-    <!-- Ad Banner -->
-    <AdBanner adSlot="2345678901" adFormat="horizontal" :fullWidth="true" />
   </div>
 </template>

@@ -3,7 +3,6 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import html2canvas from 'html2canvas'
-import AdBanner from '../../components/AdBanner.vue'
 import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
@@ -1254,8 +1253,6 @@ watch([items, animationEnabled, soundEnabled, spinDuration, duplicateMode, coold
       </div>
     </Teleport>
 
-    <!-- Ad Banner -->
-    <AdBanner adSlot="2345678901" adFormat="horizontal" :fullWidth="true" />
   </div>
 </template>
 
