@@ -286,7 +286,7 @@ function createForeignKeyEdge(table, fk, index, sourceNode, targetNode, useLogic
     targetHandle: `${targetPosition}-target`, // target handle ID
     sourcePosition,
     targetPosition,
-    type: 'custom',  // 커스텀 엣지로 변경
+    type: 'smoothstep',
     animated: false,
     style: {
       stroke: '#6b7280',
@@ -316,7 +316,7 @@ function createForeignKeyEdge(table, fk, index, sourceNode, targetNode, useLogic
       targetColumns: fk.references.columns,
       onDelete: fk.onDelete,
       onUpdate: fk.onUpdate,
-      cardinality  // 카디널리티 정보 추가
+      cardinality  // 카디널리티 정보 유지 (나중에 사용 가능)
     }
   }
 }
