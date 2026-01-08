@@ -379,12 +379,8 @@ watch(showColumnDetails, () => {
 
         nodes.value = recenteredNodes
 
-        // 엣지 위치도 재계산
-        const currentEdges = [...edges.value]
-        edges.value = []
-        nextTick(() => {
-          edges.value = updateEdgePositions(currentEdges, nodes.value)
-        })
+        // 엣지는 노드 위치 변경에 따라 자동으로 업데이트됨
+        // Vue Flow가 자동으로 재렌더링하므로 별도 처리 불필요
       }, 50)
     })
   }
