@@ -1,7 +1,6 @@
-import { createRouter, createWebHistory } from 'vue-router'
 import { trackPageView } from '../utils/analytics'
 
-const routes = [
+export const routes = [
   {
     path: '/',
     name: 'Home',
@@ -129,16 +128,11 @@ const routes = [
   }
 ]
 
-const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes
-})
-
-// SPA 라우팅 시 페이지 뷰 추적
-router.afterEach((to) => {
-  // Google Analytics 페이지 뷰 추적
-  const pageTitle = to.name || to.path
-  trackPageView(to.path, pageTitle)
-})
-
-export default router
+// setupRouter는 vite-ssg에서 사용
+export const setupRouter = (router) => {
+  router.afterEach((to) => {
+    // Google Analytics 페이지 뷰 추적
+    const pageTitle = to.name || to.path
+    trackPageView(to.path, pageTitle)
+  })
+}
