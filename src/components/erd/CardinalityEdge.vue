@@ -32,25 +32,6 @@ const path = computed(() => {
   return edgePath
 })
 
-// 카디널리티 텍스트 위치 계산
-const sourceCardinalityPos = computed(() => {
-  const offsetX = props.sourcePosition === 'right' ? 20 : props.sourcePosition === 'left' ? -20 : 0
-  const offsetY = props.sourcePosition === 'bottom' ? 20 : props.sourcePosition === 'top' ? -20 : 0
-  return {
-    x: props.sourceX + offsetX,
-    y: props.sourceY + offsetY
-  }
-})
-
-const targetCardinalityPos = computed(() => {
-  const offsetX = props.targetPosition === 'right' ? 20 : props.targetPosition === 'left' ? -20 : 0
-  const offsetY = props.targetPosition === 'bottom' ? 20 : props.targetPosition === 'top' ? -20 : 0
-  return {
-    x: props.targetX + offsetX,
-    y: props.targetY + offsetY
-  }
-})
-
 // 라벨 중앙 위치 계산
 const labelPos = computed(() => {
   return {
@@ -58,52 +39,103 @@ const labelPos = computed(() => {
     y: (props.sourceY + props.targetY) / 2
   }
 })
+
+// 카디널리티에 따른 마커 ID 계산
+const markerStartId = computed(() => {
+  const cardinality = props.data?.cardinality?.source
+  if (cardinality === '1') return 'url(#erd-one-start)'
+  if (cardinality === 'N') return 'url(#erd-many-start)'
+  return ''
+})
+
+const markerEndId = computed(() => {
+  const cardinality = props.data?.cardinality?.target
+  if (cardinality === '1') return 'url(#erd-one-end)'
+  if (cardinality === 'N') return 'url(#erd-many-end)'
+  return ''
+})
 </script>
 
 <template>
-  <BaseEdge :id="id" :style="style" :path="path" :marker-end="markerEnd" />
+  <!-- SVG 마커 정의 (Crow's Foot Notation) -->
+  <svg style="position: absolute; width: 0; height: 0;">
+    <defs>
+      <!-- One (1) - 두 개의 수직선 || (source용) -->
+      <marker
+        id="erd-one-start"
+        viewBox="0 0 20 20"
+        refX="10"
+        refY="10"
+        markerWidth="20"
+        markerHeight="20"
+        orient="auto-start-reverse"
+      >
+        <line x1="10" y1="4" x2="10" y2="16" stroke="#6b7280" stroke-width="1.5" />
+        <line x1="7" y1="4" x2="7" y2="16" stroke="#6b7280" stroke-width="1.5" />
+      </marker>
+
+      <!-- One (1) - 두 개의 수직선 || (target용) -->
+      <marker
+        id="erd-one-end"
+        viewBox="0 0 20 20"
+        refX="10"
+        refY="10"
+        markerWidth="20"
+        markerHeight="20"
+        orient="auto"
+      >
+        <line x1="10" y1="4" x2="10" y2="16" stroke="#6b7280" stroke-width="1.5" />
+        <line x1="13" y1="4" x2="13" y2="16" stroke="#6b7280" stroke-width="1.5" />
+      </marker>
+
+      <!-- Many (N) - 까마귀 발 ⟨ (source용) -->
+      <marker
+        id="erd-many-start"
+        viewBox="0 0 20 20"
+        refX="10"
+        refY="10"
+        markerWidth="20"
+        markerHeight="20"
+        orient="auto-start-reverse"
+      >
+        <!-- 중앙 수직선 -->
+        <line x1="10" y1="4" x2="10" y2="16" stroke="#6b7280" stroke-width="1.5" />
+        <!-- 위쪽 대각선 -->
+        <line x1="10" y1="4" x2="4" y2="4" stroke="#6b7280" stroke-width="1.5" />
+        <!-- 아래쪽 대각선 -->
+        <line x1="10" y1="16" x2="4" y2="16" stroke="#6b7280" stroke-width="1.5" />
+      </marker>
+
+      <!-- Many (N) - 까마귀 발 ⟩ (target용) -->
+      <marker
+        id="erd-many-end"
+        viewBox="0 0 20 20"
+        refX="10"
+        refY="10"
+        markerWidth="20"
+        markerHeight="20"
+        orient="auto"
+      >
+        <!-- 중앙 수직선 -->
+        <line x1="10" y1="4" x2="10" y2="16" stroke="#6b7280" stroke-width="1.5" />
+        <!-- 위쪽 대각선 -->
+        <line x1="10" y1="4" x2="16" y2="4" stroke="#6b7280" stroke-width="1.5" />
+        <!-- 아래쪽 대각선 -->
+        <line x1="10" y1="16" x2="16" y2="16" stroke="#6b7280" stroke-width="1.5" />
+      </marker>
+    </defs>
+  </svg>
+
+  <!-- 엣지 렌더링 -->
+  <BaseEdge
+    :id="id"
+    :style="style"
+    :path="path"
+    :marker-start="markerStartId"
+    :marker-end="markerEndId"
+  />
 
   <EdgeLabelRenderer>
-    <!-- Source 카디널리티 -->
-    <div
-      v-if="data?.cardinality?.source"
-      :style="{
-        position: 'absolute',
-        transform: `translate(-50%, -50%) translate(${sourceCardinalityPos.x}px, ${sourceCardinalityPos.y}px)`,
-        pointerEvents: 'none',
-        fontSize: '12px',
-        fontWeight: '600',
-        color: '#6b7280',
-        backgroundColor: '#ffffff',
-        padding: '2px 6px',
-        borderRadius: '3px',
-        border: '1px solid #e5e7eb'
-      }"
-      class="nodrag nopan cardinality-badge"
-    >
-      {{ data.cardinality.source }}
-    </div>
-
-    <!-- Target 카디널리티 -->
-    <div
-      v-if="data?.cardinality?.target"
-      :style="{
-        position: 'absolute',
-        transform: `translate(-50%, -50%) translate(${targetCardinalityPos.x}px, ${targetCardinalityPos.y}px)`,
-        pointerEvents: 'none',
-        fontSize: '12px',
-        fontWeight: '600',
-        color: '#6b7280',
-        backgroundColor: '#ffffff',
-        padding: '2px 6px',
-        borderRadius: '3px',
-        border: '1px solid #e5e7eb'
-      }"
-      class="nodrag nopan cardinality-badge"
-    >
-      {{ data.cardinality.target }}
-    </div>
-
     <!-- FK 컬럼명 라벨 -->
     <div
       v-if="label"

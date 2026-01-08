@@ -482,11 +482,6 @@ const downloadImage = async () => {
         if (controls) controls.style.display = 'none'
         if (minimap) minimap.style.display = 'none'
 
-        // ✅ 카디널리티 배지 숨김 (화면에만 표시, 이미지에는 제외)
-        clonedDoc.querySelectorAll('.cardinality-badge').forEach(badge => {
-          badge.style.display = 'none'
-        })
-
         // ✅ 캡처 전용: 폰트/라인하이트를 "고정"해서 html2canvas 폰트메트릭 흔들림 제거
         const ROOT_FONT = `-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", Arial, sans-serif`
 
