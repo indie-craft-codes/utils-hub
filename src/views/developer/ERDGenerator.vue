@@ -697,6 +697,9 @@ const downloadImage = async () => {
     ctx.fillStyle = backgroundColor
     ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height)
 
+    // [수정 1] 노드를 먼저 그립니다 (화살표가 노드 위로 올라오도록)
+    ctx.drawImage(nodeCanvas, 0, 0)
+
     // ✅ 3) edge를 DOM 기반으로 "직접" 그리기 (끊김 방지)
     const getHandleXY = (nodeId, handleId) => {
       const el = viewportElement.querySelector(`[data-id="${nodeId}"]`)
@@ -757,27 +760,28 @@ const downloadImage = async () => {
       ctx.fillStyle = ctx.strokeStyle
       ctx.beginPath()
 
-      // target position에 따라 화살표 방향 결정
+      // [수정 2] 화살표 방향 반전 (노드 바깥쪽으로 그려지도록 부호 변경)
+      // 기존 코드는 노드 안쪽(+)을 향해 그려져서 가려졌습니다.
       switch (t.pos) {
-        case Position.Left:
-          ctx.moveTo(tx, ty)
-          ctx.lineTo(tx + arrowSize, ty - arrowSize / 2)
-          ctx.lineTo(tx + arrowSize, ty + arrowSize / 2)
-          break
-        case Position.Right:
+        case Position.Left: // 왼쪽 핸들: 화살표는 왼쪽에 위치 (-)
           ctx.moveTo(tx, ty)
           ctx.lineTo(tx - arrowSize, ty - arrowSize / 2)
           ctx.lineTo(tx - arrowSize, ty + arrowSize / 2)
           break
-        case Position.Top:
+        case Position.Right: // 오른쪽 핸들: 화살표는 오른쪽에 위치 (+)
           ctx.moveTo(tx, ty)
-          ctx.lineTo(tx - arrowSize / 2, ty + arrowSize)
-          ctx.lineTo(tx + arrowSize / 2, ty + arrowSize)
+          ctx.lineTo(tx + arrowSize, ty - arrowSize / 2)
+          ctx.lineTo(tx + arrowSize, ty + arrowSize / 2)
           break
-        case Position.Bottom:
+        case Position.Top: // 위쪽 핸들: 화살표는 위쪽에 위치 (-)
           ctx.moveTo(tx, ty)
           ctx.lineTo(tx - arrowSize / 2, ty - arrowSize)
           ctx.lineTo(tx + arrowSize / 2, ty - arrowSize)
+          break
+        case Position.Bottom: // 아래쪽 핸들: 화살표는 아래쪽에 위치 (+)
+          ctx.moveTo(tx, ty)
+          ctx.lineTo(tx - arrowSize / 2, ty + arrowSize)
+          ctx.lineTo(tx + arrowSize / 2, ty + arrowSize)
           break
       }
       ctx.closePath()
@@ -811,10 +815,9 @@ const downloadImage = async () => {
 
     ctx.restore()
 
-    // ✅ 4) 노드를 edge 위에 합성
-    ctx.drawImage(nodeCanvas, 0, 0)
+    // [삭제됨] ctx.drawImage(nodeCanvas, 0, 0) - 위쪽으로 이동함
 
-    // ✅ 5) 다운로드
+    // ✅ 4) 다운로드
     finalCanvas.toBlob((blob) => {
       if (!blob) {
         error.value = '이미지 생성에 실패했습니다. (CORS/taint 가능)'
