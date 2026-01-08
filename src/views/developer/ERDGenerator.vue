@@ -332,6 +332,9 @@ watch(showColumnDetails, () => {
       }
     })
 
+    // 엣지 백업
+    const currentEdges = [...edges.value]
+
     // 렌더링 후 크기 변화 감지하여 중앙 유지
     nextTick(() => {
       setTimeout(() => {
@@ -379,8 +382,11 @@ watch(showColumnDetails, () => {
 
         nodes.value = recenteredNodes
 
-        // 엣지는 노드 위치 변경에 따라 자동으로 업데이트됨
-        // Vue Flow가 자동으로 재렌더링하므로 별도 처리 불필요
+        // 엣지 강제 재설정 (markerEnd 등 속성 유지를 위해)
+        edges.value = []
+        nextTick(() => {
+          edges.value = currentEdges
+        })
       }, 50)
     })
   }
