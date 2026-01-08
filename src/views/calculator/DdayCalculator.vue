@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { trackToolUsage } from '../../utils/analytics'
+import ToolGuide from '../../components/common/ToolGuide.vue'
 
 const { t } = useI18n()
 
@@ -257,5 +258,6 @@ const getDdayDisplay = (dateStr) => {
       </p>
     </div>
 
+    <ToolGuide toolKey="dday" />
   </div>
 </template>

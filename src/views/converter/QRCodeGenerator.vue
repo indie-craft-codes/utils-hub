@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import QRCode from 'qrcode'
 import { trackToolUsage } from '../../utils/analytics'
+import ToolGuide from '../../components/common/ToolGuide.vue'
 
 const { t } = useI18n()
 
@@ -126,5 +127,6 @@ const downloadSvg = () => {
       </div>
     </div>
 
+    <ToolGuide toolKey="qrcode" />
   </div>
 </template>

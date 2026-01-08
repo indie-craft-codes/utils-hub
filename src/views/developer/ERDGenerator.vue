@@ -9,6 +9,7 @@ import TableNode from '../../components/erd/TableNode.vue'
 import { parseMultipleDDL } from '../../utils/ddl/mysqlParser'
 import { convertToFlowElements, toggleLogicalPhysical, saveNodePositions, restoreNodePositions, updateEdgePositions, updateEdgeLabels } from '../../utils/erd/erdConverter'
 import { trackToolUsage } from '../../utils/analytics'
+import ToolGuide from '../../components/common/ToolGuide.vue'
 
 const { t } = useI18n()
 
@@ -1048,6 +1049,7 @@ const downloadImage = async () => {
       </div>
     </div>
 
+    <ToolGuide toolKey="erd" />
   </div>
 </template>
 

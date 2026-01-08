@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import ToolGuide from '../../components/common/ToolGuide.vue'
 
 const { t } = useI18n()
 
@@ -342,5 +343,6 @@ ${result.value.birthdayPassed ? t('tools.koreanAge.result.birthdayPassed') : t('
       </div>
     </div>
 
+    <ToolGuide toolKey="koreanAge" />
   </div>
 </template>

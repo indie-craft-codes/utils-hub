@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
+import ToolGuide from '../../components/common/ToolGuide.vue'
 
 const { t } = useI18n()
 
@@ -269,5 +270,6 @@ const copyResult = async () => {
       </div>
     </div>
 
+    <ToolGuide toolKey="unit" />
   </div>
 </template>

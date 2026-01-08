@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import html2canvas from 'html2canvas'
 import GIF from 'gif.js'
 import { trackToolUsage } from '../../utils/analytics'
+import ToolGuide from '../../components/common/ToolGuide.vue'
 
 const { t } = useI18n()
 
@@ -657,5 +658,6 @@ const saveGif = async () => {
       </div>
     </div>
 
+    <ToolGuide toolKey="ladder" />
   </div>
 </template>

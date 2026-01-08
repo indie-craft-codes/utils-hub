@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import html2canvas from 'html2canvas'
 import { trackToolUsage } from '../../utils/analytics'
+import ToolGuide from '../../components/common/ToolGuide.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -1253,6 +1254,7 @@ watch([items, animationEnabled, soundEnabled, spinDuration, duplicateMode, coold
       </div>
     </Teleport>
 
+    <ToolGuide toolKey="roulette" />
   </div>
 </template>
 

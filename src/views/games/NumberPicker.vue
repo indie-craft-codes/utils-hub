@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { trackToolUsage } from '../../utils/analytics'
+import ToolGuide from '../../components/common/ToolGuide.vue'
 
 const { t } = useI18n()
 
@@ -107,5 +108,6 @@ const generateNumbers = () => {
       </div>
     </div>
 
+    <ToolGuide toolKey="numberPicker" />
   </div>
 </template>

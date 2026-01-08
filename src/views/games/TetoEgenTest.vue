@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import ToolGuide from '../../components/common/ToolGuide.vue'
 
 const { t, te } = useI18n()
 
@@ -1059,5 +1060,6 @@ const mbtiConnections = {
       </div>
     </div>
 
+    <ToolGuide toolKey="tetoEgen" />
   </div>
 </template>
