@@ -531,13 +531,14 @@ const downloadImage = async () => {
       return
     }
 
-    // ✅ 크기에 따라 SCALE 자동 조정 (더 넓은 범위를 작은 스케일로)
+    // ✅ 크기에 따라 SCALE 자동 조정 (고화질 + 안전장치)
     const maxDimension = Math.max(capW, capH)
-    let SCALE = 1.5  // 기본 스케일 감소 (2 → 1.5)
+    const maxCanvasSize = 8000  // 캔버스 크기 제한 (브라우저 안전)
+    let SCALE = 2  // 기본 스케일 (고화질)
 
-    // 큰 다이어그램은 더 작은 스케일 사용
-    if (maxDimension > 1500) {
-      SCALE = Math.min(1.5, 6000 / maxDimension)  // 최대 출력 크기 증가 (4000 → 6000)
+    // 캔버스 크기가 제한을 초과하지 않도록 조정
+    if (capW * SCALE > maxCanvasSize || capH * SCALE > maxCanvasSize) {
+      SCALE = Math.min(maxCanvasSize / capW, maxCanvasSize / capH)
     }
     console.log(`📏 캡처 영역: ${capW.toFixed(0)}x${capH.toFixed(0)}, SCALE: ${SCALE.toFixed(2)}`)
 
