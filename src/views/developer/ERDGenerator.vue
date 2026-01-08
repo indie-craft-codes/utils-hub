@@ -306,6 +306,90 @@ watch(useLogicalNames, (newValue) => {
   }
 })
 
+// 컬럼 상세 정보 토글 시 중앙값 유지
+watch(showColumnDetails, () => {
+  if (nodes.value.length > 0) {
+    // 실제 렌더링된 노드 크기를 DOM에서 직접 읽어오기
+    const actualWidths = new Map()
+    const actualHeights = new Map()
+    const originalPositions = new Map() // 원래 위치 저장
+
+    nodes.value.forEach(node => {
+      // 원래 위치 저장 (토글 전)
+      originalPositions.set(node.id, { x: node.position.x, y: node.position.y })
+
+      // Vue Flow가 렌더링한 실제 DOM 요소 찾기
+      const nodeElement = document.querySelector(`[data-id="${node.id}"]`)
+      if (nodeElement) {
+        const width = nodeElement.offsetWidth || node.dimensions?.width
+        const height = nodeElement.offsetHeight || node.dimensions?.height
+        if (width) {
+          actualWidths.set(node.id, width)
+        }
+        if (height) {
+          actualHeights.set(node.id, height)
+        }
+      }
+    })
+
+    // 렌더링 후 크기 변화 감지하여 중앙 유지
+    nextTick(() => {
+      setTimeout(() => {
+        const newActualWidths = new Map()
+        const newActualHeights = new Map()
+
+        nodes.value.forEach(node => {
+          const nodeElement = document.querySelector(`[data-id="${node.id}"]`)
+          if (nodeElement) {
+            const width = nodeElement.offsetWidth
+            const height = nodeElement.offsetHeight
+            if (width) newActualWidths.set(node.id, width)
+            if (height) newActualHeights.set(node.id, height)
+          }
+        })
+
+        // 실제 렌더링된 크기와 비교하여 재조정
+        const recenteredNodes = nodes.value.map(node => {
+          const oldWidth = actualWidths.get(node.id)
+          const oldHeight = actualHeights.get(node.id)
+          const newWidth = newActualWidths.get(node.id)
+          const newHeight = newActualHeights.get(node.id)
+          const originalPos = originalPositions.get(node.id)
+
+          if (!oldWidth || !oldHeight || !newWidth || !newHeight || !originalPos) {
+            return node
+          }
+
+          // 기존 중앙점 (토글 전 - 원래 위치 사용)
+          const oldCenterX = originalPos.x + oldWidth / 2
+          const oldCenterY = originalPos.y + oldHeight / 2
+
+          // 새 position (실제 렌더링된 크기 기준)
+          const recenteredX = oldCenterX - newWidth / 2
+          const recenteredY = oldCenterY - newHeight / 2
+
+          return {
+            ...node,
+            position: {
+              x: recenteredX,
+              y: recenteredY
+            }
+          }
+        })
+
+        nodes.value = recenteredNodes
+
+        // 엣지 위치도 재계산
+        const currentEdges = [...edges.value]
+        edges.value = []
+        nextTick(() => {
+          edges.value = updateEdgePositions(currentEdges, nodes.value)
+        })
+      }, 50)
+    })
+  }
+})
+
 // 노드 드래그 종료 시 위치 저장 및 엣지 재계산
 const handleNodeDragStop = () => {
   saveNodePositions(nodes.value)
