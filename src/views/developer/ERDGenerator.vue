@@ -750,7 +750,7 @@ const downloadImage = async () => {
       ctx.stroke(new Path2D(pathData))
 
       // 화살표 그리기 (target 쪽)
-      const arrowSize = 10
+      const arrowSize = 16  // 10 → 16으로 증가
       const tx = (t.x - capX) * SCALE
       const ty = (t.y - capY) * SCALE
 
@@ -785,7 +785,7 @@ const downloadImage = async () => {
 
       // FK 레이블 그리기 (엣지 중간)
       if (edge.label) {
-        ctx.font = '12px sans-serif'
+        ctx.font = '11px sans-serif'  // 12px → 11px (컬럼 타입과 동일)
         ctx.fillStyle = isDark ? '#9ca3af' : '#6b7280'
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
