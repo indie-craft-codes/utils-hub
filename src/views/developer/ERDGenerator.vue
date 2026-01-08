@@ -6,7 +6,6 @@ import { Background } from '@vue-flow/background'
 import { Controls } from '@vue-flow/controls'
 import { MiniMap } from '@vue-flow/minimap'
 import TableNode from '../../components/erd/TableNode.vue'
-import AdBanner from '../../components/AdBanner.vue'
 import { parseMultipleDDL } from '../../utils/ddl/mysqlParser'
 import { convertToFlowElements, toggleLogicalPhysical, saveNodePositions, restoreNodePositions, updateEdgePositions, updateEdgeLabels } from '../../utils/erd/erdConverter'
 import { trackToolUsage } from '../../utils/analytics'
@@ -1048,8 +1047,6 @@ const downloadImage = async () => {
       </div>
     </div>
 
-    <!-- Ad Banner -->
-    <AdBanner adSlot="3456789013" adFormat="horizontal" :fullWidth="true" />
   </div>
 </template>
 

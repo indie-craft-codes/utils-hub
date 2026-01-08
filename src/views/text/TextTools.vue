@@ -2,7 +2,6 @@
 import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import CryptoJS from 'crypto-js'
-import AdBanner from '../../components/AdBanner.vue'
 import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
@@ -195,7 +194,5 @@ const swap = () => {
       </button>
     </div>
 
-    <!-- Ad Banner -->
-    <AdBanner adSlot="5678901234" adFormat="horizontal" :fullWidth="true" />
   </div>
 </template>

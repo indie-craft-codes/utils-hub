@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import AdBanner from '../../components/AdBanner.vue'
 import { trackToolUsage } from '../../utils/analytics'
 
 const { t } = useI18n()
@@ -196,7 +195,5 @@ const copy = async (value, key) => {
       </div>
     </div>
 
-    <!-- Ad Banner -->
-    <AdBanner adSlot="3456789012" adFormat="horizontal" :fullWidth="true" />
   </div>
 </template>
