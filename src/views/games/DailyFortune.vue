@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import ToolGuide from '../../components/common/ToolGuide.vue'
 
 const { t, locale } = useI18n()
 
@@ -825,5 +826,6 @@ const share = async () => {
       </p>
     </div>
 
+    <ToolGuide toolKey="fortune" />
   </div>
 </template>

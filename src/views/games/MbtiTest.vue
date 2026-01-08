@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import ToolGuide from '../../components/common/ToolGuide.vue'
 
 const { t, te } = useI18n()
 
@@ -901,5 +902,6 @@ const mbtiTypes = [
       </div>
     </div>
 
+    <ToolGuide toolKey="mbti" />
   </div>
 </template>

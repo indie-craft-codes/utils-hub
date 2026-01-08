@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import heic2any from 'heic2any'
 import { trackConversion } from '../../utils/analytics'
+import ToolGuide from '../../components/common/ToolGuide.vue'
 
 const { t } = useI18n()
 
@@ -306,5 +307,6 @@ const reset = () => {
       </div>
     </div>
 
+    <ToolGuide toolKey="converter" />
   </div>
 </template>

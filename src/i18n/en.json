@@ -13,6 +13,11 @@
     "output": "Output",
     "delete": "Delete"
   },
+  "guide": {
+    "howToUse": "How to Use",
+    "tips": "Helpful Tips",
+    "faq": "FAQ"
+  },
   "home": {
     "subtitle": "All-in-one utility tools for everyday use",
     "description": "Utils Hub is a collection of free online tools you can use directly in your browser without installation. All data is processed in your browser and never sent to any server, ensuring your privacy.",
