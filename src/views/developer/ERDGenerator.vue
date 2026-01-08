@@ -752,7 +752,7 @@ const downloadImage = async () => {
       ctx.stroke(new Path2D(pathData))
 
       // 화살표 그리기 (target 쪽)
-      const arrowSize = 16  // 10 → 16으로 증가
+      const arrowSize = 10
       const tx = (t.x - capX) * SCALE
       const ty = (t.y - capY) * SCALE
 
