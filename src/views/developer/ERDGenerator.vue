@@ -889,8 +889,8 @@ const downloadImage = async () => {
         ></textarea>
       </div>
 
-      <!-- 액션 버튼 -->
-      <div class="flex flex-wrap gap-3 items-center">
+      <!-- DDL 액션 버튼 -->
+      <div class="flex flex-wrap gap-3 items-center mb-4">
         <button @click="addDDL" class="btn btn-primary">
           {{ t('tools.erd.addDDL') }}
         </button>
@@ -899,53 +899,65 @@ const downloadImage = async () => {
           {{ t('tools.erd.uploadFile') }}
         </label>
         <button @click="saveCurrentDDL" :disabled="ddlList.length === 0" class="btn btn-secondary disabled:opacity-50">
-          💾 ERD 저장
+          {{ t('tools.erd.saveERD') }}
         </button>
         <button @click="clearAll" class="btn btn-secondary">
           {{ t('common.clear') }}
         </button>
-        <div class="border-l border-gray-300 dark:border-gray-600 h-8"></div>
+      </div>
 
-        <!-- 논리/물리 모델 토글 -->
-        <label class="relative inline-flex items-center cursor-pointer">
-          <input type="checkbox" v-model="useLogicalNames" class="sr-only peer">
-          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
-          <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-            {{ useLogicalNames ? t('tools.erd.logicalModel') : t('tools.erd.physicalModel') }}
-          </span>
-        </label>
+      <!-- 표시 옵션 & 뷰 컨트롤 -->
+      <div class="flex flex-wrap gap-x-6 gap-y-3 items-center pt-4 border-t border-gray-200 dark:border-gray-700">
+        <!-- 표시 옵션 -->
+        <div class="flex flex-wrap gap-4 items-center">
+          <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{{ t('tools.erd.displayOptions') }}</span>
 
-        <!-- 미니맵 토글 -->
-        <label class="relative inline-flex items-center cursor-pointer">
-          <input type="checkbox" v-model="showMiniMap" class="sr-only peer">
-          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
-          <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-            {{ t('tools.erd.showMiniMap') }}
-          </span>
-        </label>
+          <!-- 논리/물리 모델 토글 -->
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" v-model="useLogicalNames" class="sr-only peer">
+            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+              {{ useLogicalNames ? t('tools.erd.logicalModel') : t('tools.erd.physicalModel') }}
+            </span>
+          </label>
 
-        <!-- 컬럼 상세정보 토글 -->
-        <label class="relative inline-flex items-center cursor-pointer">
-          <input type="checkbox" v-model="showColumnDetails" class="sr-only peer">
-          <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
-          <span class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-300">
-            컬럼 상세정보
-          </span>
-        </label>
+          <!-- 미니맵 토글 -->
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" v-model="showMiniMap" class="sr-only peer">
+            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+              {{ t('tools.erd.showMiniMap') }}
+            </span>
+          </label>
 
-        <div class="border-l border-gray-300 dark:border-gray-600 h-8"></div>
-        <button @click="fitToView" :disabled="nodes.length === 0" class="btn btn-secondary disabled:opacity-50">
-          🔍 전체 보기
-        </button>
-        <button @click="zoomOut50" :disabled="nodes.length === 0" class="btn btn-secondary disabled:opacity-50">
-          🔎 50%
-        </button>
-        <button @click="zoomOut25" :disabled="nodes.length === 0" class="btn btn-secondary disabled:opacity-50">
-          🔎 25%
-        </button>
-        <button @click="downloadImage" :disabled="nodes.length === 0 || isDownloading" class="btn btn-secondary disabled:opacity-50">
-          {{ isDownloading ? '다운로드 중...' : t('tools.erd.downloadImage') }}
-        </button>
+          <!-- 컬럼 상세정보 토글 -->
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" v-model="showColumnDetails" class="sr-only peer">
+            <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary-300 dark:peer-focus:ring-primary-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-primary-600"></div>
+            <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+              {{ t('tools.erd.columnDetails') }}
+            </span>
+          </label>
+        </div>
+
+        <div class="hidden sm:block border-l border-gray-300 dark:border-gray-600 h-6"></div>
+
+        <!-- 뷰 컨트롤 -->
+        <div class="flex flex-wrap gap-2 items-center">
+          <span class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide">{{ t('tools.erd.viewControls') }}</span>
+          <button @click="fitToView" :disabled="nodes.length === 0" class="btn btn-secondary text-sm py-1.5 px-3 disabled:opacity-50">
+            {{ t('tools.erd.fitToView') }}
+          </button>
+          <button @click="zoomOut50" :disabled="nodes.length === 0" class="btn btn-secondary text-sm py-1.5 px-3 disabled:opacity-50">
+            50%
+          </button>
+          <button @click="zoomOut25" :disabled="nodes.length === 0" class="btn btn-secondary text-sm py-1.5 px-3 disabled:opacity-50">
+            25%
+          </button>
+          <button @click="downloadImage" :disabled="nodes.length === 0 || isDownloading" class="btn btn-secondary text-sm py-1.5 px-3 disabled:opacity-50">
+            {{ isDownloading ? t('tools.erd.downloading') : t('tools.erd.downloadImage') }}
+          </button>
+        </div>
       </div>
 
       <!-- 에러 메시지 -->
