@@ -3,13 +3,14 @@ import { Parser } from 'node-sql-parser'
 const parser = new Parser()
 
 /**
- * MySQL DDL을 파싱하여 테이블 스키마 정보 추출
+ * DDL을 파싱하여 테이블 스키마 정보 추출
  * @param {string} ddl - CREATE TABLE 문
+ * @param {string} database - 데이터베이스 유형 (MySQL, PostgreSQL, MariaDB)
  * @returns {Object|null} 파싱된 테이블 정보
  */
-export function parseMySQLDDL(ddl) {
+export function parseDDL(ddl, database = 'MySQL') {
   try {
-    const ast = parser.astify(ddl, { database: 'MySQL' })
+    const ast = parser.astify(ddl, { database })
 
     // CREATE TABLE 문이 아니면 null 반환
     if (!ast || ast.type !== 'create' || ast.keyword !== 'table') {
@@ -119,11 +120,21 @@ export function parseMySQLDDL(ddl) {
 }
 
 /**
+ * MySQL DDL 파싱 (하위 호환성)
+ * @param {string} ddl - CREATE TABLE 문
+ * @returns {Object|null} 파싱된 테이블 정보
+ */
+export function parseMySQLDDL(ddl) {
+  return parseDDL(ddl, 'MySQL')
+}
+
+/**
  * 여러 개의 DDL 문을 파싱
  * @param {string} ddlText - 여러 CREATE TABLE 문 (세미콜론으로 구분)
+ * @param {string} database - 데이터베이스 유형 (MySQL, PostgreSQL, MariaDB)
  * @returns {Array} 파싱된 테이블 정보 배열
  */
-export function parseMultipleDDL(ddlText) {
+export function parseMultipleDDL(ddlText, database = 'MySQL') {
   const tables = []
   const errors = []
 
@@ -135,7 +146,7 @@ export function parseMultipleDDL(ddlText) {
 
   for (const statement of statements) {
     try {
-      const table = parseMySQLDDL(statement)
+      const table = parseDDL(statement, database)
       if (table) {
         tables.push(table)
       }

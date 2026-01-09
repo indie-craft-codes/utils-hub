@@ -441,6 +441,7 @@
       "title": "ERD 생성기",
       "description": "DDL로 ERD 다이어그램 생성",
       "vendor": "데이터베이스",
+      "selectDatabase": "데이터베이스 선택",
       "inputDDL": "DDL 입력",
       "placeholder": "CREATE TABLE users (\n  user_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT '사용자ID',\n  email VARCHAR(255) NOT NULL UNIQUE COMMENT '이메일',\n  name VARCHAR(100) NOT NULL COMMENT '이름',\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '생성일시'\n) COMMENT='사용자';",
       "addDDL": "DDL 추가",
@@ -467,7 +468,7 @@
           "여러 테이블을 한 번에 추가할 수 있습니다."
         ],
         "faq": [
-          { "q": "어떤 데이터베이스를 지원하나요?", "a": "MySQL, PostgreSQL, SQL Server 등 표준 DDL 문법을 지원합니다." },
+          { "q": "어떤 데이터베이스를 지원하나요?", "a": "MySQL, PostgreSQL, MariaDB DDL 문법을 지원합니다." },
           { "q": "관계선이 표시되지 않아요.", "a": "FOREIGN KEY 제약조건을 DDL에 포함해야 관계가 표시됩니다." }
         ]
       }

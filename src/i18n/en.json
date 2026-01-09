@@ -263,6 +263,7 @@
       "title": "ERD Generator",
       "description": "Generate ERD diagrams from DDL",
       "vendor": "Database",
+      "selectDatabase": "Select Database",
       "inputDDL": "Input DDL",
       "placeholder": "CREATE TABLE users (\n  user_id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'User ID',\n  email VARCHAR(255) NOT NULL UNIQUE COMMENT 'Email',\n  name VARCHAR(100) NOT NULL COMMENT 'Name',\n  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Created At'\n) COMMENT='Users';",
       "addDDL": "Add DDL",

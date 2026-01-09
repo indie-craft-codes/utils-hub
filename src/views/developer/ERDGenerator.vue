@@ -24,7 +24,7 @@ const nodes = ref([])
 const edges = ref([])
 const error = ref('')
 const useLogicalNames = ref(false)
-const vendor = ref('mysql')
+const vendor = ref('MySQL')
 const showMiniMap = ref(true)
 const savedDDLs = ref([]) // 로컬스토리지에 저장된 DDL 목록
 const isDownloading = ref(false) // 이미지 다운로드 중 여부
@@ -116,7 +116,7 @@ const addDDL = () => {
   }
 
   try {
-    const result = parseMultipleDDL(ddlInput.value)
+    const result = parseMultipleDDL(ddlInput.value, vendor.value)
 
     if (result.errors.length > 0) {
       error.value = t('tools.erd.parseError') + ':\n' +
@@ -862,6 +862,21 @@ const downloadImage = async () => {
 
     <!-- 컨트롤 패널 -->
     <div class="card mb-6">
+      <!-- 데이터베이스 선택 -->
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          {{ t('tools.erd.selectDatabase') }}
+        </label>
+        <select
+          v-model="vendor"
+          class="w-full sm:w-48 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+        >
+          <option value="MySQL">MySQL</option>
+          <option value="PostgreSQL">PostgreSQL</option>
+          <option value="MariaDB">MariaDB</option>
+        </select>
+      </div>
+
       <!-- DDL 입력 -->
       <div class="mb-4">
         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
