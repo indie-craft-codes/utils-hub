@@ -1,0 +1,1023 @@
+<title>AI 유튜브 영상 제작 시스템</title>
+<meta name="description" content="Higgsfield 벤치마킹 기반 자동화 영상 제작 파이프라인 설계">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+:root {
+  --bg: #0a0a0f;
+  --bg-card: #12121a;
+  --bg-card-hover: #1a1a25;
+  --border: #2a2a3a;
+  --text: #e8e8f0;
+  --text-muted: #8888a0;
+  --accent: #6366f1;
+  --accent-glow: rgba(99, 102, 241, 0.3);
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #f8f9fc;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f0f1f5;
+    --border: #e2e4ea;
+    --text: #1a1a2e;
+    --text-muted: #6b7280;
+    --accent: #4f46e5;
+    --accent-glow: rgba(79, 70, 229, 0.15);
+    color-scheme: light;
+  }
+}
+
+:root[data-theme="light"] {
+  --bg: #f8f9fc;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f0f1f5;
+  --border: #e2e4ea;
+  --text: #1a1a2e;
+  --text-muted: #6b7280;
+  --accent: #4f46e5;
+  --accent-glow: rgba(79, 70, 229, 0.15);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #0a0a0f;
+  --bg-card: #12121a;
+  --bg-card-hover: #1a1a25;
+  --border: #2a2a3a;
+  --text: #e8e8f0;
+  --text-muted: #8888a0;
+  --accent: #6366f1;
+  --accent-glow: rgba(99, 102, 241, 0.3);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans KR', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  padding: 24px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1, h2, h3 { font-weight: 700; line-height: 1.3; text-wrap: balance; }
+
+h1 {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--accent), #a855f7);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  color: var(--text-muted);
+  font-size: 1rem;
+  margin-bottom: 32px;
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin: 32px 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+h2::before {
+  content: '';
+  width: 4px;
+  height: 24px;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+h3 {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+/* Pipeline Flow */
+.pipeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+
+.stage {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.stage:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.stage-num {
+  position: absolute;
+  top: -10px;
+  left: 16px;
+  background: var(--accent);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 10px;
+}
+
+.stage-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stage-desc {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.stage-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tool-tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  background: var(--accent-glow);
+  color: var(--accent);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+/* Feature Cards */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+}
+
+.feature {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.feature-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.feature-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* Architecture Diagram */
+.arch-diagram {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 20px 0;
+  overflow-x: auto;
+}
+
+.arch-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.arch-box {
+  flex: 1;
+  min-width: 150px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  font-size: 0.85rem;
+}
+
+.arch-box.highlight {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.arch-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.arch-arrow {
+  display: flex;
+  justify-content: center;
+  padding: 8px 0;
+  color: var(--text-muted);
+}
+
+/* Model Table */
+.model-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 0.9rem;
+}
+
+.model-table th,
+.model-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.model-table th {
+  font-weight: 600;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.model-table tr:hover td {
+  background: var(--bg-card-hover);
+}
+
+.badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.badge-best { background: var(--success); color: white; }
+.badge-fast { background: var(--warning); color: black; }
+.badge-cheap { background: var(--accent); color: white; }
+
+/* Code Block */
+.code-block {
+  background: #1a1a2e;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: #e8e8f0;
+}
+
+.code-comment { color: #6b7280; }
+.code-keyword { color: #c084fc; }
+.code-string { color: #34d399; }
+.code-func { color: #60a5fa; }
+
+/* Summary */
+.summary {
+  background: linear-gradient(135deg, var(--accent-glow), transparent);
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 32px;
+}
+
+.summary-title {
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.summary-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 8px;
+}
+
+.summary-list li {
+  font-size: 0.9rem;
+  padding-left: 20px;
+  position: relative;
+}
+
+.summary-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: var(--success);
+}
+</style>
+
+<h1>AI 유튜브 영상 제작 시스템</h1>
+<p class="subtitle">Higgsfield 벤치마킹 기반 · 자동화 파이프라인 설계</p>
+
+<h2>제작 파이프라인</h2>
+<div class="pipeline">
+  <div class="stage">
+    <span class="stage-num">01</span>
+    <div class="stage-title">📝 콘텐츠 기획</div>
+    <p class="stage-desc">주제 선정, 타겟 분석, 스크립트 작성 (LLM 기반)</p>
+    <div class="stage-tools">
+      <span class="tool-tag">Claude API</span>
+      <span class="tool-tag">트렌드 분석</span>
+    </div>
+  </div>
+
+  <div class="stage">
+    <span class="stage-num">02</span>
+    <div class="stage-title">🎬 스토리보드</div>
+    <p class="stage-desc">AI Director로 장면 분할, 샷 구성, 카메라 설정</p>
+    <div class="stage-tools">
+      <span class="tool-tag">Cinema Studio</span>
+      <span class="tool-tag">샷 분할</span>
+    </div>
+  </div>
+
+  <div class="stage">
+    <span class="stage-num">03</span>
+    <div class="stage-title">🎨 에셋 생성</div>
+    <p class="stage-desc">텍스트→이미지, 이미지→비디오, 캐릭터 생성</p>
+    <div class="stage-tools">
+      <span class="tool-tag">Seedance 2.0</span>
+      <span class="tool-tag">Kling 3.0</span>
+      <span class="tool-tag">Veo 3.1</span>
+    </div>
+  </div>
+
+  <div class="stage">
+    <span class="stage-num">04</span>
+    <div class="stage-title">👤 캐릭터 일관성</div>
+    <p class="stage-desc">Soul ID로 채널 캐릭터/아바타 일관성 유지</p>
+    <div class="stage-tools">
+      <span class="tool-tag">Soul ID</span>
+      <span class="tool-tag">참조 이미지</span>
+    </div>
+  </div>
+
+  <div class="stage">
+    <span class="stage-num">05</span>
+    <div class="stage-title">🎞️ 영상 편집</div>
+    <p class="stage-desc">클립 결합, 트랜지션, 인페인팅, 배경 제거</p>
+    <div class="stage-tools">
+      <span class="tool-tag">Edit Video</span>
+      <span class="tool-tag">FFmpeg</span>
+    </div>
+  </div>
+
+  <div class="stage">
+    <span class="stage-num">06</span>
+    <div class="stage-title">🔊 오디오</div>
+    <p class="stage-desc">AI 보이스오버, BGM 생성, 더빙</p>
+    <div class="stage-tools">
+      <span class="tool-tag">TTS</span>
+      <span class="tool-tag">Voice Clone</span>
+      <span class="tool-tag">Dubbing</span>
+    </div>
+  </div>
+
+  <div class="stage">
+    <span class="stage-num">07</span>
+    <div class="stage-title">✨ 후처리</div>
+    <p class="stage-desc">업스케일링(4K), 색보정, 노이즈 제거</p>
+    <div class="stage-tools">
+      <span class="tool-tag">Topaz Upscale</span>
+      <span class="tool-tag">Color Grade</span>
+    </div>
+  </div>
+
+  <div class="stage">
+    <span class="stage-num">08</span>
+    <div class="stage-title">🖼️ 썸네일</div>
+    <p class="stage-desc">AI 썸네일 생성, A/B 테스트용 변형</p>
+    <div class="stage-tools">
+      <span class="tool-tag">generate_image</span>
+      <span class="tool-tag">Edit Image</span>
+    </div>
+  </div>
+</div>
+
+<h2>시스템 아키텍처</h2>
+<div class="arch-diagram">
+  <div class="arch-row">
+    <div class="arch-box">
+      <div class="arch-label">입력</div>
+      주제/키워드
+    </div>
+    <div class="arch-box">
+      <div class="arch-label">입력</div>
+      참조 이미지
+    </div>
+    <div class="arch-box">
+      <div class="arch-label">입력</div>
+      스크립트
+    </div>
+  </div>
+  <div class="arch-arrow">↓</div>
+  <div class="arch-row">
+    <div class="arch-box highlight">
+      <div class="arch-label">오케스트레이터</div>
+      메인 컨트롤러 (Python/Node)
+    </div>
+  </div>
+  <div class="arch-arrow">↓</div>
+  <div class="arch-row">
+    <div class="arch-box">
+      <div class="arch-label">AI 모델</div>
+      Higgsfield API
+    </div>
+    <div class="arch-box">
+      <div class="arch-label">AI 모델</div>
+      Claude API
+    </div>
+    <div class="arch-box">
+      <div class="arch-label">처리</div>
+      FFmpeg
+    </div>
+    <div class="arch-box">
+      <div class="arch-label">저장</div>
+      S3/GCS
+    </div>
+  </div>
+  <div class="arch-arrow">↓</div>
+  <div class="arch-row">
+    <div class="arch-box highlight">
+      <div class="arch-label">출력</div>
+      완성 영상 + 썸네일 + 메타데이터
+    </div>
+  </div>
+</div>
+
+<h2>AI 모델 선택 가이드</h2>
+<div style="overflow-x: auto;">
+<table class="model-table">
+  <thead>
+    <tr>
+      <th>모델</th>
+      <th>용도</th>
+      <th>강점</th>
+      <th>권장</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Seedance 2.0</strong></td>
+      <td>제품 영상, 광고</td>
+      <td>빠른 속도, 일관된 품질</td>
+      <td><span class="badge badge-fast">속도</span></td>
+    </tr>
+    <tr>
+      <td><strong>Veo 3.1</strong></td>
+      <td>시네마틱, 스토리</td>
+      <td>영화적 품질, 긴 클립</td>
+      <td><span class="badge badge-best">품질</span></td>
+    </tr>
+    <tr>
+      <td><strong>Kling 3.0</strong></td>
+      <td>모션, 액션</td>
+      <td>자연스러운 움직임</td>
+      <td><span class="badge badge-best">모션</span></td>
+    </tr>
+    <tr>
+      <td><strong>Wan 2.6</strong></td>
+      <td>일반 영상</td>
+      <td>균형 잡힌 성능</td>
+      <td><span class="badge badge-cheap">비용</span></td>
+    </tr>
+    <tr>
+      <td><strong>Hailuo</strong></td>
+      <td>빠른 프로토타입</td>
+      <td>초고속 생성</td>
+      <td><span class="badge badge-fast">테스트</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>핵심 기능 상세</h2>
+<div class="features">
+  <div class="feature">
+    <div class="feature-title">🎯 Soul ID (캐릭터 일관성)</div>
+    <div class="feature-desc">참조 이미지로 캐릭터 정의 → 모든 장면에서 동일 인물/캐릭터 유지. 채널 아바타, 시리즈 캐릭터에 필수.</div>
+  </div>
+  <div class="feature">
+    <div class="feature-title">🎬 Cinema Studio</div>
+    <div class="feature-desc">AI Director가 스크립트를 장면별로 분할, 가상 카메라(렌즈/초점거리) 설정까지 자동화.</div>
+  </div>
+  <div class="feature">
+    <div class="feature-title">🔗 URL-to-Video</div>
+    <div class="feature-desc">제품 URL 입력 → 자동으로 광고 영상 생성. 제품 리뷰, 언박싱 콘텐츠에 활용.</div>
+  </div>
+  <div class="feature">
+    <div class="feature-title">🎨 Edit Image/Video</div>
+    <div class="feature-desc">브러시 기반 인페인팅으로 특정 영역만 수정. 로고 제거, 배경 교체 등.</div>
+  </div>
+  <div class="feature">
+    <div class="feature-title">🔊 Voice Clone</div>
+    <div class="feature-desc">나레이션용 AI 음성 생성. 일관된 채널 보이스 유지.</div>
+  </div>
+  <div class="feature">
+    <div class="feature-title">📐 Topaz Upscale</div>
+    <div class="feature-desc">AI 영상을 4K로 업스케일링. 유튜브 고화질 업로드용.</div>
+  </div>
+</div>
+
+<h2>구현 예시 (의사 코드)</h2>
+<div class="code-block">
+<span class="code-comment"># 유튜브 영상 제작 파이프라인</span>
+
+<span class="code-keyword">async def</span> <span class="code-func">create_youtube_video</span>(topic, style):
+    <span class="code-comment"># 1. 스크립트 생성 (Claude)</span>
+    script = <span class="code-keyword">await</span> claude.<span class="code-func">generate_script</span>(topic)
+
+    <span class="code-comment"># 2. 스토리보드 분할 (Cinema Studio)</span>
+    shots = <span class="code-keyword">await</span> higgsfield.<span class="code-func">cinema_studio</span>(
+        script=script,
+        camera=<span class="code-string">"Sony A7S III"</span>,
+        lens=<span class="code-string">"35mm"</span>
+    )
+
+    <span class="code-comment"># 3. 캐릭터 정의 (Soul ID)</span>
+    character = <span class="code-keyword">await</span> higgsfield.<span class="code-func">create_soul_id</span>(
+        reference_image=<span class="code-string">"avatar.png"</span>
+    )
+
+    <span class="code-comment"># 4. 장면별 영상 생성</span>
+    clips = []
+    <span class="code-keyword">for</span> shot <span class="code-keyword">in</span> shots:
+        clip = <span class="code-keyword">await</span> higgsfield.<span class="code-func">generate_video</span>(
+            prompt=shot.prompt,
+            model=<span class="code-string">"veo-3.1"</span>,
+            soul_id=character,
+            duration=<span class="code-string">"5s"</span>
+        )
+        clips.<span class="code-func">append</span>(clip)
+
+    <span class="code-comment"># 5. 오디오 생성</span>
+    voiceover = <span class="code-keyword">await</span> higgsfield.<span class="code-func">generate_audio</span>(script)
+    bgm = <span class="code-keyword">await</span> higgsfield.<span class="code-func">generate_audio</span>(style=<span class="code-string">"cinematic"</span>)
+
+    <span class="code-comment"># 6. 영상 합성</span>
+    final = <span class="code-keyword">await</span> ffmpeg.<span class="code-func">concat</span>(clips)
+    final = <span class="code-keyword">await</span> ffmpeg.<span class="code-func">add_audio</span>(final, voiceover, bgm)
+
+    <span class="code-comment"># 7. 후처리</span>
+    final = <span class="code-keyword">await</span> higgsfield.<span class="code-func">upscale_video</span>(final, scale=<span class="code-string">"4K"</span>)
+
+    <span class="code-comment"># 8. 썸네일 생성</span>
+    thumbnail = <span class="code-keyword">await</span> higgsfield.<span class="code-func">generate_image</span>(
+        prompt=f<span class="code-string">"YouTube thumbnail: {topic}"</span>
+    )
+
+    <span class="code-keyword">return</span> final, thumbnail
+</div>
+
+<h2>콘텐츠 유형별 추천 설정</h2>
+<div class="features">
+  <div class="feature">
+    <div class="feature-title">🎮 게임/리뷰</div>
+    <div class="feature-desc">모델: Kling 3.0 (액션) · 속도: 30fps · Soul ID로 캐릭터 유지</div>
+  </div>
+  <div class="feature">
+    <div class="feature-title">📚 교육/설명</div>
+    <div class="feature-desc">모델: Wan 2.6 (비용효율) · 정적 장면 + 애니메이션 · TTS 나레이션</div>
+  </div>
+  <div class="feature">
+    <div class="feature-title">🛍️ 제품/광고</div>
+    <div class="feature-desc">모델: Seedance 2.0 · URL-to-Video · Marketing Studio</div>
+  </div>
+  <div class="feature">
+    <div class="feature-title">🎬 브이로그/스토리</div>
+    <div class="feature-desc">모델: Veo 3.1 (시네마틱) · Cinema Studio · Voice Clone</div>
+  </div>
+</div>
+
+<h2>MCP API 통합 가이드</h2>
+<p style="color: var(--text-muted); margin-bottom: 16px;">실제 Higgsfield MCP 도구를 활용한 구현 방법</p>
+
+<h3>영상 생성 도구</h3>
+<div class="code-block">
+<span class="code-comment"># 단일 영상 생성</span>
+<span class="code-func">generate_video</span>({
+  model: <span class="code-string">"seedance_2_5"</span>,     <span class="code-comment">// 기본, 빠른 생성</span>
+  prompt: <span class="code-string">"제품 홍보 영상..."</span>,
+  aspect_ratio: <span class="code-string">"16:9"</span>,      <span class="code-comment">// 유튜브 가로</span>
+  duration: 5
+})
+
+<span class="code-comment"># 배치 생성 (1-12개 병렬)</span>
+<span class="code-func">generate_video_batch</span>({
+  requests: [
+    { index: 0, params: { model: <span class="code-string">"kling3_0"</span>, prompt: <span class="code-string">"장면1"</span> } },
+    { index: 1, params: { model: <span class="code-string">"kling3_0"</span>, prompt: <span class="code-string">"장면2"</span> } }
+  ]
+})
+
+<span class="code-comment"># 모션 전이 (캐릭터에 동작 적용)</span>
+<span class="code-func">motion_control</span>({
+  image_id: <span class="code-string">"캐릭터_이미지_uuid"</span>,
+  motion_video_id: <span class="code-string">"참조_동작_uuid"</span>,
+  resolution: <span class="code-string">"1080p"</span>
+})
+</div>
+
+<h3>이미지 생성 도구</h3>
+<div class="code-block">
+<span class="code-comment"># 일반 이미지 (썸네일 등)</span>
+<span class="code-func">generate_image</span>({
+  model: <span class="code-string">"gpt_image_2_5"</span>,     <span class="code-comment">// 기본, 포토리얼</span>
+  prompt: <span class="code-string">"YouTube 썸네일: 긴장감 있는..."</span>,
+  aspect_ratio: <span class="code-string">"16:9"</span>
+})
+
+<span class="code-comment"># 캐릭터 생성 (Soul ID)</span>
+<span class="code-func">generate_image</span>({
+  model: <span class="code-string">"soul_2"</span>,
+  prompt: <span class="code-string">"채널 마스코트 캐릭터"</span>,
+  medias: [{ value: <span class="code-string">"soul_id_uuid"</span>, role: <span class="code-string">"soul_id"</span> }]
+})
+
+<span class="code-comment"># 제품/광고용</span>
+<span class="code-func">generate_image</span>({
+  model: <span class="code-string">"marketing_studio_image"</span>,
+  prompt: <span class="code-string">"제품 광고 이미지"</span>
+})
+</div>
+
+<h3>오디오 생성 도구</h3>
+<div class="code-block">
+<span class="code-comment"># TTS 나레이션</span>
+<span class="code-func">generate_audio</span>({
+  model: <span class="code-string">"seed_audio"</span>,         <span class="code-comment">// ByteDance 기본</span>
+  prompt: <span class="code-string">"안녕하세요, 오늘은..."</span>,
+  voice_type: <span class="code-string">"preset"</span>,
+  voice_id: <span class="code-string">"korean_male_1"</span>
+})
+
+<span class="code-comment"># 음성 복제 (나만의 보이스)</span>
+<span class="code-func">create_voice_from_confirmed_audio</span>({
+  audio_media_id: <span class="code-string">"내_음성_샘플_uuid"</span>,
+  name: <span class="code-string">"채널보이스"</span>
+})
+
+<span class="code-comment"># 다국어 더빙 (립싱크)</span>
+<span class="code-func">dubbing</span>({
+  video_id: <span class="code-string">"원본_영상_uuid"</span>,
+  target_language: <span class="code-string">"eng"</span>  <span class="code-comment">// 영어로 더빙</span>
+})
+</div>
+
+<h3>후처리 도구</h3>
+<div class="code-block">
+<span class="code-comment"># 영상 업스케일링 (4K)</span>
+<span class="code-func">upscale_video</span>({
+  provider: <span class="code-string">"topaz"</span>,
+  video_id: <span class="code-string">"영상_uuid"</span>,
+  resolution: <span class="code-string">"2160p"</span>       <span class="code-comment">// 4K</span>
+})
+
+<span class="code-comment"># 이미지 업스케일링</span>
+<span class="code-func">upscale_image</span>({
+  image_id: <span class="code-string">"썸네일_uuid"</span>,
+  width: 1280, height: 720,
+  resolution: <span class="code-string">"4k"</span>
+})
+
+<span class="code-comment"># 이미지 확장 (아웃페인팅)</span>
+<span class="code-func">outpaint_image</span>({
+  image_id: <span class="code-string">"원본_uuid"</span>,
+  aspect_ratio: <span class="code-string">"16:9"</span>      <span class="code-comment">// 정사각형→가로로 확장</span>
+})
+</div>
+
+<h3>쇼츠/리스타일 도구</h3>
+<div class="code-block">
+<span class="code-comment"># 쇼츠 스튜디오 (영상 리스타일)</span>
+<span class="code-func">shorts_studio_create</span>({
+  source_video_id: <span class="code-string">"원본_영상_uuid"</span>,
+  preset_id: <span class="code-string">"스타일_프리셋_uuid"</span>,
+  preset_source: <span class="code-string">"cms"</span>,
+  aspect_ratio: <span class="code-string">"9:16"</span>      <span class="code-comment">// 세로 쇼츠</span>
+})
+
+<span class="code-comment"># 유튜브 영상 분석</span>
+<span class="code-func">video_analysis_create</span>({
+  youtube_url: <span class="code-string">"https://youtube.com/watch?v=..."</span>
+})
+</div>
+
+<h3>워크플로우 & 미디어</h3>
+<div class="code-block">
+<span class="code-comment"># 워크플로우 가이드 로드</span>
+<span class="code-func">get_workflow_instructions</span>({
+  workflow: <span class="code-string">"ad-multiplier"</span>  <span class="code-comment">// 광고 변형 워크플로우</span>
+})
+
+<span class="code-comment"># 마케팅 스튜디오 (템플릿 갤러리)</span>
+<span class="code-func">show_marketing_studio_v2</span>({
+  category: <span class="code-string">"ugc"</span>           <span class="code-comment">// UGC 광고 템플릿</span>
+})
+
+<span class="code-comment"># URL에서 미디어 가져오기</span>
+<span class="code-func">media_import_url</span>({
+  url: <span class="code-string">"https://example.com/image.jpg"</span>,
+  type: <span class="code-string">"image"</span>
+})
+</div>
+
+<h2>모델 ID 참조표</h2>
+<div style="overflow-x: auto;">
+<table class="model-table">
+  <thead>
+    <tr>
+      <th>용도</th>
+      <th>모델 ID</th>
+      <th>특징</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>영상 (일반)</td>
+      <td><code>seedance_2_5</code></td>
+      <td>기본값, 빠른 생성</td>
+    </tr>
+    <tr>
+      <td>영상 (모션)</td>
+      <td><code>kling3_0</code></td>
+      <td>멀티샷, 오디오, 모션전이</td>
+    </tr>
+    <tr>
+      <td>영상 (고화질)</td>
+      <td><code>minimax_h3</code></td>
+      <td>2K 키프레임, 혼합 참조</td>
+    </tr>
+    <tr>
+      <td>영상 (광고)</td>
+      <td><code>marketing_studio_video</code></td>
+      <td>광고/제품용</td>
+    </tr>
+    <tr>
+      <td>이미지 (일반)</td>
+      <td><code>gpt_image_2_5</code></td>
+      <td>포토리얼, 타이포그래피</td>
+    </tr>
+    <tr>
+      <td>이미지 (캐릭터)</td>
+      <td><code>soul_2</code></td>
+      <td>Soul ID 일관성</td>
+    </tr>
+    <tr>
+      <td>이미지 (아바타)</td>
+      <td><code>soul_cast</code></td>
+      <td>텍스트 기반 캐릭터</td>
+    </tr>
+    <tr>
+      <td>오디오 (TTS)</td>
+      <td><code>seed_audio</code></td>
+      <td>ByteDance 기본</td>
+    </tr>
+    <tr>
+      <td>3D 메시</td>
+      <td><code>image_to_3d</code></td>
+      <td>이미지→GLB 변환</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h2>비용 비교 (5분 영상 기준, 2026년 9월)</h2>
+<p style="color: var(--text-muted); margin-bottom: 16px;">60개 클립 × 5초, 720p HD 기준</p>
+
+<h3>API 서비스별 단가</h3>
+<div style="overflow-x: auto;">
+<table class="model-table">
+  <thead>
+    <tr>
+      <th>서비스</th>
+      <th>단가 (초당)</th>
+      <th>5분 영상</th>
+      <th>직접 API</th>
+      <th>특징</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Higgsfield</strong></td>
+      <td>크레딧 기반</td>
+      <td>$55~80</td>
+      <td>❌</td>
+      <td>다양한 모델 통합</td>
+    </tr>
+    <tr>
+      <td><strong>FLUX 3</strong></td>
+      <td>$0.17 (HD) / $0.06 (Draft)</td>
+      <td>$51</td>
+      <td>✅</td>
+      <td>4K/$0.80, 오디오 동기화</td>
+    </tr>
+    <tr>
+      <td><strong>Grok 1.5</strong></td>
+      <td>$0.14 (720p)</td>
+      <td>$42</td>
+      <td>✅</td>
+      <td>가장 저렴한 API</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>셀프 호스팅 (GPU 렌탈)</h3>
+<div style="overflow-x: auto;">
+<table class="model-table">
+  <thead>
+    <tr>
+      <th>GPU</th>
+      <th>시간당</th>
+      <th>5분 영상</th>
+      <th>월 100개</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>H100 80GB</strong></td>
+      <td>$2.10~3.25</td>
+      <td>$5~8</td>
+      <td>$500~800</td>
+    </tr>
+    <tr>
+      <td><strong>A100 80GB</strong></td>
+      <td>$1.09~2.21</td>
+      <td>$8~12</td>
+      <td>$800~1,200</td>
+    </tr>
+    <tr>
+      <td><strong>M4 Max 128GB</strong></td>
+      <td>전기료만</td>
+      <td>~$0.50</td>
+      <td>~$50</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>GPU 구매 vs 렌탈</h3>
+<div style="overflow-x: auto;">
+<table class="model-table">
+  <thead>
+    <tr>
+      <th>GPU</th>
+      <th>구매가</th>
+      <th>손익분기</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>H100 80GB (신품)</td>
+      <td>$25,000~40,000</td>
+      <td>16개월 24/7</td>
+    </tr>
+    <tr>
+      <td>A100 80GB (신품)</td>
+      <td>$15,000~17,000</td>
+      <td>12개월 24/7</td>
+    </tr>
+    <tr>
+      <td>Mac M4 Max 128GB</td>
+      <td>~$4,000</td>
+      <td>즉시 (느림 감수)</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>오픈소스 모델 (셀프호스팅)</h3>
+<div class="features">
+  <div class="feature">
+    <div class="feature-title">LTX-2.5 ⭐</div>
+    <div class="feature-desc">Apache 2.0 · 4K/50fps · 네이티브 오디오 (유일) · 상용급 품질</div>
+  </div>
+  <div class="feature">
+    <div class="feature-title">Wan 2.7 ⭐</div>
+    <div class="feature-desc">Apache 2.0 · MoE 아키텍처 · 가장 범용적 · Sora/Veo 수준</div>
+  </div>
+  <div class="feature">
+    <div class="feature-title">HunyuanVideo 1.5</div>
+    <div class="feature-desc">Apache 2.0 · Tencent · 안정적 품질</div>
+  </div>
+  <div class="feature">
+    <div class="feature-title">CogVideoX</div>
+    <div class="feature-desc">오픈 · Tsinghua · 연구/실험용</div>
+  </div>
+</div>
+
+<h3>월간 비용 비교표</h3>
+<div style="overflow-x: auto;">
+<table class="model-table">
+  <thead>
+    <tr>
+      <th>월 생산량</th>
+      <th>Higgsfield</th>
+      <th>FLUX API</th>
+      <th>Grok API</th>
+      <th>셀프호스팅</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>10개</td>
+      <td>$550~800</td>
+      <td>$660</td>
+      <td>$500</td>
+      <td>$70~100</td>
+    </tr>
+    <tr>
+      <td>30개</td>
+      <td>$1,650~2,400</td>
+      <td>$1,980</td>
+      <td>$1,500</td>
+      <td>$210~300</td>
+    </tr>
+    <tr>
+      <td>50개</td>
+      <td>$2,750~4,000</td>
+      <td>$3,300</td>
+      <td>$2,500</td>
+      <td>$350~500</td>
+    </tr>
+    <tr>
+      <td>100개</td>
+      <td>$5,500~8,000</td>
+      <td>$6,600</td>
+      <td>$5,000</td>
+      <td>$700~1,000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<h3>상황별 추천</h3>
+<div class="features">
+  <div class="feature">
+    <div class="feature-title">입문/테스트</div>
+    <div class="feature-desc">→ Grok API ($50~100/월)</div>
+  </div>
+  <div class="feature">
+    <div class="feature-title">다양한 모델 필요</div>
+    <div class="feature-desc">→ Higgsfield (Kling, Seedance 등)</div>
+  </div>
+  <div class="feature">
+    <div class="feature-title">비용 최적화</div>
+    <div class="feature-desc">→ 셀프호스팅 (월 20개+부터 유리)</div>
+  </div>
+  <div class="feature">
+    <div class="feature-title">대량 생산 (100개+)</div>
+    <div class="feature-desc">→ H100 렌탈 + 오픈소스</div>
+  </div>
+</div>
+
+<div class="summary">
+  <div class="summary-title">💡 핵심 설계 포인트</div>
+  <ul class="summary-list">
+    <li>Soul ID로 채널 아이덴티티 일관성</li>
+    <li>Cinema Studio로 자동 스토리보드</li>
+    <li>멀티모델 전략 (품질/속도/비용)</li>
+    <li>모듈화된 파이프라인 구조</li>
+    <li>FFmpeg 기반 후처리 통합</li>
+    <li>Topaz 4K 업스케일링</li>
+    <li>AI 썸네일 자동 생성</li>
+    <li>Voice Clone으로 채널 보이스</li>
+    <li>MCP 도구로 직접 API 호출</li>
+    <li>배치 생성으로 병렬 처리</li>
+  </ul>
+</div>
